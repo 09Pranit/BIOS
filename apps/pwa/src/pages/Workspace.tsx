@@ -55,7 +55,6 @@ import { Bird, VillageArt } from '../components/Art';
 import { lessons } from '../lib/content';
 import GovernmentResources from '../components/GovernmentResources';
 import { governmentResources } from '../lib/government-resources';
-import { integrations } from '../config/sponsors';
 import { digest, reasonFor, compareOpsByClock, type Op } from '../../../../packages/sync-core/src/index';
 const today = localCalendarDate;
 const fieldLabels: Record<string, string> = {
@@ -1455,8 +1454,8 @@ export function About() {
         <p>
           Judge enrollment is deliberately open. Controlled enrollment through first-admin bootstrap and
           role-bound invitations is implemented. External identity-provider login, field-specific read
-          permissions, district peer replication, Merkle repair trees, clinical decision support and sponsor
-          adapters are not completed. Workspace controls and the four original lessons are available in
+          permissions, district peer replication, Merkle repair trees, clinical decision support and external
+          integrations are not completed. Workspace controls and the four original lessons are available in
           English, Hindi and Punjabi; source documentation and raw technical logs remain English. Do not
           deploy this demo with real personal data.
         </p>

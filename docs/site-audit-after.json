@@ -301,7 +301,7 @@
           "displayValue": "Est savings of 150 ms"
         }
       ],
-      "rawReport": "site-audit-after.lighthouse-mobile.json"
+      "rawReport": null
     },
     {
       "formFactor": "desktop",
@@ -361,7 +361,7 @@
           "score": 0.5
         }
       ],
-      "rawReport": "site-audit-after.lighthouse-desktop.json"
+      "rawReport": null
     }
   ],
   "warnings": [],

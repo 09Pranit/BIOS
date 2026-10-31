@@ -15,7 +15,7 @@ Lighthouse **13.5.0**, local Chrome, fresh profiles, mobile and desktop presets.
 
 The original SEO checklist score was already 100; it did not establish useful public content, good indexing boundaries or search ranking. The structural SEO changes below go beyond that checklist. Scores are local lab observations, not Google rankings or field Core Web Vitals. [Chrome explains score variability](https://developer.chrome.com/docs/lighthouse/performance/performance-scoring).
 
-Evidence: [baseline summary](site-audit-baseline.json), [after summary](site-audit-after.json), [mobile Lighthouse report](site-audit-after.lighthouse-mobile.json), [desktop Lighthouse report](site-audit-after.lighthouse-desktop.json). Version, emulation settings, timings and runtime-error fields are retained. Exploratory runs with another Lighthouse version are excluded from this comparison.
+Evidence: [baseline summary](site-audit-baseline.json) and [after summary](site-audit-after.json). Version, emulation settings, timings and runtime-error fields are retained. Full Lighthouse payloads are generated audit artifacts and are intentionally not kept in the source tree.
 
 ## Findings and changes
 

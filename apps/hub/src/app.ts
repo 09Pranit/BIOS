@@ -64,7 +64,6 @@ export function createApp(store: HubStore, demo = true) {
         'invitations',
         'audit',
       ],
-      integrations: { mojoauth: 'not configured', n8n: 'not configured', ai: 'not configured' },
     }),
   );
   const authLimiter = rateLimit({

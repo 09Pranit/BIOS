@@ -1,6 +1,6 @@
 # Smriva — Last-mile records. Continuous care.
 
-**[Requirements and evidence](docs/REQUIREMENTS_MAP.md) · [Design notes](docs/DESIGN_NOTES.md) · [Site analysis](docs/SITE_ANALYSIS.md) · [SEO deployment](docs/SEO.md) · [API reference](docs/API.md) · [Security](docs/SECURITY.md) · [Judge walkthrough](docs/DEMO_SCRIPT.md)**
+**[Documentation](docs/README.md) · [Requirements and evidence](docs/REQUIREMENTS_MAP.md) · [API reference](docs/API.md) · [Security](docs/SECURITY.md) · [Judge walkthrough](docs/DEMO_SCRIPT.md)**
 
 Smriva brings village-school and community-health records into one consented child record. People work independently, and their changes cross weak connections without silently discarding a competing account.
 
@@ -48,7 +48,7 @@ Windows launcher, including the runtime detected in this workspace:
 powershell -ExecutionPolicy Bypass -File .\start-smriva.ps1
 ```
 
-`start-setusync.ps1` and `start-kuka.ps1` remain compatibility launchers. Existing PINs, databases and encrypted backups remain readable. A present `data/kuka.sqlite` is migrated in place; a new installation retains the compatible `data/setusync.sqlite` path. No accepted operations are renamed or rewritten during the migration.
+Existing PINs, databases and encrypted backups remain readable. A present `data/kuka.sqlite` is migrated in place; a new installation retains the compatible `data/setusync.sqlite` path. No accepted operations are renamed or rewritten during the migration.
 
 ### Forgotten device PIN
 
@@ -222,6 +222,4 @@ All demo child and care records are synthetic. Four original text lessons/quizze
 
 ## Boundaries
 
-This is a runnable stage-2 hackathon system, not a certified clinical deployment. External SSO, fine-grained clinical read ACLs, district federation, Merkle repair, WHO z-scores, ANC/prescription decision support and sponsor integrations are not implemented. A short PIN remains susceptible to offline guessing; unlocked workspaces cannot resist malicious script. Large deployments need causal indexing/compaction instead of whole-log projection rebuilds. HTTPS, key management and an organization-specific retention/access review remain deployment work.
-
-MojoAuth, n8n, TechnoTribes, Tin Computer, Anthropic and Langfuse are not shown as connected. The core works without them. The n8n file is an inactive template only. Built at BIOS V2; no affiliation, endorsement, award or deployment claim.
+This is a runnable stage-2 hackathon system, not a certified clinical deployment. External SSO, fine-grained clinical read ACLs, district federation, Merkle repair, WHO z-scores, ANC/prescription decision support and external integrations are not implemented. A short PIN remains susceptible to offline guessing; unlocked workspaces cannot resist malicious script. Large deployments need causal indexing/compaction instead of whole-log projection rebuilds. HTTPS, key management and an organization-specific retention/access review remain deployment work. The n8n file is an inactive template only. Built at BIOS V2; no affiliation, endorsement, award or deployment claim.

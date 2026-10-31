@@ -497,7 +497,7 @@
           "displayValue": "Est savings of 300 ms"
         }
       ],
-      "rawReport": "site-audit-baseline.lighthouse-mobile.json",
+      "rawReport": null,
       "measuredAt": "2026-10-31T15:13:15.386Z"
     },
     {
@@ -603,7 +603,7 @@
           "displayValue": "Est savings of 40 ms"
         }
       ],
-      "rawReport": "site-audit-baseline.lighthouse-desktop.json",
+      "rawReport": null,
       "measuredAt": "2026-10-31T15:13:23.835Z"
     }
   ],

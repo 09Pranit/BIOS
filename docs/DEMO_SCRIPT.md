@@ -22,7 +22,7 @@ Offer the judge the two DOB values, a chaos seed, link profile, and the moment t
 
 - Internet unavailable: everything core runs on the laptop village hub. Cached lessons, PIN unlock, records and lab need no cloud service.
 - Hub stopped: local entries still save; the lab cannot sync until the Node hub restarts. Show pending operations and restart the owned hub. Do not claim a successful backup.
-- Sponsor/AI unavailable: no core behavior depends on them; Admin clearly says not configured. No fabricated integration statuses.
+- External services unavailable: no core workflow depends on them; continue with the local hub.
 - Browser storage unavailable/full: the app reports that the new change was not saved. Export earlier records if storage permits, free unrelated space, and retry. Do not clear the site’s database without an export.
 - Existing lab records remain: create a new scenario ID. Do not erase a real teacher workspace.
 - Session locked after reload: enter the PIN. Keys deliberately stay only in memory while unlocked.
