@@ -507,6 +507,8 @@ export async function enroll(actor: string, role: string, code = 'setusync-demo-
     body: JSON.stringify({ actor, role, code }),
     signal: timeoutSignal(10000),
   });
+  if (!r.headers.get('content-type')?.includes('application/json'))
+    throw new Error('The hub API is unavailable on this deployment. Refresh after the deployment finishes.');
   const result = await r.json();
   if (!r.ok) throw new Error(result.error);
   return result;
