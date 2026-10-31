@@ -257,9 +257,28 @@ export function materialize(input: Op[]): Materialized {
       ].sort();
     else if (strategy === 'pn-counter') value = ops.reduce((sum, o) => sum + Number(o.value), 0);
     else {
-      const values = [...new Set(frontier.map((o) => canonical(o.value)))];
+      let alternatives = frontier;
+      if (field === 'attendance' && frontier.length === 1 && frontier[0].kind === 'set') {
+        const boundary = ops
+            .filter(
+              (op) =>
+                op.kind === 'resolve' &&
+                frontier.every((current) => op.opId === current.opId || before(op, current)),
+            )
+            .sort(compareOpsByClock)
+            .at(-1),
+          latestByDevice = new Map<string, Op>();
+        for (const op of boundary ? [boundary, ...ops.filter((candidate) => before(boundary, candidate))] : ops) {
+          const previous = latestByDevice.get(op.deviceId);
+          if (!previous || op.counter > previous.counter) latestByDevice.set(op.deviceId, op);
+        }
+        const deviceAlternatives = [...latestByDevice.values()];
+        if (new Set(deviceAlternatives.map((op) => canonical(op.value))).size > 1)
+          alternatives = deviceAlternatives;
+      }
+      const values = [...new Set(alternatives.map((o) => canonical(o.value)))];
       if (values.length > 1) {
-        conflicts.push({ id: key, entityId, field, reason: reasonFor(field), versions: frontier });
+        conflicts.push({ id: key, entityId, field, reason: reasonFor(field), versions: alternatives });
         value = null;
       } else value = frontier[0]?.value;
     }

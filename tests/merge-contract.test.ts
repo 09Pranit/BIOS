@@ -84,6 +84,24 @@ describe('merge contracts for independent offline replicas', () => {
     expect(merged.operations).toBe(2);
   });
 
+  it('keeps different attendance marks from different devices in the Conflict inbox', () => {
+    const first = edit('teacher-tablet', 'attendance', 'present'),
+      otherDevice = edit('office-laptop', 'attendance', 'absent', [first]);
+    const sameDevice = edit('teacher-tablet', 'attendance', 'absent', [first]);
+    expect(materialize([first, sameDevice]).conflicts).toEqual([]);
+    expect(materialize([first, sameDevice]).entities['audit-child'].attendance).toBe('absent');
+
+    const conflicted = materialize([first, otherDevice]);
+    expect(conflicted.conflicts).toHaveLength(1);
+    expect(conflicted.conflicts[0]).toMatchObject({ entityId: 'audit-child', field: 'attendance' });
+    expect(conflicted.conflicts[0].versions.map((op) => op.value).sort()).toEqual(['absent', 'present']);
+    expect(conflicted.entities['audit-child'].attendance).toBeNull();
+
+    const reviewed = edit('reviewer', 'attendance', 'present', [first, otherDevice], 'resolve');
+    expect(materialize([first, otherDevice, reviewed]).conflicts).toEqual([]);
+    expect(materialize([first, otherDevice, reviewed]).entities['audit-child'].attendance).toBe('present');
+  });
+
   it('cannot erase an unseen third alternative by resolving only the first two', () => {
     const a = edit('north', 'dob', '2018-01-01');
     const b = edit('south', 'dob', '2019-01-01');
