@@ -28,8 +28,9 @@ test('encrypted entry, offline reload and JSON backup work on this browser and s
   await noOverflow(page);
   await context.setOffline(true);
   await navigate(page, '/app/children');
-  await page.getByRole('button', { name: 'New child', exact: true }).click();
-  const dialog = page.getByRole('dialog', { name: 'New child', exact: true });
+  await page.getByRole('button', { name: 'New', exact: true }).last().click();
+  await page.getByRole('button', { name: 'Student', exact: true }).last().click();
+  const dialog = page.getByRole('dialog', { name: 'New student', exact: true });
   await dialog.locator('input[name="name"]').fill('आशा ਕੌਰ ' + testInfo.project.name);
   await dialog.getByLabel('Date of birth', { exact: true }).fill('2018-01-10');
   await dialog.getByRole('checkbox').check();
@@ -40,7 +41,7 @@ test('encrypted entry, offline reload and JSON backup work on this browser and s
         .evaluate((element) => parseFloat(getComputedStyle(element).fontSize)),
     ).toBeGreaterThanOrEqual(16);
   }
-  await dialog.getByRole('button', { name: 'Save child', exact: true }).click();
+  await dialog.getByRole('button', { name: 'Save student', exact: true }).click();
   await expect(dialog).toHaveCount(0);
   await noOverflow(page);
   await page.reload();
@@ -84,8 +85,9 @@ test('missing recent convenience APIs do not block enrollment or saving', async 
   page.on('pageerror', (error) => errors.push(error.message));
   await enroll(page);
   await navigate(page, '/app/children');
-  await page.getByRole('button', { name: 'New child', exact: true }).click();
-  const dialog = page.getByRole('dialog', { name: 'New child', exact: true });
+  await page.getByRole('button', { name: 'New', exact: true }).last().click();
+  await page.getByRole('button', { name: 'Student', exact: true }).last().click();
+  const dialog = page.getByRole('dialog', { name: 'New student', exact: true });
   await dialog.locator('input[name="name"]').fill('Older browser example');
   await dialog.getByLabel('Date of birth', { exact: true }).fill('2019-01-01');
   await dialog.getByRole('checkbox').check();

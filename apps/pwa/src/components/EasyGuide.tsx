@@ -25,7 +25,7 @@ export default function EasyGuide() {
       title: 'Find or add a child',
       steps: [
         'Search by name, ID or village. Check the list to avoid adding the same child twice.',
-        'Open a child’s record, or choose New child to enter a new record.',
+        'Open a record, or choose New and then Student or Patient.',
         'For a new child, enter the details, confirm guardian consent and save on this device.',
       ],
     };

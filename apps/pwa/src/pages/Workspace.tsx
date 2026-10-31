@@ -120,7 +120,15 @@ function Metric({
     </div>
   );
 }
-export function ChildForm({ close, child }: { close: () => void; child?: any }) {
+export function ChildForm({
+  close,
+  child,
+  profile = 'student',
+}: {
+  close: () => void;
+  child?: any;
+  profile?: 'student' | 'patient';
+}) {
   const { t, locale, language } = useI18n();
   const { refresh, notify, easyMode } = useKuka(),
     [busy, setBusy] = useState(false),
@@ -131,9 +139,10 @@ export function ChildForm({ close, child }: { close: () => void; child?: any }) 
     [defaults, setDefaults] = useState({
       class: child?.class ?? 'Class 1',
       village: child?.village ?? 'Dhareri',
-    });
+    }),
+    newTitle = profile === 'patient' ? 'New patient' : 'New student';
   return (
-    <Modal title={t(child ? 'Edit child' : 'New child')} close={close}>
+    <Modal title={t(child ? 'Edit record' : newTitle)} close={close}>
       <Form
         key={formKey}
         onSubmit={async (data) => {
@@ -152,6 +161,8 @@ export function ChildForm({ close, child }: { close: () => void; child?: any }) 
               { entityId: id, field: 'village', value: String(data.get('village')) },
               { entityId: id, field: 'consent', value: true },
             ];
+            if (!initialChild)
+              values.push({ entityId: id, field: 'tags', value: profile, kind: 'add' });
             // Correct only fields the person changed. Re-saving the whole form
             // would turn unrelated offline edits into avoidable conflicts.
             const changed = initialChild
@@ -159,7 +170,7 @@ export function ChildForm({ close, child }: { close: () => void; child?: any }) 
               : values;
             if (changed.length) await vault.writeMany(changed, observedAtStart);
             refresh();
-            notify(t('Child record saved on this device · encrypted'));
+            notify(t('Record saved on this device · encrypted'));
             if (data.get('continue') === 'yes') {
               setDefaults({ class: String(data.get('class')), village: String(data.get('village')) });
               setError('');
@@ -237,7 +248,10 @@ export function ChildForm({ close, child }: { close: () => void; child?: any }) 
         )}
         {error && <Notice tone="coral">{error}</Notice>}
         <div className="form-actions">
-          <Submit busy={busy} label={t(child ? 'Save changes' : 'Save child')} />
+          <Submit
+            busy={busy}
+            label={t(child ? 'Save changes' : profile === 'patient' ? 'Save patient' : 'Save student')}
+          />
           {!child && (
             <button className="button outline" type="submit" name="continue" value="yes" disabled={busy}>
               {t('Save and add another')}

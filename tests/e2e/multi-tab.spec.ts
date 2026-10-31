@@ -34,15 +34,16 @@ test('two tabs sharing one browser preserve simultaneous offline registrations a
     [b, 'Concurrent Browser B'],
   ] as const) {
     await page.locator('.sidebar nav a[href="/app/children"]').click();
-    await page.getByRole('button', { name: 'New child', exact: true }).click();
-    const dialog = page.getByRole('dialog', { name: 'New child', exact: true });
+    await page.getByRole('button', { name: 'New', exact: true }).last().click();
+    await page.getByRole('button', { name: 'Student', exact: true }).last().click();
+    const dialog = page.getByRole('dialog', { name: 'New student', exact: true });
     await dialog.getByLabel(/Child’s name/).fill(name);
     await dialog.getByLabel('Date of birth', { exact: true }).fill('2019-04-15');
     await dialog.getByRole('checkbox').check();
   }
   await Promise.all(
     [a, b].map((page) =>
-      page.getByRole('dialog').getByRole('button', { name: 'Save child', exact: true }).click(),
+      page.getByRole('dialog').getByRole('button', { name: 'Save student', exact: true }).click(),
     ),
   );
   for (const page of [a, b]) await expect(page.getByRole('dialog')).toHaveCount(0);

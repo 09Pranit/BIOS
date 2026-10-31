@@ -20,10 +20,11 @@ import {
   GitBranch,
   Filter,
   ChevronRight,
+  ChevronDown,
   FilePlus2,
   LockKeyhole,
 } from 'lucide-react';
-import { formatDisplayDate, useI18n } from '../lib/i18n';
+import { formatDisplayDate, languages, useI18n, type Language } from '../lib/i18n';
 import { useKuka } from '../lib/context';
 import EasyDashboard from '../components/EasyDashboard';
 import { displayRole } from '../lib/presentation';
@@ -541,32 +542,43 @@ function RosterImport({ close }: { close: () => void }) {
   );
 }
 export function Children() {
-  const { t, locale } = useI18n();
+  const { t, locale, language } = useI18n();
   const { version, easyMode } = useKuka(),
     children = childrenOnDevice(),
     [search, setSearch] = useState(''),
     [grade, setGrade] = useState('All classes'),
     [review, setReview] = useState('All records'),
+    [sortLanguage, setSortLanguage] = useState<Language>(language),
     [params, setParams] = useSearchParams(),
-    [add, setAdd] = useState(false),
+    [add, setAdd] = useState<'student' | 'patient' | null>(null),
     [importing, setImporting] = useState(false);
   useEffect(() => {
-    if (params.get('new') === '1') setAdd(true);
+    const requested = params.get('new');
+    if (requested === 'student' || requested === 'patient') setAdd(requested);
+    else if (requested === '1') setAdd('student');
   }, [params]);
   const close = () => {
-    setAdd(false);
+    setAdd(null);
     if (params.has('new')) {
       const next = new URLSearchParams(params);
       next.delete('new');
       setParams(next, { replace: true });
     }
   };
-  const shown = children.filter(
-    (c) =>
-      matchesChild(c, search) &&
-      (grade === 'All classes' || c.class === grade) &&
-      (review === 'All records' || c.hasConflict),
-  );
+  const sortLocale = languages.find((entry) => entry.code === sortLanguage)!.locale,
+    shown = children
+      .filter(
+        (c) =>
+          matchesChild(c, search) &&
+          (grade === 'All classes' || c.class === grade) &&
+          (review === 'All records' || c.hasConflict),
+      )
+      .sort((a, b) =>
+        new Intl.Collator(sortLocale, { numeric: true, sensitivity: 'base' }).compare(
+          a.name ?? a.id,
+          b.name ?? b.id,
+        ),
+      );
   return (
     <>
       <PageTitle
@@ -582,9 +594,19 @@ export function Children() {
             <button className="button outline" onClick={() => setImporting(true)}>
               <Upload size={16} /> {easyMode ? t('Add a list from a file') : t('Import CSV')}
             </button>
-            <button className="button primary" onClick={() => setAdd(true)}>
-              <Plus size={16} /> {t('New child')}{' '}
-            </button>
+            <details className="new-menu">
+              <summary className="button primary">
+                <Plus size={16} /> {t('New')} <ChevronDown size={14} />
+              </summary>
+              <div className="new-menu-options">
+                <button type="button" onClick={() => setAdd('student')}>
+                  <GraduationCap size={15} /> {t('Student')}
+                </button>
+                <button type="button" onClick={() => setAdd('patient')}>
+                  <Heart size={15} /> {t('Patient')}
+                </button>
+              </div>
+            </details>
           </div>
         }
       />
@@ -594,6 +616,17 @@ export function Children() {
         <select aria-label={t('Record status')} value={review} onChange={(e) => setReview(e.target.value)}>
           <option value="All records">{t('All records')}</option>
           <option value="Needs review">{t('Needs review')}</option>
+        </select>
+        <select
+          aria-label={t('Sort names by language')}
+          value={sortLanguage}
+          onChange={(event) => setSortLanguage(event.target.value as Language)}
+        >
+          {languages.map(({ code, name }) => (
+            <option key={code} value={code}>
+              {t('Sort: {language}', { language: name })}
+            </option>
+          ))}
         </select>
         <button
           className="button outline"
@@ -636,7 +669,9 @@ export function Children() {
                       <Users size={16} />
                       <span>
                         <strong>{c.name ?? t('Identity needs review')}</strong>
-                        <small>{c.id}</small>
+                        <small>
+                          {t(c.tags?.includes('patient') ? 'Patient' : 'Student')} · {c.id}
+                        </small>
                       </span>
                     </Link>
                   </td>
@@ -675,7 +710,7 @@ export function Children() {
           />
         )}
       </Panel>
-      {add && <ChildForm close={close} />}
+      {add && <ChildForm close={close} profile={add} />}
       {importing && <RosterImport close={() => setImporting(false)} />}
     </>
   );
@@ -1184,7 +1219,7 @@ export function School() {
         {!rows.length && (
           <Empty
             title={t('No matching children')}
-            description={t('Change the filters to continue data entry.')}
+            description={t('Change the filters to continue entering records.')}
           />
         )}
       </Panel>

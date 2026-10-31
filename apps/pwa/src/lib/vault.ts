@@ -153,7 +153,7 @@ export class Vault {
       const saved = await this.db.vault.get('state');
       if (!saved)
         throw new Error(
-          'The encrypted workspace is missing. Keep this browserâ€™s data and recover from a backup.',
+          'The encrypted workspace is missing. Keep this browser’s data and recover from a backup.',
         );
       const state = await open<State>(key, saved.sealed);
       this.assertSession(generation, key);
@@ -168,15 +168,15 @@ export class Vault {
       key = this.key;
     const run = this.tail.then(async () => {
       this.assertSession(generation, key);
-      // Reading another tabâ€™s committed bytes is necessary for safe storage, but is
-      // not evidence that this tabâ€™s user observed those edits. Keep that causal
+      // Reading another tab’s committed bytes is necessary for safe storage, but is
+      // not evidence that this tab’s user observed those edits. Keep that causal
       // boundary fixed across retries; earlier queued writes in this tab are included.
       const observedOps = this.state!.ops.slice();
       for (let attempt = 0; attempt < 20; attempt++) {
         const saved = await this.db.vault.get('state');
         if (!saved)
           throw new Error(
-            'The encrypted workspace is missing. Keep this browserâ€™s data and recover from a backup.',
+            'The encrypted workspace is missing. Keep this browser’s data and recover from a backup.',
           );
         // Crypto stays outside the transaction. A short atomic compare-and-swap prevents
         // stale tabs overwriting each other, including browsers without navigator.locks.
@@ -531,4 +531,3 @@ export function download(name: string, data: unknown) {
   a.click();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
-

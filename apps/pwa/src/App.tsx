@@ -286,7 +286,7 @@ function Unlock() {
         </form>
         <p className="fine">
           {t(
-            'Synthetic demonstration data. Your PIN encrypts a random data key with PBKDF2. Remember it, and save your recovery code in Settings.',
+            'This is a demonstration project. Your PIN protects a random encryption key with PBKDF2. Remember it, and save your recovery code in Settings.',
           )}
         </p>
         <Link className="text-link" to="/recover">
@@ -509,14 +509,21 @@ function Shell() {
         </div>
         <div className="global-actions">
           <QuickSearch />
-          <Link
-            className="button outline new-global"
-            to="/app/children?new=1"
-            aria-label={easyMode ? t('Add a child') : t('New child')}
-          >
-            <Plus size={16} />
-            <span>{easyMode ? t('Add a child') : t('New child')}</span>
-          </Link>
+          <details className="new-menu">
+            <summary className="button outline new-global" aria-label={t('New')}>
+              <Plus size={16} />
+              <span>{t('New')}</span>
+              <ChevronDown size={14} />
+            </summary>
+            <div className="new-menu-options">
+              <Link to="/app/children?new=student">
+                <GraduationCap size={15} /> {t('Student')}
+              </Link>
+              <Link to="/app/children?new=patient">
+                <Heart size={15} /> {t('Patient')}
+              </Link>
+            </div>
+          </details>
           <Link to="/about" className="icon-button" aria-label={t('About Smriva')}>
             <HelpCircle size={18} />
           </Link>
@@ -747,7 +754,7 @@ function Shell() {
           ))}
         </nav>
         <footer className="app-footer">
-          <span>{t('Smriva · Synthetic demonstration data · No real personal records')}</span>
+          <span>{t('Smriva · Demonstration project · No real personal records')}</span>
           <span>
             <Link to="/about">{t('Sources & method')}</Link>
             <a href="https://biosv2.devfolio.co/" target="_blank" rel="noreferrer">

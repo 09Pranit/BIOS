@@ -78,13 +78,13 @@ test('Easy mode keeps data entry, unsaved forms and encrypted drafts intact acro
   await page.screenshot({ path: 'docs/smriva-easy-desktop.png', fullPage: true });
   await activity(page, 'Add a child').click();
   const child = 'Easy Entry Child';
-  const dialog = page.getByRole('dialog', { name: 'New child', exact: true });
+  const dialog = page.getByRole('dialog', { name: 'New student', exact: true });
   await dialog.getByLabel(/Child.s name/).fill(child);
   await dialog.getByLabel('Date of birth', { exact: true }).fill('2019-04-15');
   await dialog.getByLabel('Class', { exact: true }).selectOption('Class 3');
   await dialog.getByLabel('Village', { exact: true }).selectOption('Baran');
   await dialog.getByRole('checkbox').check();
-  await dialog.getByRole('button', { name: 'Save child', exact: true }).click();
+  await dialog.getByRole('button', { name: 'Save student', exact: true }).click();
   await expect(dialog).toHaveCount(0);
   await navigate(page, '/app/health');
   await expect(page.getByText('How to use this page', { exact: true })).toBeVisible();

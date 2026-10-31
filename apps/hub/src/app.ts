@@ -196,4 +196,3 @@ export function createApp(store: HubStore, demo = true) {
   });
   return app;
 }
-

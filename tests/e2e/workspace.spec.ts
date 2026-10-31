@@ -179,8 +179,9 @@ test('score entry saves zero, moves focus, and restores an invalid encrypted dra
 test('consecutive registration, reviewed CSV import, global search and dark theme work', async ({ page }) => {
   await unlock(page, 'Roster Worker');
   await navigate(page, '/app/children');
-  await page.getByRole('button', { name: 'New child', exact: true }).click();
-  const dialog = page.getByRole('dialog', { name: 'New child', exact: true });
+  await page.getByRole('button', { name: 'New', exact: true }).last().click();
+  await page.getByRole('button', { name: 'Student', exact: true }).last().click();
+  const dialog = page.getByRole('dialog', { name: 'New student', exact: true });
   await dialog.getByLabel(/Child’s name/).fill('Entry Example One');
   await dialog.getByLabel('Date of birth', { exact: true }).fill('2019-04-15');
   await dialog.getByLabel('Class', { exact: true }).selectOption('Class 3');
@@ -193,8 +194,20 @@ test('consecutive registration, reviewed CSV import, global search and dark them
   await dialog.getByLabel(/Child’s name/).fill('Entry Example Two');
   await dialog.getByLabel('Date of birth', { exact: true }).fill('2019-06-10');
   await dialog.getByRole('checkbox').check();
-  await dialog.getByRole('button', { name: 'Save child', exact: true }).click();
+  await dialog.getByRole('button', { name: 'Save student', exact: true }).click();
   await expect(dialog).toHaveCount(0);
+  const languageSort = page.getByLabel('Sort names by language', { exact: true });
+  await expect(languageSort.locator('option')).toHaveCount(3);
+  await languageSort.selectOption('pa');
+  await expect(languageSort).toHaveValue('pa');
+  await page.getByRole('button', { name: 'New', exact: true }).last().click();
+  await page.getByRole('button', { name: 'Patient', exact: true }).last().click();
+  const patientDialog = page.getByRole('dialog', { name: 'New patient', exact: true });
+  await patientDialog.getByLabel(/Childâ€™s name/).fill('Patient Example');
+  await patientDialog.getByLabel('Date of birth', { exact: true }).fill('2018-01-10');
+  await patientDialog.getByRole('checkbox').check();
+  await patientDialog.getByRole('button', { name: 'Save patient', exact: true }).click();
+  await expect(page.getByRole('row').filter({ hasText: 'Patient Example' })).toContainText('Patient');
   await page.getByRole('button', { name: 'Import CSV', exact: true }).click();
   await page
     .getByRole('dialog', { name: 'Import child roster' })

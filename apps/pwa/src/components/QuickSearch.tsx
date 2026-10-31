@@ -19,7 +19,7 @@ import { matchesChild } from '../lib/entry';
 import { easyPageLabel } from '../lib/easy';
 const pages = [
   { title: 'Record database and enrollment', path: '/admin', Icon: Database },
-  { title: 'New child', path: '/app/children?new=1', Icon: FilePlus2 },
+  { title: 'New student', path: '/app/children?new=student', Icon: FilePlus2 },
   { title: 'Attendance and assessments', path: '/app/school', Icon: GraduationCap },
   { title: 'Add health record', path: '/app/health', Icon: Heart },
   { title: 'Sync center', path: '/app/sync', Icon: RefreshCw },
@@ -55,7 +55,7 @@ export default function QuickSearch() {
             ? p.path === '/admin'
               ? 'Village hub tools'
               : p.path.includes('?new')
-                ? 'Add a child'
+                ? 'Add a record'
                 : p.path === '/app/school'
                   ? 'Attendance & marks'
                   : easyPageLabel(p.path, p.title)

@@ -28,13 +28,14 @@ async function sync(page: Page) {
 
 async function createChild(page: Page, name: string) {
   await navigate(page, '/app/children');
-  await page.getByRole('button', { name: 'New child', exact: true }).click();
-  const form = page.getByRole('dialog', { name: 'New child', exact: true });
+  await page.getByRole('button', { name: 'New', exact: true }).last().click();
+  await page.getByRole('button', { name: 'Student', exact: true }).last().click();
+  const form = page.getByRole('dialog', { name: 'New student', exact: true });
   // The form names are stable across typography changes to the visible apostrophe.
   await form.locator('input[name="name"]').fill(name);
   await form.getByLabel('Date of birth', { exact: true }).fill('2018-01-10');
   await form.getByRole('checkbox').check();
-  await form.getByRole('button', { name: 'Save child', exact: true }).click();
+  await form.getByRole('button', { name: 'Save student', exact: true }).click();
   await expect(form).toHaveCount(0);
   const link = page.getByRole('link').filter({ has: page.getByText(name, { exact: true }) });
   const href = await link.getAttribute('href');

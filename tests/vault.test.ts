@@ -102,7 +102,7 @@ describe('encrypted local durability and real HTTP synchronization', () => {
     await a.saveEntryDrafts({ 'score|child-a': '24' });
     await b.write('child-b', 'name', 'Second tab child');
     await b.saveEntryDrafts({ 'score|child-b': '58' });
-    // Exporting from the stale first tab must include the other tabâ€™s committed data.
+    // Exporting from the stale first tab must include the other tab’s committed data.
     const backup = await a.export('shared-backup-passphrase'),
       restored = await device('Shared tab backup');
     await restored.import(backup, 'shared-backup-passphrase');
@@ -383,4 +383,3 @@ describe('encrypted local durability and real HTTP synchronization', () => {
     expect(reopened.state!.entryDrafts?.['score|child-001']).toBeUndefined();
   });
 });
-

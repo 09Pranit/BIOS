@@ -1,6 +1,10 @@
 import { adminTranslations } from './admin';
 /** Interface copy only: record contents and identifiers are never translated. */
 export const easyTranslations: Record<string, readonly [string, string]> = {
+  'Open a record, or choose New and then Student or Patient.': [
+    'रिकॉर्ड खोलें, या नया चुनकर विद्यार्थी अथवा रोगी चुनें।',
+    'ਰਿਕਾਰਡ ਖੋਲ੍ਹੋ, ਜਾਂ ਨਵਾਂ ਚੁਣ ਕੇ ਵਿਦਿਆਰਥੀ ਜਾਂ ਮਰੀਜ਼ ਚੁਣੋ।',
+  ],
   ...adminTranslations,
   'Add a child': ['बच्चा जोड़ें', 'ਬੱਚਾ ਜੋੜੋ'],
   'Enter a child’s details and guardian consent.': [

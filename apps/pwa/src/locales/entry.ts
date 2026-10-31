@@ -1,4 +1,23 @@
 export const entryTranslations: Record<string, readonly [string, string]> = {
+  New: ['नया', 'ਨਵਾਂ'],
+  Student: ['विद्यार्थी', 'ਵਿਦਿਆਰਥੀ'],
+  Patient: ['रोगी', 'ਮਰੀਜ਼'],
+  'New student': ['नया विद्यार्थी', 'ਨਵਾਂ ਵਿਦਿਆਰਥੀ'],
+  'Add a record': ['रिकॉर्ड जोड़ें', 'ਰਿਕਾਰਡ ਜੋੜੋ'],
+  'New patient': ['नया रोगी', 'ਨਵਾਂ ਮਰੀਜ਼'],
+  'Edit record': ['रिकॉर्ड बदलें', 'ਰਿਕਾਰਡ ਬਦਲੋ'],
+  'Save student': ['विद्यार्थी सहेजें', 'ਵਿਦਿਆਰਥੀ ਸੰਭਾਲੋ'],
+  'Save patient': ['रोगी सहेजें', 'ਮਰੀਜ਼ ਸੰਭਾਲੋ'],
+  'Record saved on this device · encrypted': [
+    'रिकॉर्ड इस डिवाइस पर एन्क्रिप्ट करके सहेजा गया',
+    'ਰਿਕਾਰਡ ਇਸ ਡਿਵਾਈਸ ਉੱਤੇ ਇਨਕ੍ਰਿਪਟ ਕਰਕੇ ਸੰਭਾਲਿਆ ਗਿਆ',
+  ],
+  'Sort names by language': ['भाषा के अनुसार नाम क्रम में लगाएँ', 'ਭਾਸ਼ਾ ਅਨੁਸਾਰ ਨਾਂ ਕ੍ਰਮ ਵਿੱਚ ਲਾਓ'],
+  'Sort: {language}': ['क्रम: {language}', 'ਕ੍ਰਮ: {language}'],
+  'Change the filters to continue entering records.': [
+    'रिकॉर्ड भरना जारी रखने के लिए फ़िल्टर बदलें।',
+    'ਰਿਕਾਰਡ ਭਰਨਾ ਜਾਰੀ ਰੱਖਣ ਲਈ ਫ਼ਿਲਟਰ ਬਦਲੋ।',
+  ],
   'Search children': ['बच्चे खोजें', 'ਬੱਚੇ ਲੱਭੋ'],
   'Type a name or village…': ['नाम या गाँव लिखें…', 'ਨਾਂ ਜਾਂ ਪਿੰਡ ਲਿਖੋ…'],
   'Search name, ID, village…': ['नाम, आईडी या गाँव खोजें…', 'ਨਾਂ, ਆਈਡੀ ਜਾਂ ਪਿੰਡ ਲੱਭੋ…'],
