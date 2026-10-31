@@ -1,0 +1,170 @@
+/* Bundled interface copy and system script fonts keep language switching fully offline. */
+.topbar {
+  flex-wrap: wrap;
+}
+.language-picker {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  padding: 6px 0 10px;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+  color: var(--fg);
+}
+.language-picker-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 500;
+}
+.language-picker-label > svg {
+  color: var(--muted);
+  flex-shrink: 0;
+}
+.language-options {
+  display: flex;
+  gap: 2px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+.language-option {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-height: 38px;
+  min-width: 94px;
+  padding: 6px 10px;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.65;
+  white-space: nowrap;
+}
+.language-option[lang='hi'] {
+  font-family: 'Nirmala UI', 'Noto Sans Devanagari', Mangal, sans-serif;
+}
+.language-option[lang='pa'] {
+  font-family: 'Nirmala UI', 'Noto Sans Gurmukhi', Raavi, sans-serif;
+}
+.language-option:hover {
+  background: var(--hover);
+  color: var(--fg);
+}
+.language-option[aria-pressed='true'] {
+  background: var(--subtle);
+  border-color: var(--line);
+  color: var(--fg);
+  box-shadow: inset 0 -2px 0 var(--blue);
+  font-weight: 600;
+}
+.language-option-check {
+  display: inline-flex;
+  width: 14px;
+  flex-shrink: 0;
+}
+.language-picker .language-options .language-option {
+  min-height: 44px;
+}
+.language-option:focus-visible {
+  outline: 3px solid var(--blue);
+  outline-offset: 3px;
+}
+.unlock-page > .language-picker,
+.standalone > .language-picker {
+  max-width: 560px;
+  margin: 0 auto 24px;
+}
+html:lang(hi) {
+  font-family: 'Nirmala UI', 'Noto Sans Devanagari', Mangal, 'Segoe UI', sans-serif;
+  line-height: 1.7;
+}
+html:lang(pa) {
+  font-family: 'Nirmala UI', 'Noto Sans Gurmukhi', Raavi, 'Segoe UI', sans-serif;
+  line-height: 1.7;
+}
+html:is(:lang(hi), :lang(pa)) :is(h1, h2, h3, .eyebrow, .nav-label, .gov-eyebrow, .library-kicker) {
+  letter-spacing: normal;
+  text-transform: none;
+  line-height: 1.65;
+}
+html:is(:lang(hi), :lang(pa)) :is(button, .button, select, input) {
+  min-height: 40px;
+  line-height: 1.7;
+}
+html:is(:lang(hi), :lang(pa))
+  :is(.page-title .muted, .easy-activity-copy, .easy-guide-copy, .gov-resource-card) {
+  line-height: 1.8;
+}
+html:is(:lang(hi), :lang(pa)) .sidebar nav > a {
+  min-height: 44px;
+  align-items: flex-start;
+}
+html:is(:lang(hi), :lang(pa)) .sidebar nav > a > svg {
+  margin-top: 4px;
+  flex-shrink: 0;
+}
+html:is(:lang(hi), :lang(pa)) .sidebar nav > a > span:not(.counter) {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+html:is(:lang(hi), :lang(pa)) .repo-tabs > a {
+  height: auto;
+  min-height: 44px;
+}
+html:is(:lang(hi), :lang(pa)) .mobile-bottom-nav {
+  height: auto;
+  min-height: 58px;
+}
+html:is(:lang(hi), :lang(pa)) .mobile-bottom-nav a {
+  padding: 7px 3px;
+  line-height: 1.6;
+  text-align: center;
+}
+html:is(:lang(hi), :lang(pa)) :is(.durability-strip, .top-actions, .bulk-toolbar, .entry-config) {
+  flex-wrap: wrap;
+}
+html:is(:lang(hi), :lang(pa)) .connection-pill {
+  white-space: normal;
+}
+html[data-mode='easy'] .language-option {
+  min-height: 44px;
+}
+@media (max-width: 700px) {
+  .language-picker {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 8px;
+    padding: 6px 0 10px;
+  }
+  .language-picker-label {
+    font-size: 12px;
+  }
+  .language-options {
+    width: 100%;
+  }
+  .language-option {
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 44px;
+    padding: 6px;
+  }
+  html:is(:lang(hi), :lang(pa)) .topbar > .mode-and-breadcrumb {
+    gap: 8px;
+  }
+  html:is(:lang(hi), :lang(pa)) .mode-and-breadcrumb > .breadcrumb {
+    flex: 1 1 100%;
+  }
+  html:is(:lang(hi), :lang(pa)) .durability-strip {
+    font-size: 12px;
+  }
+}

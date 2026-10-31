@@ -1,0 +1,13 @@
+node_modules
+.tools
+dist
+data
+test-results
+playwright-report
+package-lock.json
+*.zip
+docs/benchmark-results.json
+packages/content/sources.json
+apps/pwa/public/lessons
+apps/pwa/public/benchmark-results.json
+apps/pwa/public/education-snapshot.json

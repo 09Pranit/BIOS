@@ -1,0 +1,403 @@
+{
+  "generatedAt": "2026-10-31T15:05:07.582Z",
+  "base": "http://localhost:3001",
+  "scope": "Public routes only; fresh isolated browser storage. No enrollment, credentials or record values collected.",
+  "methodology": "Browser navigation and aggregate DOM checks. Transfer sizes are browser-reported, not mobile network measurements. Name checks are a heuristic, not a complete WCAG audit.",
+  "http": [
+    {
+      "path": "/",
+      "status": 200,
+      "headers": {
+        "content-type": "text/html; charset=utf-8",
+        "cache-control": "no-store",
+        "content-security-policy": "default-src 'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' 'unsafe-inline';upgrade-insecure-requests;connect-src 'self'",
+        "referrer-policy": "no-referrer",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "SAMEORIGIN",
+        "cross-origin-resource-policy": "same-origin"
+      },
+      "bytes": 985,
+      "htmlFallback": true
+    },
+    {
+      "path": "/about",
+      "status": 200,
+      "headers": {
+        "content-type": "text/html; charset=utf-8",
+        "cache-control": "no-store",
+        "content-security-policy": "default-src 'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' 'unsafe-inline';upgrade-insecure-requests;connect-src 'self'",
+        "referrer-policy": "no-referrer",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "SAMEORIGIN",
+        "cross-origin-resource-policy": "same-origin"
+      },
+      "bytes": 985,
+      "htmlFallback": true
+    },
+    {
+      "path": "/recover",
+      "status": 200,
+      "headers": {
+        "content-type": "text/html; charset=utf-8",
+        "cache-control": "no-store",
+        "content-security-policy": "default-src 'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' 'unsafe-inline';upgrade-insecure-requests;connect-src 'self'",
+        "referrer-policy": "no-referrer",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "SAMEORIGIN",
+        "cross-origin-resource-policy": "same-origin"
+      },
+      "bytes": 985,
+      "htmlFallback": true
+    },
+    {
+      "path": "/robots.txt",
+      "status": 200,
+      "headers": {
+        "content-type": "text/plain; charset=utf-8",
+        "cache-control": "no-store",
+        "content-security-policy": "default-src 'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' 'unsafe-inline';upgrade-insecure-requests;connect-src 'self'",
+        "referrer-policy": "no-referrer",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "SAMEORIGIN",
+        "cross-origin-resource-policy": "same-origin"
+      },
+      "bytes": 72,
+      "htmlFallback": false
+    },
+    {
+      "path": "/sitemap.xml",
+      "status": 200,
+      "headers": {
+        "content-type": "text/html; charset=utf-8",
+        "cache-control": "no-store",
+        "content-security-policy": "default-src 'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' 'unsafe-inline';upgrade-insecure-requests;connect-src 'self'",
+        "referrer-policy": "no-referrer",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "SAMEORIGIN",
+        "cross-origin-resource-policy": "same-origin"
+      },
+      "bytes": 985,
+      "htmlFallback": true
+    },
+    {
+      "path": "/missing-audit-file.js",
+      "status": 200,
+      "headers": {
+        "content-type": "text/html; charset=utf-8",
+        "cache-control": "no-store",
+        "content-security-policy": "default-src 'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' 'unsafe-inline';upgrade-insecure-requests;connect-src 'self'",
+        "referrer-policy": "no-referrer",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "SAMEORIGIN",
+        "cross-origin-resource-policy": "same-origin"
+      },
+      "bytes": 985,
+      "htmlFallback": true
+    },
+    {
+      "path": "/api/missing-audit-route",
+      "status": 401,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store",
+        "content-security-policy": "default-src 'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' 'unsafe-inline';upgrade-insecure-requests;connect-src 'self'",
+        "referrer-policy": "no-referrer",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "SAMEORIGIN",
+        "cross-origin-resource-policy": "same-origin"
+      },
+      "bytes": 61,
+      "htmlFallback": false
+    }
+  ],
+  "pages": [
+    {
+      "path": "/app/today",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "status": 200,
+      "title": "Smriva — Last-mile records, connected",
+      "meta": {
+        "description": "Smriva bridges last-mile health and education. Enter records offline, synchronize safely, and preserve every valid account.",
+        "robots": null,
+        "theme-color": "#0b1020"
+      },
+      "canonical": null,
+      "documentLanguage": "en",
+      "horizontalOverflowPixels": 0,
+      "h1Count": 1,
+      "mainLandmarks": 0,
+      "visibleControls": 8,
+      "inputsWithoutLabels": 0,
+      "buttonsOrLinksWithoutNames": 0,
+      "targetsBelow44Pixels": 7,
+      "alertRegions": 0,
+      "statusRegions": 0,
+      "performance": {
+        "navigationTransferBytes": 1285,
+        "resourceTransferBytes": 692854,
+        "resourceCount": 8,
+        "domContentLoadedMs": 833,
+        "loadMs": 834
+      },
+      "keyboard": {
+        "sampledTargets": 8,
+        "unnamedTargets": 0,
+        "elementKinds": [
+          "A",
+          "INPUT",
+          "SELECT",
+          "INPUT",
+          "INPUT",
+          "BUTTON",
+          "BUTTON",
+          "A"
+        ]
+      },
+      "consoleErrors": 0,
+      "pageErrors": 0
+    },
+    {
+      "path": "/about",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "status": 200,
+      "title": "Smriva — Last-mile records, connected",
+      "meta": {
+        "description": "Smriva bridges last-mile health and education. Enter records offline, synchronize safely, and preserve every valid account.",
+        "robots": null,
+        "theme-color": "#0b1020"
+      },
+      "canonical": null,
+      "documentLanguage": "en",
+      "horizontalOverflowPixels": 0,
+      "h1Count": 1,
+      "mainLandmarks": 0,
+      "visibleControls": 10,
+      "inputsWithoutLabels": 0,
+      "buttonsOrLinksWithoutNames": 0,
+      "targetsBelow44Pixels": 9,
+      "alertRegions": 0,
+      "statusRegions": 0,
+      "performance": {
+        "navigationTransferBytes": 1285,
+        "resourceTransferBytes": 695144,
+        "resourceCount": 8,
+        "domContentLoadedMs": 66,
+        "loadMs": 66
+      },
+      "keyboard": {
+        "sampledTargets": 10,
+        "unnamedTargets": 0,
+        "elementKinds": [
+          "A",
+          "A",
+          "A",
+          "A",
+          "A",
+          "A",
+          "A",
+          "A",
+          "A",
+          "A"
+        ]
+      },
+      "consoleErrors": 0,
+      "pageErrors": 0
+    },
+    {
+      "path": "/recover",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "status": 200,
+      "title": "Smriva — Last-mile records, connected",
+      "meta": {
+        "description": "Smriva bridges last-mile health and education. Enter records offline, synchronize safely, and preserve every valid account.",
+        "robots": null,
+        "theme-color": "#0b1020"
+      },
+      "canonical": null,
+      "documentLanguage": "en",
+      "horizontalOverflowPixels": 0,
+      "h1Count": 1,
+      "mainLandmarks": 0,
+      "visibleControls": 6,
+      "inputsWithoutLabels": 0,
+      "buttonsOrLinksWithoutNames": 0,
+      "targetsBelow44Pixels": 6,
+      "alertRegions": 0,
+      "statusRegions": 0,
+      "performance": {
+        "navigationTransferBytes": 1285,
+        "resourceTransferBytes": 692854,
+        "resourceCount": 8,
+        "domContentLoadedMs": 92,
+        "loadMs": 93
+      },
+      "keyboard": {
+        "sampledTargets": 6,
+        "unnamedTargets": 0,
+        "elementKinds": [
+          "A",
+          "INPUT",
+          "INPUT",
+          "BUTTON",
+          "BUTTON",
+          "A"
+        ]
+      },
+      "consoleErrors": 0,
+      "pageErrors": 0
+    },
+    {
+      "path": "/app/today",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": 200,
+      "title": "Smriva — Last-mile records, connected",
+      "meta": {
+        "description": "Smriva bridges last-mile health and education. Enter records offline, synchronize safely, and preserve every valid account.",
+        "robots": null,
+        "theme-color": "#0b1020"
+      },
+      "canonical": null,
+      "documentLanguage": "en",
+      "horizontalOverflowPixels": 0,
+      "h1Count": 1,
+      "mainLandmarks": 0,
+      "visibleControls": 8,
+      "inputsWithoutLabels": 0,
+      "buttonsOrLinksWithoutNames": 0,
+      "targetsBelow44Pixels": 7,
+      "alertRegions": 0,
+      "statusRegions": 0,
+      "performance": {
+        "navigationTransferBytes": 1285,
+        "resourceTransferBytes": 692854,
+        "resourceCount": 8,
+        "domContentLoadedMs": 90,
+        "loadMs": 90
+      },
+      "keyboard": {
+        "sampledTargets": 8,
+        "unnamedTargets": 0,
+        "elementKinds": [
+          "A",
+          "INPUT",
+          "SELECT",
+          "INPUT",
+          "INPUT",
+          "BUTTON",
+          "BUTTON",
+          "A"
+        ]
+      },
+      "consoleErrors": 0,
+      "pageErrors": 0
+    },
+    {
+      "path": "/about",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": 200,
+      "title": "Smriva — Last-mile records, connected",
+      "meta": {
+        "description": "Smriva bridges last-mile health and education. Enter records offline, synchronize safely, and preserve every valid account.",
+        "robots": null,
+        "theme-color": "#0b1020"
+      },
+      "canonical": null,
+      "documentLanguage": "en",
+      "horizontalOverflowPixels": 0,
+      "h1Count": 1,
+      "mainLandmarks": 0,
+      "visibleControls": 10,
+      "inputsWithoutLabels": 0,
+      "buttonsOrLinksWithoutNames": 0,
+      "targetsBelow44Pixels": 8,
+      "alertRegions": 0,
+      "statusRegions": 0,
+      "performance": {
+        "navigationTransferBytes": 1285,
+        "resourceTransferBytes": 695144,
+        "resourceCount": 8,
+        "domContentLoadedMs": 72,
+        "loadMs": 72
+      },
+      "keyboard": {
+        "sampledTargets": 10,
+        "unnamedTargets": 0,
+        "elementKinds": [
+          "A",
+          "A",
+          "A",
+          "A",
+          "A",
+          "A",
+          "A",
+          "A",
+          "A",
+          "A"
+        ]
+      },
+      "consoleErrors": 0,
+      "pageErrors": 0
+    },
+    {
+      "path": "/recover",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": 200,
+      "title": "Smriva — Last-mile records, connected",
+      "meta": {
+        "description": "Smriva bridges last-mile health and education. Enter records offline, synchronize safely, and preserve every valid account.",
+        "robots": null,
+        "theme-color": "#0b1020"
+      },
+      "canonical": null,
+      "documentLanguage": "en",
+      "horizontalOverflowPixels": 0,
+      "h1Count": 1,
+      "mainLandmarks": 0,
+      "visibleControls": 6,
+      "inputsWithoutLabels": 0,
+      "buttonsOrLinksWithoutNames": 0,
+      "targetsBelow44Pixels": 6,
+      "alertRegions": 0,
+      "statusRegions": 0,
+      "performance": {
+        "navigationTransferBytes": 1285,
+        "resourceTransferBytes": 692854,
+        "resourceCount": 8,
+        "domContentLoadedMs": 73,
+        "loadMs": 73
+      },
+      "keyboard": {
+        "sampledTargets": 6,
+        "unnamedTargets": 0,
+        "elementKinds": [
+          "A",
+          "INPUT",
+          "INPUT",
+          "BUTTON",
+          "BUTTON",
+          "A"
+        ]
+      },
+      "consoleErrors": 0,
+      "pageErrors": 0
+    }
+  ]
+}

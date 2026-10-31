@@ -1,0 +1,24 @@
+# Use with: docker compose -f docker-compose.yml -f docker-compose.https.yml up --build -d
+services:
+  smriva:
+    environment:
+      TRUST_PROXY_HOPS: '1'
+      SITE_URL: https://${SMRIVA_DOMAIN:?Set SMRIVA_DOMAIN to a DNS hostname pointing at this server}
+  https:
+    image: caddy:2-alpine
+    environment:
+      SMRIVA_DOMAIN: ${SMRIVA_DOMAIN:?Set SMRIVA_DOMAIN to a DNS hostname pointing at this server}
+    ports:
+      - '80:80'
+      - '443:443'
+      - '443:443/udp'
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      - smriva
+    restart: unless-stopped
+volumes:
+  caddy-data:
+  caddy-config:

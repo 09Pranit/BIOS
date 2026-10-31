@@ -1,11 +1,12 @@
 node_modules
+dist
 .tools
 .git
 .env
-data/*.sqlite*
-data/*.png
-apps/web/dist
+data
+backups
+certs
+*.zip
 test-results
 playwright-report
-*-runtime.zip
-node-shasums.txt
+docs/*.png

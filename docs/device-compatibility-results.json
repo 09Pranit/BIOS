@@ -1,0 +1,68 @@
+{
+  "verificationDate": "2026-11-01",
+  "timezone": "Asia/Kolkata",
+  "completedAtUTC": "2026-10-31T18:39:38.991Z",
+  "node": "24.22.1",
+  "host": "win32",
+  "build": {
+    "passed": true,
+    "bundledSourceChecks": 21
+  },
+  "automatedTests": {
+    "passed": 266,
+    "failed": 0,
+    "files": 20
+  },
+  "deviceBrowserTests": {
+    "passed": 20,
+    "failed": 0,
+    "profiles": {
+      "edge-desktop": 4,
+      "chrome-desktop": 4,
+      "firefox-desktop": 4,
+      "chrome-tablet": 4,
+      "chrome-small-phone": 4
+    },
+    "durationMs": 54113.289
+  },
+  "regressionBrowserTests": {
+    "scenariosVerified": 29,
+    "unresolvedFailures": 0,
+    "fullRun": {
+      "passed": 28,
+      "failed": 1,
+      "durationMs": 268970.12
+    },
+    "focusedRerun": {
+      "passed": 1,
+      "failed": 0,
+      "durationMs": 9107.879
+    },
+    "explanation": "The attendance test assumed the fixed demo date was today. Its setup now creates an existing mark on the selected day; the focused rerun passed after this test-only correction."
+  },
+  "browsers": {
+    "chrome": "156.0.8078.74",
+    "edge": "156.0.4314.50",
+    "firefox": "157.0"
+  },
+  "nativeHttps": {
+    "certificateVerified": true,
+    "healthStatus": 200,
+    "workspaceStatus": 200,
+    "enrollmentStatus": 201,
+    "isolatedMemoryDatabase": true,
+    "changedSystemTrust": false
+  },
+  "existingDatabase": {
+    "originalEncryptedOperations": 215,
+    "preservedByteForByte": true,
+    "completeAncestry": true,
+    "sqliteQuickCheck": "ok"
+  },
+  "limitations": [
+    "Phone and tablet tests use browser emulation, not physical devices.",
+    "WebKit could not be downloaded: CDN connection resets and DNS failures. Four Safari-engine cases remain unverified.",
+    "Docker/Caddy deployment was not executed because Docker was unavailable.",
+    "Other devices require a reachable trusted HTTPS address; no public domain has been provisioned."
+  ]
+}

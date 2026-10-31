@@ -1,0 +1,45 @@
+{
+  "retrievedAt": "2026-10-31T10:45:04.605Z",
+  "observations": [
+    {
+      "indicator": "SE.PRM.ENRR",
+      "title": "School enrollment, primary (% gross)",
+      "value": 111.033783181676,
+      "unit": "%",
+      "year": 2025,
+      "geography": "India",
+      "source": "https://data.worldbank.org/indicator/SE.PRM.ENRR?locations=IN",
+      "metadataSource": "https://api.worldbank.org/v2/indicator/SE.PRM.ENRR?format=json",
+      "provider": "World Bank / UNESCO UIS",
+      "license": "CC-BY-4.0",
+      "note": "Gross enrollment ratio is the ratio of total enrollment, regardless of age, to the population of the age group that officially corresponds to the level of education shown. Primary education provides children with basic reading, writing, and mathematics skills along with an elementary understanding of such subjects as history, geography, natural science, social science, art, and music."
+    },
+    {
+      "indicator": "SE.SEC.ENRR",
+      "title": "School enrollment, secondary (% gross)",
+      "value": 79.594985086469,
+      "unit": "%",
+      "year": 2025,
+      "geography": "India",
+      "source": "https://data.worldbank.org/indicator/SE.SEC.ENRR?locations=IN",
+      "metadataSource": "https://api.worldbank.org/v2/indicator/SE.SEC.ENRR?format=json",
+      "provider": "World Bank / UNESCO UIS",
+      "license": "CC-BY-4.0",
+      "note": "Gross enrollment ratio is the ratio of total enrollment, regardless of age, to the population of the age group that officially corresponds to the level of education shown. Secondary education completes the provision of basic education that began at the primary level, and aims at laying the foundations for lifelong learning and human development, by offering more subject- or skill-oriented instruction using more specialized teachers."
+    },
+    {
+      "indicator": "SE.ADT.LITR.ZS",
+      "title": "Literacy rate, adult total (% of people ages 15 and above)",
+      "value": 78.1625330351403,
+      "unit": "%",
+      "year": 2024,
+      "geography": "India",
+      "source": "https://data.worldbank.org/indicator/SE.ADT.LITR.ZS?locations=IN",
+      "metadataSource": "https://api.worldbank.org/v2/indicator/SE.ADT.LITR.ZS?format=json",
+      "provider": "World Bank / UNESCO UIS",
+      "license": "CC-BY-4.0",
+      "note": "Adult literacy rate is the percentage of people ages 15 and above who can both read and write with understanding a short simple statement about their everyday life."
+    }
+  ],
+  "note": "National data; not measurements of synthetic school records. Gross enrollment ratios may exceed 100%."
+}

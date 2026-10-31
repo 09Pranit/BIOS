@@ -1,27 +1,28 @@
-# Three-minute judge walkthrough
+# Three minutes with Smriva
 
-Prepare with `npm run benchmark`, `npm run seed`, `npm run dev`, or `docker compose up`. Open `/login`; choose **Enter as judge**. Confirm `/partners` truthfully shows offline or configured integrations. Keep the benchmark and method pages available.
+Before the demonstration: `npm run build && npm start`. Open http://localhost:3001. The Smriva workspace uses compact registers and a restrained green palette; the Hub database page supports direct server entry. Create a Community member workspace, choose a PIN you remember, and wait until Synced. The standard dashboard remains available; switch on Easy mode to show larger controls and everyday task names. Use the production build so the service worker has installed. Keep the laptop running the hub even if internet Wi-Fi is disconnected.
 
-| Time | Click | Say and point at |
-|---|---|---|
-| 0:00–0:25 | Landing → Stress lab | “A citizen cannot choose another benefits system when this one fails. Our investigator reconstructs the failure, shows the evidence, and admits what is unknown.” Point at the organism and Life/System lens. |
-| 0:25–0:55 | Select “The narrowing artery”; clock offset 25s, missing logs 25%, lost traces 60%; Run investigation | “These are real calls to a seeded simulator, not a saved animation. The investigator never receives the scoring table.” Watch the live agent steps. |
-| 0:55–1:25 | Timeline → Raw clocks → Corrected intervals; select a mark | “Raw clocks can reverse cause and effect. Each corrected bar is an interval. Hatched gaps are explicitly unobserved.” In the drawer show raw line, original hash, source line and time bounds. |
-| 1:25–1:50 | Differential → Counterfactual lab → Intervene | “Here is the differential, including unknown, with support and contradictions. A proposed cause must reproduce the incident. Removing it must reduce symptoms across eight twin seeds.” Point at reproduction, cure CI and the limitation statement. |
-| 1:50–2:15 | Report → Public summary → Technical report | “Recorded observations are facts; causes remain inferences. Here are the open questions and what would change our mind.” Show agent replay, post-run truth badge, and the human approval/publish boundary. |
-| 2:15–2:40 | Benchmark | “All six scenarios, separate fit/test seeds, three stress levels, two baselines, three ablations. These are measured numbers, including cases where simpler baselines do better or an ablation shows no benefit.” Point at ECE and the actual improvement/no-gain label. |
-| 2:40–3:00 | Lab → invite a judge to set stress | “Set the conditions yourself. We will show the diagnosis, the exact evidence, the honest confidence, and the scoring truth after the run.” The 90-second story is available for a longer interactive challenge. |
+**0:00–0:25 — The person behind the record.** Open Today, then a child profile. “A teacher and a health worker carry different parts of the same child’s story. Their connection is rare; their data should not be disposable.” Point out synthetic demo data, consent, saved-here vs backed-up states.
+
+**0:25–1:10 — Pull the plug.** Enter Resilience lab. Initialize the two independent encrypted device databases. Leave the link Offline and create the concurrent scenario. Show the different DOB values and 49 committed operations. Set 2G and reconnect. After a chunk commits, press Kill transfer. Read the persisted cursors; click Reconnect again. Let the judge select the profile or edit the DOB values.
+
+**1:10–1:45 — Two accounts, one human decision.** Show “Two dates. Both kept.” Two people edited without seeing one another, so a timestamp cannot decide. Confirm one DOB. The resolution becomes a new operation referencing both alternatives. The alternatives remain in the operation history.
+
+**1:45–2:15 — A lost phone, a preserved story.** Ensure Device A has no pending work. Click Lost phone drill. This deletes only the lab device A database, recovers a new identity using its recovery code, revokes the old identity, and pulls acknowledged data. Read the actual recovered digest-match result. Explain that unsynced work without backup cannot be recovered.
+
+**2:15–2:50 — Inspect the evidence.** Run a chaos seed chosen by the judge. Describe the scope accurately: in-process packet-loss simulation with eventual connectivity, separate from real HTTP timings. Show 240 created/preserved operations, open conflicts, duplicates, and the LWW baseline’s lost append-only events. Export the JSON evidence.
+
+**2:50–3:00 — The finish.** “Every record survives the journey—in these tested runs. And the places we have not proved yet are documented.” Open the requirements map if asked.
 
 ## Judge challenge
 
-Let a judge choose the scenario and all four main dials. Use the same seed with clean and degraded evidence to compare confidence. Severe loss can cause abstention even when a simpler catalog rule guesses correctly. Inspect that outcome instead of explaining it away. For the overlap scenario, point at the two independent branch findings and both-fault recall. For the quiet obstruction, show latency and queue pressure despite source status 200.
+Offer the judge the two DOB values, a chaos seed, link profile, and the moment to kill a transfer. This is real execution, so results are measured rather than canned. If a full 2G pull takes too long, switch to Good for completion; say so visibly.
 
-## Backup plan
+## Backup plans
 
-- **AI unavailable or no key:** the fixed deterministic agent completes every required stage. Report and steps identify `source: rules`. Do not claim AI prose or tool choices were used.
-- **n8n unavailable:** use Run investigation. The local loop, evidence, twin and report work independently. The automation page shows no fabricated execution. Approval and publication remain enforced by the API.
-- **Wi-Fi unavailable:** telemetry, clock correction, inference, twin, calibrated model, fonts and seeded cases are local. Launch the already-built local app. Vendor calls time out and fall back. Docker images and npm packages must be downloaded beforehand.
-- **A run abstains or is wrong:** open the truth badge and support/contradiction evidence. Show the unknown mass, uncertainties and benchmark result. This is part of the demonstration, not a failure to hide.
-- **A browser request fails:** the case page polls in addition to SSE. Refresh or open a seeded case from `/cases`. The underlying record and audit survive in SQLite.
-
-Live MojoAuth login, a received Langfuse cloud trace and a genuine n8n execution require configured operator-owned accounts. Imported workflows and local adapter tests are not substitutes for that proof.
+- Internet unavailable: everything core runs on the laptop village hub. Cached lessons, PIN unlock, records and lab need no cloud service.
+- Hub stopped: local entries still save; the lab cannot sync until the Node hub restarts. Show pending operations and restart the owned hub. Do not claim a successful backup.
+- Sponsor/AI unavailable: no core behavior depends on them; Admin clearly says not configured. No fabricated integration statuses.
+- Browser storage unavailable/full: the app reports that the new change was not saved. Export earlier records if storage permits, free unrelated space, and retry. Do not clear the site’s database without an export.
+- Existing lab records remain: create a new scenario ID. Do not erase a real teacher workspace.
+- Session locked after reload: enter the PIN. Keys deliberately stay only in memory while unlocked.

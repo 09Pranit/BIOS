@@ -1,5 +1,0 @@
-import {it,expect} from 'vitest';
-import {simulate,scenarios} from '../packages/simulator/src/index.js';
-import {analyze} from '../packages/investigator/src/analyze.js';
-import {fitTemperature,calibrate,ece} from '../packages/investigator/src/calibration.js';
-it('fits on 60 incidents and improves held-out calibration without seed leakage',()=>{const fit=[];for(let seed=0;seed<20;seed++)for(const s of scenarios.slice(0,3)){const {telemetry,scoring}=simulate(s.id,seed,{logLoss:0,traceDrop:0});const a=analyze(telemetry);fit.push({probabilities:a.hypotheses.map(h=>h.raw),target:a.hypotheses.findIndex(h=>h.component===scoring.faults[0].component)});}const model=fitTemperature(fit);const raw=[],cal=[];for(let seed=80;seed<85;seed++)for(const s of scenarios.slice(0,3)){const {telemetry,scoring}=simulate(s.id,seed,{logLoss:0,traceDrop:0});const a=analyze(telemetry),c=calibrate(a.hypotheses,model);const correct=Number(c[0].component===scoring.faults[0].component);raw.push({confidence:c[0].raw,correct});cal.push({confidence:c[0].calibrated,correct});}expect(model.fitted_cases).toBe(60);expect(ece(cal)).toBeLessThan(ece(raw));});

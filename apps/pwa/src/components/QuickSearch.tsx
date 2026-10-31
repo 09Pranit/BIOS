@@ -1,0 +1,154 @@
+import { useI18n } from '../lib/i18n';
+import { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import {
+  Search,
+  Users,
+  ArrowRight,
+  FilePlus2,
+  GraduationCap,
+  Heart,
+  RefreshCw,
+  ShieldCheck,
+  Database,
+} from 'lucide-react';
+import { Modal } from './UI';
+import { vault } from '../lib/vault';
+import { useKuka } from '../lib/context';
+import { matchesChild } from '../lib/entry';
+import { easyPageLabel } from '../lib/easy';
+const pages = [
+  { title: 'Hub database and enrollment', path: '/admin', Icon: Database },
+  { title: 'New child', path: '/app/children?new=1', Icon: FilePlus2 },
+  { title: 'Attendance and assessments', path: '/app/school', Icon: GraduationCap },
+  { title: 'Add health record', path: '/app/health', Icon: Heart },
+  { title: 'Sync center', path: '/app/sync', Icon: RefreshCw },
+  { title: 'Conflict inbox', path: '/app/conflicts', Icon: ShieldCheck },
+];
+export default function QuickSearch() {
+  const { t } = useI18n();
+  const { version, easyMode } = useKuka(),
+    [open, setOpen] = useState(false),
+    [query, setQuery] = useState(''),
+    [active, setActive] = useState(0),
+    navigate = useNavigate(),
+    input = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    const key = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setOpen((v) => !v);
+      }
+    };
+    window.addEventListener('keydown', key);
+    return () => window.removeEventListener('keydown', key);
+  }, []);
+  const children = Object.values(vault.view.entities)
+    .filter((c) => c.type === 'child' && !c.deleted && !c.id.startsWith('lab-') && matchesChild(c, query))
+    .slice(0, 8);
+  const results = [
+    ...pages
+      .map((p) => ({
+        ...p,
+        title: t(
+          easyMode
+            ? p.path === '/admin'
+              ? 'Village hub tools'
+              : p.path.includes('?new')
+                ? 'Add a child'
+                : p.path === '/app/school'
+                  ? 'Attendance & marks'
+                  : easyPageLabel(p.path, p.title)
+            : p.title,
+        ),
+      }))
+      .filter((p) => p.title.toLowerCase().includes(query.toLowerCase())),
+    ...children.map((c) => ({
+      title: c.name ?? t('Identity needs review'),
+      path: '/app/children/' + c.id,
+      Icon: Users,
+      detail: `${c.id} · ${c.class} · ${c.village}`,
+    })),
+  ];
+  const choose = (path: string) => {
+    navigate(path);
+    setOpen(false);
+    setQuery('');
+    setActive(0);
+  };
+  return (
+    <>
+      <button
+        className="global-search"
+        onClick={() => setOpen(true)}
+        aria-label={t(easyMode ? 'Find a child or activity Ctrl K' : 'Search or jump to… Ctrl K')}
+        aria-keyshortcuts="Control+K Meta+K"
+      >
+        <Search size={16} />
+        <span>{t(easyMode ? 'Find a child or activity' : 'Search or jump to…')}</span>{' '}
+        <kbd aria-hidden="true">Ctrl K</kbd>
+      </button>
+      {open && (
+        <Modal title={t('Search records and pages')} close={() => setOpen(false)}>
+          <div className="command-search">
+            <Search size={18} />
+            <input
+              ref={input}
+              autoFocus
+              aria-label={t('Search workspace')}
+              placeholder={t(
+                easyMode
+                  ? 'Type a child’s name, village, or activity…'
+                  : 'Search by name, ID, village, or page…',
+              )}
+              value={query}
+              onChange={(e) => {
+                setQuery(e.target.value);
+                setActive(0);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'ArrowDown') {
+                  e.preventDefault();
+                  setActive((n) => Math.min(n + 1, results.length - 1));
+                }
+                if (e.key === 'ArrowUp') {
+                  e.preventDefault();
+                  setActive((n) => Math.max(n - 1, 0));
+                }
+                if (e.key === 'Enter' && results[active]) {
+                  e.preventDefault();
+                  choose(results[active].path);
+                }
+              }}
+            />
+          </div>
+          <div className="command-results">
+            {results.map((r: any, i) => (
+              <button
+                key={r.path}
+                className={active === i ? 'active' : ''}
+                onMouseEnter={() => setActive(i)}
+                onClick={() => choose(r.path)}
+              >
+                <r.Icon size={16} />
+                <span>
+                  <strong>{r.title}</strong>
+                  {r.detail && <small>{r.detail}</small>}
+                </span>
+                <ArrowRight size={14} />
+              </button>
+            ))}
+            {!results.length && <p className="muted">{t('No matching records or pages.')}</p>}
+          </div>
+          <p className="fine">
+            {t(
+              easyMode
+                ? 'Search works offline. Choose a result to open it. Close this window to go back.'
+                : 'Search runs on this device. ↑ ↓ to navigate, Enter to open, Esc to close.',
+            )}
+          </p>
+        </Modal>
+      )}
+    </>
+  );
+}

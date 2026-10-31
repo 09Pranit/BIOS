@@ -1,0 +1,611 @@
+{
+  "phase": "baseline",
+  "measuredAt": "2026-10-31T15:06:23.178Z",
+  "origin": "http://localhost:3001",
+  "method": {
+    "browser": "Chromium through Playwright, fresh contexts; no saved user browser profile",
+    "scope": "Synthetic local demonstration only; automated checks do not establish complete accessibility or production readiness.",
+    "privacy": "No PINs, recovery codes, tokens, record text, DOM HTML or screenshots are included. Accessibility selectors have attribute values removed.",
+    "timing": "Navigation timings are unthrottled local observations, not a Lighthouse score or field Core Web Vitals.",
+    "node": "v24.22.1",
+    "chrome": "156.0.8078.74",
+    "axeTags": [
+      "wcag2a",
+      "wcag2aa",
+      "wcag21a",
+      "wcag21aa"
+    ],
+    "lighthouseVersion": "13.5.0"
+  },
+  "pages": [
+    {
+      "requestedPath": "/",
+      "viewport": "desktop",
+      "status": 200,
+      "xRobotsTag": null,
+      "path": "/app/today",
+      "title": "Smriva — Last-mile records, connected",
+      "description": "Smriva bridges last-mile health and education. Enter records offline, synchronize safely, and preserve every valid account.",
+      "robots": null,
+      "canonical": null,
+      "h1Count": 1,
+      "overflow": false,
+      "navigation": {
+        "responseStartMs": 439,
+        "domContentLoadedMs": 515,
+        "loadMs": 515,
+        "transferBytes": 1285
+      }
+    },
+    {
+      "requestedPath": "/about",
+      "viewport": "desktop",
+      "status": 200,
+      "xRobotsTag": null,
+      "path": "/about",
+      "title": "Smriva — Last-mile records, connected",
+      "description": "Smriva bridges last-mile health and education. Enter records offline, synchronize safely, and preserve every valid account.",
+      "robots": null,
+      "canonical": null,
+      "h1Count": 1,
+      "overflow": false,
+      "navigation": {
+        "responseStartMs": 3,
+        "domContentLoadedMs": 30,
+        "loadMs": 30,
+        "transferBytes": 0
+      }
+    },
+    {
+      "requestedPath": "/",
+      "viewport": "mobile",
+      "status": 200,
+      "xRobotsTag": null,
+      "path": "/app/today",
+      "title": "Smriva — Last-mile records, connected",
+      "description": "Smriva bridges last-mile health and education. Enter records offline, synchronize safely, and preserve every valid account.",
+      "robots": null,
+      "canonical": null,
+      "h1Count": 1,
+      "overflow": false,
+      "navigation": {
+        "responseStartMs": 3,
+        "domContentLoadedMs": 83,
+        "loadMs": 84,
+        "transferBytes": 1285
+      }
+    },
+    {
+      "requestedPath": "/about",
+      "viewport": "mobile",
+      "status": 200,
+      "xRobotsTag": null,
+      "path": "/about",
+      "title": "Smriva — Last-mile records, connected",
+      "description": "Smriva bridges last-mile health and education. Enter records offline, synchronize safely, and preserve every valid account.",
+      "robots": null,
+      "canonical": null,
+      "h1Count": 1,
+      "overflow": false,
+      "navigation": {
+        "responseStartMs": 2,
+        "domContentLoadedMs": 29,
+        "loadMs": 29,
+        "transferBytes": 1285
+      }
+    }
+  ],
+  "accessibility": [
+    {
+      "name": "/",
+      "viewport": "desktop",
+      "engine": {
+        "name": "axe-core",
+        "version": "4.14.0"
+      },
+      "violations": [
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "help": "Elements must have their visible text as part of their accessible name",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright",
+          "affectedNodes": 1,
+          "targets": [
+            [
+              ".brand"
+            ]
+          ]
+        }
+      ],
+      "incomplete": [],
+      "passedRules": 21
+    },
+    {
+      "name": "/about",
+      "viewport": "desktop",
+      "engine": {
+        "name": "axe-core",
+        "version": "4.14.0"
+      },
+      "violations": [],
+      "incomplete": [],
+      "passedRules": 11
+    },
+    {
+      "name": "workspace-standard",
+      "viewport": "desktop",
+      "engine": {
+        "name": "axe-core",
+        "version": "4.14.0"
+      },
+      "violations": [
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "help": "Elements must have their visible text as part of their accessible name",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright",
+          "affectedNodes": 3,
+          "targets": [
+            [
+              ".brand"
+            ],
+            [
+              ".global-search"
+            ],
+            [
+              "button[attribute]"
+            ]
+          ]
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "aria-prohibited-attr",
+          "impact": "serious",
+          "help": "Elements must only use permitted ARIA attributes",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/aria-prohibited-attr?application=playwright",
+          "affectedNodes": 1,
+          "targets": [
+            [
+              ".durability-strip"
+            ]
+          ]
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "help": "Elements must have their visible text as part of their accessible name",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright",
+          "affectedNodes": 1,
+          "targets": [
+            [
+              ".easy-mode-toggle"
+            ]
+          ]
+        }
+      ],
+      "passedRules": 26
+    },
+    {
+      "name": "workspace-easy",
+      "viewport": "desktop",
+      "engine": {
+        "name": "axe-core",
+        "version": "4.14.0"
+      },
+      "violations": [
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "help": "Elements must have their visible text as part of their accessible name",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright",
+          "affectedNodes": 3,
+          "targets": [
+            [
+              ".brand"
+            ],
+            [
+              ".global-search"
+            ],
+            [
+              "button[attribute]"
+            ]
+          ]
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "aria-prohibited-attr",
+          "impact": "serious",
+          "help": "Elements must only use permitted ARIA attributes",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/aria-prohibited-attr?application=playwright",
+          "affectedNodes": 1,
+          "targets": [
+            [
+              ".durability-strip"
+            ]
+          ]
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "help": "Elements must have their visible text as part of their accessible name",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright",
+          "affectedNodes": 1,
+          "targets": [
+            [
+              ".easy-mode-toggle"
+            ]
+          ]
+        }
+      ],
+      "passedRules": 26
+    },
+    {
+      "name": "/",
+      "viewport": "mobile",
+      "engine": {
+        "name": "axe-core",
+        "version": "4.14.0"
+      },
+      "violations": [
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "help": "Elements must have their visible text as part of their accessible name",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright",
+          "affectedNodes": 1,
+          "targets": [
+            [
+              ".brand"
+            ]
+          ]
+        }
+      ],
+      "incomplete": [],
+      "passedRules": 21
+    },
+    {
+      "name": "/about",
+      "viewport": "mobile",
+      "engine": {
+        "name": "axe-core",
+        "version": "4.14.0"
+      },
+      "violations": [],
+      "incomplete": [],
+      "passedRules": 11
+    },
+    {
+      "name": "workspace-standard",
+      "viewport": "mobile",
+      "engine": {
+        "name": "axe-core",
+        "version": "4.14.0"
+      },
+      "violations": [
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "help": "Elements must have their visible text as part of their accessible name",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright",
+          "affectedNodes": 1,
+          "targets": [
+            [
+              "button[attribute]"
+            ]
+          ]
+        },
+        {
+          "id": "link-name",
+          "impact": "serious",
+          "help": "Links must have discernible text",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/link-name?application=playwright",
+          "affectedNodes": 1,
+          "targets": [
+            [
+              ".new-global"
+            ]
+          ]
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "aria-prohibited-attr",
+          "impact": "serious",
+          "help": "Elements must only use permitted ARIA attributes",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/aria-prohibited-attr?application=playwright",
+          "affectedNodes": 1,
+          "targets": [
+            [
+              ".durability-strip"
+            ]
+          ]
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "help": "Elements must have their visible text as part of their accessible name",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright",
+          "affectedNodes": 1,
+          "targets": [
+            [
+              ".easy-mode-toggle"
+            ]
+          ]
+        }
+      ],
+      "passedRules": 27
+    },
+    {
+      "name": "workspace-easy",
+      "viewport": "mobile",
+      "engine": {
+        "name": "axe-core",
+        "version": "4.14.0"
+      },
+      "violations": [
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "help": "Elements must have their visible text as part of their accessible name",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright",
+          "affectedNodes": 1,
+          "targets": [
+            [
+              "button[attribute]"
+            ]
+          ]
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "aria-prohibited-attr",
+          "impact": "serious",
+          "help": "Elements must only use permitted ARIA attributes",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/aria-prohibited-attr?application=playwright",
+          "affectedNodes": 1,
+          "targets": [
+            [
+              ".durability-strip"
+            ]
+          ]
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "help": "Elements must have their visible text as part of their accessible name",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright",
+          "affectedNodes": 1,
+          "targets": [
+            [
+              ".easy-mode-toggle"
+            ]
+          ]
+        }
+      ],
+      "passedRules": 27
+    }
+  ],
+  "lighthouse": [
+    {
+      "formFactor": "mobile",
+      "emulation": {
+        "formFactor": "mobile",
+        "screen": {
+          "mobile": true,
+          "width": 412,
+          "height": 823,
+          "deviceScaleFactor": 1.75,
+          "disabled": false
+        },
+        "throttlingMethod": "simulate",
+        "throttling": {
+          "rttMs": 150,
+          "throughputKbps": 1638.4,
+          "requestLatencyMs": 562.5,
+          "downloadThroughputKbps": 1474.5600000000002,
+          "uploadThroughputKbps": 675,
+          "cpuSlowdownMultiplier": 4
+        }
+      },
+      "version": "13.5.0",
+      "runtimeError": null,
+      "runWarnings": [],
+      "requestedPath": "/",
+      "finalPath": "/app/today",
+      "scores": {
+        "performance": 70,
+        "accessibility": 98,
+        "best-practices": 96,
+        "seo": 100
+      },
+      "metrics": {
+        "first-contentful-paint": 4763.633625,
+        "largest-contentful-paint": 5024.7603500000005,
+        "speed-index": 4763.633625,
+        "total-blocking-time": 10.5,
+        "cumulative-layout-shift": 0
+      },
+      "failedAudits": [
+        {
+          "id": "first-contentful-paint",
+          "title": "First Contentful Paint",
+          "score": 0.12,
+          "displayValue": "4.8 s"
+        },
+        {
+          "id": "largest-contentful-paint",
+          "title": "Largest Contentful Paint",
+          "score": 0.26,
+          "displayValue": "5.0 s"
+        },
+        {
+          "id": "speed-index",
+          "title": "Speed Index",
+          "score": 0.68,
+          "displayValue": "4.8 s"
+        },
+        {
+          "id": "interactive",
+          "title": "Time to Interactive",
+          "score": 0.76,
+          "displayValue": "5.0 s"
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "title": "Elements with visible text labels do not have matching accessible names.",
+          "score": 0
+        },
+        {
+          "id": "landmark-one-main",
+          "title": "Document does not have a main landmark.",
+          "score": 0
+        },
+        {
+          "id": "unused-css-rules",
+          "title": "Reduce unused CSS",
+          "score": 0,
+          "displayValue": "Est savings of 47 KiB"
+        },
+        {
+          "id": "unused-javascript",
+          "title": "Reduce unused JavaScript",
+          "score": 0,
+          "displayValue": "Est savings of 391 KiB"
+        },
+        {
+          "id": "inspector-issues",
+          "title": "Issues were logged in the `Issues` panel in Chrome Devtools",
+          "score": 0
+        },
+        {
+          "id": "bf-cache",
+          "title": "Page prevented back/forward cache restoration",
+          "score": 0,
+          "displayValue": "2 failure reasons"
+        },
+        {
+          "id": "network-dependency-tree-insight",
+          "title": "Network dependency tree",
+          "score": 0
+        },
+        {
+          "id": "render-blocking-insight",
+          "title": "Render-blocking requests",
+          "score": 0,
+          "displayValue": "Est savings of 300 ms"
+        }
+      ],
+      "rawReport": "site-audit-baseline.lighthouse-mobile.json",
+      "measuredAt": "2026-10-31T15:13:15.386Z"
+    },
+    {
+      "formFactor": "desktop",
+      "emulation": {
+        "formFactor": "desktop",
+        "screen": {
+          "mobile": false,
+          "width": 1350,
+          "height": 940,
+          "deviceScaleFactor": 1,
+          "disabled": false
+        },
+        "throttlingMethod": "simulate",
+        "throttling": {
+          "rttMs": 40,
+          "throughputKbps": 10240,
+          "requestLatencyMs": 0,
+          "downloadThroughputKbps": 0,
+          "uploadThroughputKbps": 0,
+          "cpuSlowdownMultiplier": 1
+        }
+      },
+      "version": "13.5.0",
+      "runtimeError": null,
+      "runWarnings": [],
+      "requestedPath": "/",
+      "finalPath": "/app/today",
+      "scores": {
+        "performance": 98,
+        "accessibility": 98,
+        "best-practices": 96,
+        "seo": 100
+      },
+      "metrics": {
+        "first-contentful-paint": 872.8438749999999,
+        "largest-contentful-paint": 943.01265,
+        "speed-index": 872.8438749999999,
+        "total-blocking-time": 0,
+        "cumulative-layout-shift": 0
+      },
+      "failedAudits": [
+        {
+          "id": "first-contentful-paint",
+          "title": "First Contentful Paint",
+          "score": 0.92,
+          "displayValue": "0.9 s"
+        },
+        {
+          "id": "largest-contentful-paint",
+          "title": "Largest Contentful Paint",
+          "score": 0.96,
+          "displayValue": "0.9 s"
+        },
+        {
+          "id": "speed-index",
+          "title": "Speed Index",
+          "score": 0.99,
+          "displayValue": "0.9 s"
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "title": "Elements with visible text labels do not have matching accessible names.",
+          "score": 0
+        },
+        {
+          "id": "landmark-one-main",
+          "title": "Document does not have a main landmark.",
+          "score": 0
+        },
+        {
+          "id": "unused-css-rules",
+          "title": "Reduce unused CSS",
+          "score": 0,
+          "displayValue": "Est savings of 47 KiB"
+        },
+        {
+          "id": "unused-javascript",
+          "title": "Reduce unused JavaScript",
+          "score": 0,
+          "displayValue": "Est savings of 391 KiB"
+        },
+        {
+          "id": "inspector-issues",
+          "title": "Issues were logged in the `Issues` panel in Chrome Devtools",
+          "score": 0
+        },
+        {
+          "id": "bf-cache",
+          "title": "Page prevented back/forward cache restoration",
+          "score": 0,
+          "displayValue": "2 failure reasons"
+        },
+        {
+          "id": "network-dependency-tree-insight",
+          "title": "Network dependency tree",
+          "score": 0
+        },
+        {
+          "id": "render-blocking-insight",
+          "title": "Render-blocking requests",
+          "score": 0,
+          "displayValue": "Est savings of 40 ms"
+        }
+      ],
+      "rawReport": "site-audit-baseline.lighthouse-desktop.json",
+      "measuredAt": "2026-10-31T15:13:23.835Z"
+    }
+  ],
+  "warnings": []
+}

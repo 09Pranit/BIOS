@@ -1,0 +1,4 @@
+{$SMRIVA_DOMAIN} {
+    encode zstd gzip
+    reverse_proxy smriva:3001
+}

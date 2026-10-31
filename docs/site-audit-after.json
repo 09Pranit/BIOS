@@ -1,0 +1,376 @@
+{
+  "phase": "after",
+  "measuredAt": "2026-10-31T15:38:48.418Z",
+  "origin": "http://127.0.0.1:3003",
+  "method": {
+    "browser": "Chromium through Playwright, fresh contexts; no saved user browser profile",
+    "scope": "Synthetic local demonstration only; automated checks do not establish complete accessibility or production readiness.",
+    "axeTags": [
+      "wcag2a",
+      "wcag2aa",
+      "wcag21a",
+      "wcag21aa"
+    ],
+    "requested": {
+      "accessibility": true,
+      "syntheticWorkspace": true,
+      "lighthouse": true
+    },
+    "privacy": "No PINs, recovery codes, tokens, record text, DOM HTML or screenshots are included. Accessibility selectors have attribute values removed.",
+    "timing": "Navigation timings are unthrottled local observations, not a Lighthouse score or field Core Web Vitals.",
+    "node": "v24.22.1",
+    "chrome": "156.0.8078.74"
+  },
+  "pages": [
+    {
+      "requestedPath": "/",
+      "viewport": "desktop",
+      "status": 200,
+      "xRobotsTag": null,
+      "path": "/",
+      "title": "Smriva — Offline-first health and education records",
+      "description": "Keep village-school and community-health records working offline. Smriva preserves concurrent changes, makes conflicts visible, and synchronizes over weak connections.",
+      "robots": "index, follow, max-image-preview:large",
+      "canonical": null,
+      "h1Count": 1,
+      "overflow": false,
+      "navigation": {
+        "responseStartMs": 5,
+        "domContentLoadedMs": 72,
+        "loadMs": 77,
+        "transferBytes": 10774
+      }
+    },
+    {
+      "requestedPath": "/about",
+      "viewport": "desktop",
+      "status": 200,
+      "xRobotsTag": null,
+      "path": "/about",
+      "title": "About Smriva — Sources, security and offline sync",
+      "description": "Inspect Smriva’s offline-first design, original learning content, data sources, encryption, tested synchronization behavior and deployment limits.",
+      "robots": "index, follow",
+      "canonical": null,
+      "h1Count": 1,
+      "overflow": false,
+      "navigation": {
+        "responseStartMs": 2,
+        "domContentLoadedMs": 13,
+        "loadMs": 14,
+        "transferBytes": 7329
+      }
+    },
+    {
+      "requestedPath": "/",
+      "viewport": "mobile",
+      "status": 200,
+      "xRobotsTag": null,
+      "path": "/",
+      "title": "Smriva — Offline-first health and education records",
+      "description": "Keep village-school and community-health records working offline. Smriva preserves concurrent changes, makes conflicts visible, and synchronizes over weak connections.",
+      "robots": "index, follow, max-image-preview:large",
+      "canonical": null,
+      "h1Count": 1,
+      "overflow": false,
+      "navigation": {
+        "responseStartMs": 4,
+        "domContentLoadedMs": 113,
+        "loadMs": 113,
+        "transferBytes": 10774
+      }
+    },
+    {
+      "requestedPath": "/about",
+      "viewport": "mobile",
+      "status": 200,
+      "xRobotsTag": "noindex, nofollow, noarchive",
+      "path": "/about",
+      "title": "About Smriva — Sources, security and offline sync",
+      "description": "Inspect Smriva’s offline-first design, original learning content, data sources, encryption, tested synchronization behavior and deployment limits.",
+      "robots": "index, follow",
+      "canonical": null,
+      "h1Count": 1,
+      "overflow": false,
+      "navigation": {
+        "responseStartMs": 5,
+        "domContentLoadedMs": 19,
+        "loadMs": 19,
+        "transferBytes": 0
+      }
+    }
+  ],
+  "accessibility": [
+    {
+      "name": "/",
+      "viewport": "desktop",
+      "engine": {
+        "name": "axe-core",
+        "version": "4.14.0"
+      },
+      "violations": [],
+      "incomplete": [],
+      "passedRules": 20
+    },
+    {
+      "name": "/about",
+      "viewport": "desktop",
+      "engine": {
+        "name": "axe-core",
+        "version": "4.14.0"
+      },
+      "violations": [],
+      "incomplete": [],
+      "passedRules": 11
+    },
+    {
+      "name": "workspace-standard",
+      "viewport": "desktop",
+      "engine": {
+        "name": "axe-core",
+        "version": "4.14.0"
+      },
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "help": "Elements must have their visible text as part of their accessible name",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright",
+          "affectedNodes": 1,
+          "targets": [
+            [
+              ".easy-mode-toggle"
+            ]
+          ]
+        }
+      ],
+      "passedRules": 27
+    },
+    {
+      "name": "workspace-easy",
+      "viewport": "desktop",
+      "engine": {
+        "name": "axe-core",
+        "version": "4.14.0"
+      },
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "help": "Elements must have their visible text as part of their accessible name",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright",
+          "affectedNodes": 1,
+          "targets": [
+            [
+              ".easy-mode-toggle"
+            ]
+          ]
+        }
+      ],
+      "passedRules": 26
+    },
+    {
+      "name": "/",
+      "viewport": "mobile",
+      "engine": {
+        "name": "axe-core",
+        "version": "4.14.0"
+      },
+      "violations": [],
+      "incomplete": [],
+      "passedRules": 20
+    },
+    {
+      "name": "/about",
+      "viewport": "mobile",
+      "engine": {
+        "name": "axe-core",
+        "version": "4.14.0"
+      },
+      "violations": [],
+      "incomplete": [],
+      "passedRules": 11
+    },
+    {
+      "name": "workspace-standard",
+      "viewport": "mobile",
+      "engine": {
+        "name": "axe-core",
+        "version": "4.14.0"
+      },
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "help": "Elements must have their visible text as part of their accessible name",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright",
+          "affectedNodes": 1,
+          "targets": [
+            [
+              ".easy-mode-toggle"
+            ]
+          ]
+        }
+      ],
+      "passedRules": 27
+    },
+    {
+      "name": "workspace-easy",
+      "viewport": "mobile",
+      "engine": {
+        "name": "axe-core",
+        "version": "4.14.0"
+      },
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "help": "Elements must have their visible text as part of their accessible name",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright",
+          "affectedNodes": 1,
+          "targets": [
+            [
+              ".easy-mode-toggle"
+            ]
+          ]
+        }
+      ],
+      "passedRules": 27
+    }
+  ],
+  "lighthouse": [
+    {
+      "formFactor": "mobile",
+      "measuredAt": "2026-10-31T15:38:51.891Z",
+      "emulation": {
+        "formFactor": "mobile",
+        "screen": {
+          "mobile": true,
+          "width": 412,
+          "height": 823,
+          "deviceScaleFactor": 1.75,
+          "disabled": false
+        },
+        "throttlingMethod": "simulate",
+        "throttling": {
+          "rttMs": 150,
+          "throughputKbps": 1638.4,
+          "requestLatencyMs": 562.5,
+          "downloadThroughputKbps": 1474.5600000000002,
+          "uploadThroughputKbps": 675,
+          "cpuSlowdownMultiplier": 4
+        }
+      },
+      "version": "13.5.0",
+      "runtimeError": null,
+      "runWarnings": [],
+      "requestedPath": "/",
+      "finalPath": "/",
+      "scores": {
+        "performance": 100,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "metrics": {
+        "first-contentful-paint": 984.7915,
+        "largest-contentful-paint": 1211.7498,
+        "speed-index": 984.7915,
+        "total-blocking-time": 0,
+        "cumulative-layout-shift": 0
+      },
+      "failedAudits": [
+        {
+          "id": "document-latency-insight",
+          "title": "Document request latency",
+          "score": 0.5,
+          "displayValue": "Est savings of 7 KiB"
+        },
+        {
+          "id": "network-dependency-tree-insight",
+          "title": "Network dependency tree",
+          "score": 0
+        },
+        {
+          "id": "render-blocking-insight",
+          "title": "Render-blocking requests",
+          "score": 0,
+          "displayValue": "Est savings of 150 ms"
+        }
+      ],
+      "rawReport": "site-audit-after.lighthouse-mobile.json"
+    },
+    {
+      "formFactor": "desktop",
+      "measuredAt": "2026-10-31T15:38:59.637Z",
+      "emulation": {
+        "formFactor": "desktop",
+        "screen": {
+          "mobile": false,
+          "width": 1350,
+          "height": 940,
+          "deviceScaleFactor": 1,
+          "disabled": false
+        },
+        "throttlingMethod": "simulate",
+        "throttling": {
+          "rttMs": 40,
+          "throughputKbps": 10240,
+          "requestLatencyMs": 0,
+          "downloadThroughputKbps": 0,
+          "uploadThroughputKbps": 0,
+          "cpuSlowdownMultiplier": 1
+        }
+      },
+      "version": "13.5.0",
+      "runtimeError": null,
+      "runWarnings": [],
+      "requestedPath": "/",
+      "finalPath": "/",
+      "scores": {
+        "performance": 100,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "metrics": {
+        "first-contentful-paint": 264.62024999999994,
+        "largest-contentful-paint": 325.54429999999996,
+        "speed-index": 264.62024999999994,
+        "total-blocking-time": 0,
+        "cumulative-layout-shift": 0
+      },
+      "failedAudits": [
+        {
+          "id": "document-latency-insight",
+          "title": "Document request latency",
+          "score": 0.5,
+          "displayValue": "Est savings of 7 KiB"
+        },
+        {
+          "id": "network-dependency-tree-insight",
+          "title": "Network dependency tree",
+          "score": 0
+        },
+        {
+          "id": "render-blocking-insight",
+          "title": "Render-blocking requests",
+          "score": 0.5
+        }
+      ],
+      "rawReport": "site-audit-after.lighthouse-desktop.json"
+    }
+  ],
+  "warnings": [],
+  "summary": {
+    "accessibilityScans": 8,
+    "violationInstances": 0,
+    "violationRuleIds": [],
+    "checksRequiringHumanReview": 4,
+    "lighthouseRuns": 2
+  },
+  "accessibilityMeasuredAt": "2026-10-31T15:33:00.506Z"
+}

@@ -1,1 +1,0 @@
-export const theme={colors:{parchment:'#efdccb',surface:'#f6e8d8',ink:'#2b2118',moss:'#4f7a4a',terracotta:'#c9653a',terracottaInk:'#923a1c',light:'#ffffff',blue:'#1f3a5f',graphite:'#3a3f47'},fonts:{display:'Cormorant Garamond',body:'Jost',data:'JetBrains Mono'}} as const;
