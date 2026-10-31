@@ -32,6 +32,24 @@ async function device(name: string) {
   return v;
 }
 describe('encrypted local durability and real HTTP synchronization', () => {
+  it('keeps offline writes available after expiry and renews the session on sync', async () => {
+    const identity = store.enroll('Expired offline device', 'Reviewer'),
+      expired = Date.now() - 1000,
+      a = new Vault('test-expired-' + randomBytes(4).toString('hex'));
+    instances.push(a);
+    store.db.prepare('UPDATE devices SET expires=? WHERE id=?').run(expired, identity.deviceId);
+    identity.expires = expired;
+    await a.create('123456', identity);
+
+    await a.write('offline-child', 'name', 'Saved while the hub session was expired');
+    expect(a.view.entities['offline-child'].name).toBe('Saved while the hub session was expired');
+    expect(a.pending).toHaveLength(1);
+
+    await a.sync();
+    expect(a.state!.identity.expires).toBeGreaterThan(Date.now());
+    expect(a.pending).toHaveLength(0);
+    expect(store.all()).toHaveLength(1);
+  });
   it('keeps incompatible stale-tab edits concurrent until an observed review resolves them', async () => {
     const a = await device('Stale semantic edits');
     await a.write('child', 'dob', '2018-03-01');
@@ -84,7 +102,7 @@ describe('encrypted local durability and real HTTP synchronization', () => {
     await a.saveEntryDrafts({ 'score|child-a': '24' });
     await b.write('child-b', 'name', 'Second tab child');
     await b.saveEntryDrafts({ 'score|child-b': '58' });
-    // Exporting from the stale first tab must include the other tab’s committed data.
+    // Exporting from the stale first tab must include the other tabâ€™s committed data.
     const backup = await a.export('shared-backup-passphrase'),
       restored = await device('Shared tab backup');
     await restored.import(backup, 'shared-backup-passphrase');
@@ -365,3 +383,4 @@ describe('encrypted local durability and real HTTP synchronization', () => {
     expect(reopened.state!.entryDrafts?.['score|child-001']).toBeUndefined();
   });
 });
+

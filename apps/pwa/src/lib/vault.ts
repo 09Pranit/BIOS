@@ -153,7 +153,7 @@ export class Vault {
       const saved = await this.db.vault.get('state');
       if (!saved)
         throw new Error(
-          'The encrypted workspace is missing. Keep this browser’s data and recover from a backup.',
+          'The encrypted workspace is missing. Keep this browserâ€™s data and recover from a backup.',
         );
       const state = await open<State>(key, saved.sealed);
       this.assertSession(generation, key);
@@ -168,15 +168,15 @@ export class Vault {
       key = this.key;
     const run = this.tail.then(async () => {
       this.assertSession(generation, key);
-      // Reading another tab’s committed bytes is necessary for safe storage, but is
-      // not evidence that this tab’s user observed those edits. Keep that causal
+      // Reading another tabâ€™s committed bytes is necessary for safe storage, but is
+      // not evidence that this tabâ€™s user observed those edits. Keep that causal
       // boundary fixed across retries; earlier queued writes in this tab are included.
       const observedOps = this.state!.ops.slice();
       for (let attempt = 0; attempt < 20; attempt++) {
         const saved = await this.db.vault.get('state');
         if (!saved)
           throw new Error(
-            'The encrypted workspace is missing. Keep this browser’s data and recover from a backup.',
+            'The encrypted workspace is missing. Keep this browserâ€™s data and recover from a backup.',
           );
         // Crypto stays outside the transaction. A short atomic compare-and-swap prevents
         // stale tabs overwriting each other, including browsers without navigator.locks.
@@ -253,8 +253,6 @@ export class Vault {
     type: Op['entityType'] = 'child',
   ) {
     return this.change(async (s, observedOps) => {
-      if (s.identity.expires < Date.now())
-        throw new Error('Offline session expired. Recover online before entering records.');
       this.assertExplicitReview(observedOps, entityId, field, kind);
       const op = await signOperation(
         {
@@ -272,7 +270,6 @@ export class Vault {
     observedAtStart?: readonly Op[],
   ) {
     return this.change(async (s, observedOps) => {
-      if (s.identity.expires < Date.now()) throw new Error('Offline session expired');
       // Long-lived forms retain the log they actually displayed. Background sync
       // must not make an unseen remote edit look like an observed predecessor.
       let causalLog = observedAtStart ? union([...observedAtStart]) : observedOps.slice();
@@ -354,6 +351,7 @@ export class Vault {
       chunks = 0;
     try {
       await this.readCurrent();
+      if (this.state!.identity.expires < Date.now()) await this.renewSession();
       const pending = this.pending,
         pendingIds = new Set(pending.map((op) => op.opId));
       // Only order outgoing operations. An interrupted pull can legitimately
@@ -533,3 +531,4 @@ export function download(name: string, data: unknown) {
   a.click();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
+

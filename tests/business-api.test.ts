@@ -71,6 +71,16 @@ async function upload(identity: Identity, ops: Op[]) {
 }
 
 describe('manual database HTTP API', () => {
+  it('renews an expired device during the online grace period without reopening other routes', async () => {
+    const identity = store.enroll('Returning worker', 'Reviewer');
+    store.db.prepare('UPDATE devices SET expires=? WHERE id=?').run(Date.now() - 1000, identity.deviceId);
+    expect((await request(identity, '/api/session')).response.status).toBe(401);
+    const renewal = await request(identity, '/api/session/renew', 'POST', {});
+    expect(renewal.response.status).toBe(200);
+    expect(renewal.data.expires).toBeGreaterThan(Date.now());
+    expect((await request(identity, '/api/session')).response.status).toBe(200);
+  });
+
   it('authenticates database queries and exposes session and database metadata', async () => {
     expect((await request(undefined, '/api/children')).response.status).toBe(401);
     const identity = store.enroll('Reviewer', 'Reviewer');
@@ -481,3 +491,4 @@ describe('causal review and production enrollment', () => {
     expect(denied.response.status).toBe(403);
   });
 });
+

@@ -110,8 +110,10 @@ export function createApp(store: HubStore, demo = true) {
   });
   app.use('/api', (req: any, res, next) => {
     const token = req.headers.authorization?.replace(/^Bearer /, '') ?? '',
-      device = store.authorize(token);
-    if (!device || device.expires < Date.now())
+      device = store.authorize(token),
+      renewing = req.method === 'POST' && req.path === '/session/renew',
+      renewalGrace = 30 * 86400000;
+    if (!device || (device.expires < Date.now() && (!renewing || device.expires < Date.now() - renewalGrace)))
       return res.status(401).json({ error: 'Device session expired. Recover or enroll online.' });
     if (device.revoked)
       return res
@@ -194,3 +196,4 @@ export function createApp(store: HubStore, demo = true) {
   });
   return app;
 }
+
