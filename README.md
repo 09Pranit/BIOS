@@ -101,6 +101,12 @@ Six internal services plus the external bank adapter resolve the brief's six-ser
 
 For installed Chrome instead of downloaded Playwright Chromium, set 'CHROME_PATH' to its executable. Set 'E2E_EXTERNAL_SERVER=true' when a dev server is already running. For Docker E2E use 'E2E_BASE_URL=http://localhost:8080' with an external server. Docker was unavailable on the build host; native build, API integration, browser acceptance and production Lighthouse were executed. The Compose launch remains unexecuted here.
 
+## Vercel frontend deployment
+
+Import the repository with Root Directory set to `.`. The checked-in `vercel.json` runs `npm run build`, publishes `apps/web/dist`, and routes browser page URLs to the React app. `SITE_URL` can override the canonical origin; otherwise the build uses Vercel's production domain automatically.
+
+This deploys the frontend. The Express API uses persistent SQLite files, server-sent events, and a benchmark child process, so run the full stack with the Docker/native instructions above or host the API separately and proxy `/api` to that host. A static Vercel deployment does not start `npm start` or provide the API.
+
 ## Environment
 
 All credentials are server-side. None use a Vite client prefix. Blank provider credentials choose deterministic local behavior.
