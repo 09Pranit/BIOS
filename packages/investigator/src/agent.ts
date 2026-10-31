@@ -1,0 +1,25 @@
+import type {Telemetry} from '../../simulator/src/types.js';
+import type {Analysis,AnalysisOptions} from './analyze.js';
+import {ingest} from './ingest.js';
+import {estimateSkew,correctClocks} from './skew.js';
+import {correlate,findGaps,gapEvents} from './correlate.js';
+import {rankHypotheses} from './hypotheses.js';
+import {counterfactualUpdate} from './counterfactual.js';
+import {calibrate} from './calibration.js';
+import {buildReport} from './report.js';
+import type {AgentStep} from './types.js';
+export const tools=['query_logs','query_metrics','estimate_skew','correlate','list_gaps','get_dependency_graph','generate_hypotheses','test_counterfactual','calibrate','request_more_evidence','report'] as const;
+export type AgentTool=typeof tools[number];
+export interface Driver {choose:(input:{available:AgentTool[];completed:string[];summary:string;evidence_ids:string[]})=>Promise<{tool:AgentTool;evidence_ids:string[];tokens?:number}>}
+export async function investigate(data:Telemetry,options:AnalysisOptions&{driver?:Driver;onStep?:(s:AgentStep)=>void;stepBudget?:number}={}){
+ const started=performance.now();const a:Analysis={events:[],skew:[],links:[],gaps:[],hypotheses:[],timeline:[],seconds:0};const trace:AgentStep[]=[];let aiUsed=false;const completed=new Set<string>();const plan:AgentTool[]=[...tools];
+ const dependencies:Partial<Record<AgentTool,AgentTool[]>>={query_metrics:['query_logs'],estimate_skew:['query_metrics'],correlate:['estimate_skew'],list_gaps:['correlate'],get_dependency_graph:[],generate_hypotheses:['get_dependency_graph','list_gaps'],test_counterfactual:['generate_hypotheses'],calibrate:['test_counterfactual'],request_more_evidence:['calibrate'],report:['request_more_evidence']};
+ while(trace.length<(options.stepBudget||16)&&!completed.has('report')){
+  const available=plan.filter(t=>!completed.has(t)&&(dependencies[t]||[]).every(d=>completed.has(d)));let tool=available[0];if(!tool)break;let source:'rules'|'ai'='rules',tokens:number|undefined;
+  if(options.driver){try{const choice=await options.driver.choose({available,completed:[...completed],summary:`${a.events.length} records, ${a.gaps.length} gaps, leading posterior ${a.hypotheses[0]?.raw||0}`,evidence_ids:a.events.slice(0,100).map(e=>e.event_id)});if(!available.includes(choice.tool)||choice.evidence_ids.some(id=>!a.events.some(e=>e.event_id===id)))throw new Error('Invalid or unavailable tool/evidence');tool=choice.tool;tokens=choice.tokens;source='ai';aiUsed=true;}catch{source='rules';}}
+  const t=performance.now();let output='';const ids:string[]=[];
+  switch(tool){case 'query_logs':a.events=ingest(data.records);output=`Normalized ${a.events.length} records; PII-like fields redacted.`;break;case 'query_metrics':output=`${a.events.filter(e=>e.fields.kind==='metric').length} metric records across mixed cadences.`;break;case 'estimate_skew':a.skew=estimateSkew(a.events,data);if(options.skew!==false)a.events=correctClocks(a.events,a.skew);output='Causal difference bounds intersected over windows; gateway anchors relative time.';break;case 'correlate':a.links=correlate(a.events);output=`${a.links.length} causal links with confidence.`;break;case 'list_gaps':a.gaps=options.gaps===false?[]:findGaps(a.events,a.links);output=`${a.gaps.length} explicit gaps; no missing record silently filled.`;break;case 'get_dependency_graph':output=JSON.stringify(data.topology);break;case 'generate_hypotheses':a.hypotheses=rankHypotheses(a.events,a.gaps);output=`Leading diagnosis: ${a.hypotheses[0].statement}; unknown retained.`;ids.push(...a.hypotheses[0].support.slice(0,4));break;case 'test_counterfactual':if(options.counterfactuals!==false)a.hypotheses=counterfactualUpdate(a.hypotheses,a.events,data);output=`Revised after twin: ${a.hypotheses[0].counterfactual?.verdict||'not tested'}.`;break;case 'calibrate':a.hypotheses=calibrate(a.hypotheses,options.calibrator);output=`Raw ${a.hypotheses[0].raw.toFixed(3)} → calibrated ${a.hypotheses[0].calibrated.toFixed(3)}; fit model ${options.calibrator?.temperature||'identity (unfitted)'}.`;break;case 'request_more_evidence':output=a.hypotheses[0].calibrated<0.8?'Requested independent ingress/packet telemetry. No additional evidence available in this synthetic run.':'Confidence threshold reached; further evidence collection deferred to operator review.';break;case 'report':a.timeline=[...a.events,...gapEvents(a.gaps)].sort((x,y)=>(x.corrected_ts[0]+x.corrected_ts[1])-(y.corrected_ts[0]+y.corrected_ts[1]));output='Report schema and all provenance references validated; waiting for human review.';break;}
+  completed.add(tool);const step:AgentStep={step:trace.length+1,tool,input:{case_id:data.case_id},output,evidence_ids:ids,source,started_at:new Date().toISOString(),duration_ms:performance.now()-t,...(tokens?{tokens}:{})};trace.push(step);options.onStep?.(step);await new Promise(resolve=>setTimeout(resolve,0));
+ }
+ if(!completed.has('report'))throw new Error('Investigation step budget exhausted before a valid report');a.seconds=(performance.now()-started)/1000;return {analysis:a,report:buildReport(data,a,trace,aiUsed?'ai':'rules'),trace};
+}

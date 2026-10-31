@@ -1,0 +1,2 @@
+import {defineConfig} from '@playwright/test';
+export default defineConfig({testDir:'tests/e2e',timeout:60000,use:{baseURL:process.env.E2E_BASE_URL||'http://localhost:5173',headless:true,screenshot:'only-on-failure',trace:'retain-on-failure',...(process.env.CHROME_PATH?{launchOptions:{executablePath:process.env.CHROME_PATH}}:{})},webServer:process.env.E2E_EXTERNAL_SERVER?undefined:{command:'npm run dev',url:'http://localhost:5173',reuseExistingServer:!process.env.CI,timeout:60000},reporter:'list'});

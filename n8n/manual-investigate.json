@@ -1,0 +1,117 @@
+{
+  "name": "ServiceShield — manual investigation",
+  "nodes": [
+    {
+      "id": "investigate-now",
+      "name": "Investigate now",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "serviceshield-investigate",
+        "authentication": "headerAuth",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "serviceshield-header-auth",
+          "name": "ServiceShield shared secret"
+        }
+      }
+    },
+    {
+      "id": "run-investigator",
+      "name": "Run investigator",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        260,
+        0
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.SERVICESHIELD_API_URL + \"/api/investigate\" }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({case_id: $json.body.case_id}) }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "serviceshield-header-auth",
+          "name": "ServiceShield shared secret"
+        }
+      }
+    },
+    {
+      "id": "record-execution",
+      "name": "Record execution",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        520,
+        0
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.SERVICESHIELD_API_URL + \"/api/automation/status\" }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({execution_id: $execution.id,case_id: $('Investigate now').first().json.body.case_id,workflow: 'manual investigation',status: 'success',detail:'Investigation dispatched; report status is tracked by the case API.'}) }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "serviceshield-header-auth",
+          "name": "ServiceShield shared secret"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Investigate now": {
+      "main": [
+        [
+          {
+            "node": "Run investigator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run investigator": {
+      "main": [
+        [
+          {
+            "node": "Record execution",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {},
+  "versionId": "970d46d4-9896-40cb-b941-ec671a3d0d3d",
+  "meta": {
+    "templateCredsSetupCompleted": false
+  }
+}

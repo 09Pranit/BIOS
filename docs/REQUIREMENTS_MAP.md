@@ -1,0 +1,51 @@
+# Literal problem statement → implementation → verification
+
+The problem statement is implemented as a synthetic, runnable research system. Measured limitations and unsupported external connections are explicitly disclosed. Ground truth is available only to post-run scoring, never to the investigator.
+
+| Exact phrase | Visible feature | Exact implementation | Verification |
+|---|---|---|---|
+| “09 Autonomous Incident Investigation for Critical Public Services” | Autonomous case creation, investigation, report and review for benefits/health services | `packages/investigator/src/agent.ts::investigate`; `apps/api/src/app.ts::run`; `/lab` | `tests/report.test.ts` fallback plan; `tests/api.test.ts` full case flow; Playwright judge journey |
+| “reconstructs a cross-service failure timeline” | Timeline combines observed causes, first symptoms, service clocks and explicit gaps | `packages/investigator/src/analyze.ts`; `apps/web/src/components.tsx::Timeline`; `apps/web/src/CasePage.tsx` | `tests/skew.test.ts`; `tests/correlation.test.ts`; measured Kendall τ in benchmark |
+| “despite incomplete logs” | Sequence loss, burst loss, caller/callee silence and visible unobserved markers | `packages/simulator/src/index.ts::simulate`; `packages/investigator/src/correlate.ts::findGaps` / `gapEvents` | `tests/correlation.test.ts` correlation under 35% loss and full trace drop |
+| “and clock skew” | Difference constraints, graph propagation, windowed drift estimates, uncertainty intervals; raw/corrected switch | `packages/investigator/src/skew.ts::estimateSkew` / `correctClocks` | `tests/skew.test.ts` 12 seeds, 30-second skew, drift, interval coverage and sparse widening |
+| “ranks root-cause hypotheses” | Differential with prior × likelihood, four penalty types, evidence and explicit unknown | `packages/investigator/src/hypotheses.ts::rankHypotheses` | `tests/hypotheses.test.ts` fixture rankings, normalization and evidence degradation |
+| “tests them counterfactually” | Reproduction and cure over eight seeded twin replays, verdict, replay CI, curve overlay | `packages/investigator/src/counterfactual.ts::testCounterfactual`; `apps/web/src/Charts.tsx` | `tests/counterfactual.test.ts` supported/refuted/inconclusive thresholds and compatible cure; Playwright intervention |
+| “Reports must separate facts from inferences” | FACT solid underline, INFERENCE dashed underline, UNKNOWN hatched and text-labeled | `packages/investigator/src/report.ts::ReportSchema` / `validateReport`; `apps/web/src/CasePage.tsx` | `tests/report.test.ts` causal statement mislabeled FACT rejected |
+| “link claims to evidence” | Stable IDs, raw source/line, original hash, corrected interval, click-through provenance drawer | `packages/investigator/src/ingest.ts`; `packages/investigator/src/report.ts`; `apps/web/src/components.tsx::EvidenceDrawer` | `tests/report.test.ts` invented IDs and provenance verification; Playwright drawer |
+| “with calibrated confidence” | Persisted temperature model fitted on at least 60 incidents; raw and calibrated values, Brier, ECE and reliability diagram | `packages/investigator/src/calibration.ts`; `data/calibrator.json`; `/benchmark` | `tests/calibration.test.ts` held-out fixture improvement; `tests/benchmark.test.ts` full-mix honest outcome |
+| “cross-service correlation” | Trace links, otherwise corrected-time/operation/request-hint matches with ambiguity penalty | `packages/investigator/src/correlate.ts::correlate`; Timeline causal-link table | `tests/correlation.test.ts` no-trace probabilistic linking |
+| “clock-skew correction” | Bellman-Ford shortest-path bounds in both directions, conservative drift allowance and piecewise interpolation | `packages/investigator/src/skew.ts` | `tests/skew.test.ts` recovery, coverage and widening |
+| “causal analysis” | Declared topology, cause-before-effect interval checks, independent-branch findings, interventional twin | `packages/investigator/src/hypotheses.ts`; `packages/investigator/src/counterfactual.ts`; report `independent_faults` | `tests/scenarios.test.ts` overlap separation; `tests/counterfactual.test.ts` |
+| “missing-data reasoning” | “log loss”, “service down”, “never received” classifications with liveness justification | `packages/investigator/src/correlate.ts::classifyGap` / `findGaps` | `tests/correlation.test.ts` all three classifications |
+| “evidence provenance” | Synthetic source paths, sequence line numbers, original SHA-256, redacted immutable observations | `packages/investigator/src/ingest.ts`; `packages/investigator/src/report.ts::validateReport` | `tests/report.test.ts`; `tests/skew.test.ts` PII redaction |
+| “confidence calibration” | Fit-set ECE with tiny NLL tie-breaker; frozen model before unseen test seeds; no result fabricated if ECE worsens | `packages/investigator/src/calibration.ts::fitTemperature`; `scripts/benchmark.ts::runBenchmark` | `tests/calibration.test.ts`; `tests/benchmark.test.ts` seed separation and outcome consistency |
+| “root-cause and timeline accuracy” | Top-1/top-3, abstention/selective accuracy, Kendall τ, onset error, both-fault recall | `scripts/benchmark.ts::score`; `scripts/scoring.ts`; `data/benchmark.json` | `tests/scoring.test.ts`; `tests/scenarios.test.ts`; `npm run benchmark` |
+| “investigation time” | Per-case analyzer wall time and p50/p95; report also records agent wall time | `packages/investigator/src/analyze.ts`; `packages/investigator/src/agent.ts`; `scripts/benchmark.ts::summarize` | API integration saves timing; benchmark validates finite times |
+| “evidence quality” | Macro precision/recall over claim citations versus scoring-only relevant records; semantic claim faithfulness | `scripts/benchmark.ts::score`; `scripts/scoring.ts::evidenceScore` | `tests/scoring.test.ts` irrelevant evidence penalty; report validator and benchmark tests |
+| “confidence calibration” (success metric) | Raw/calibrated Brier and ECE, reliability bins, honest improvement flag | `packages/investigator/src/calibration.ts::ece` / `brier` / `reliability`; `/benchmark` | `tests/calibration.test.ts`; `tests/benchmark.test.ts` |
+| “Observability” | Every agent action and audit entry; optional investigation trace with stage spans and token metadata | `packages/investigator/src/agent.ts`; `apps/api/src/adapters/langfuse.ts`; Report trace replay | `tests/report.test.ts`; `tests/integrations.test.ts` offline trace fallback |
+| “AI Agents” | Validated tool planner, dependency-aware tool selection, gather/revise/budget/stop loop and deterministic fallback | `packages/investigator/src/agent.ts`; `apps/api/src/adapters/anthropic.ts` | `tests/report.test.ts` invalid tool/citation fallback and budget exhaustion |
+| “SDG 9, 16” | Resilient infrastructure and accountable institutions, public summary and human publication gate | `apps/web/src/Pages.tsx::About`; `packages/investigator/src/report.ts`; API approval/publish routes | `tests/api.test.ts` approval before publish; `tests/integrations.test.ts` automation cannot approve |
+
+## Build brief acceptance coverage
+
+| Requirement group | Feature/file | Test or review evidence |
+|---|---|---|
+| Six internal services plus external bank | `packages/simulator/src/types.ts::services` / `topology`; seven nodes resolves the brief's six-versus-seven naming ambiguity | Simulator tests; scenario tests |
+| All six scenarios and hidden ground truth | `packages/simulator/src/index.ts::scenarios`; separate `data/scoring.sqlite::scoring_only`; `apps/api/src/scoring-store.ts` | `tests/scenarios.test.ts` verifies all six and investigator import isolation |
+| Stress dials, formats, drift, dropped propagation, differing cadences | `simulate`; `/lab` in `apps/web/src/Pages.tsx`; deterministic seed | Simulator, skew and correlation tests; Playwright changes stress controls |
+| Full TypeScript stack | npm workspaces, React/Vite/Router/Recharts/d3; Express/SQLite/zod/helmet/cors/rate-limit/pino | `npm run build`; `npm test` |
+| Agent tools, source and replay | `agent.ts::tools`; local report `agent_trace`; source `ai` or `rules` | Fallback/budget/invalid-AI tests |
+| Reports and public transparency | Full zod report; plain-language public summary, open questions and change-my-mind conditions | Report and API tests |
+| Baselines and ablations | Raw-clock heuristic (optional real LLM); no-skew rules; no-skew/no-gap/no-counterfactual ablations | `npm run benchmark`; persisted table/chart; honest zero or negative gains |
+| MojoAuth and two roles | OIDC PKCE, verified JWTs, hashed server sessions, subject allowlisted Reviewers, explicit judge account | Integration/API auth boundaries; real-account verification in `docs/INTEGRATIONS.md` |
+| Four n8n workflows and status | `n8n/*.json`; signed API calls, authenticated waiting URL, Reviewer-triggered resume, actual callbacks | Workflow export, signature and human gate tests; live setup is operator-configured |
+| TechnoTribes credit | `apps/web/src/config/sponsors.ts` | Track credit only; no unconfirmed proprietary product |
+| Tin Computer readiness | Pre-rendered public landing, meta/OG/JSON-LD, bundled fonts, sitemap/robots, `docs/GROWTH.md` | Build; `data/lighthouse.json`; no connection claimed |
+| Langfuse | Current scoped tracing SDK/OTel adapter, one case root, stage spans, tokens, latency and link | Offline fallback tested; cloud receipt requires credentials |
+| Design and accessibility | Theme tokens, paper/blueprint language, Life/System lens, text-labeled epistemic markers, responsive layout, keyboard shortcuts and drawer focus | Desktop/mobile PNGs in `data/`; Playwright; Lighthouse accessibility |
+| Star page tabs and Lab | `CasePage.tsx`, `components.tsx`, `Charts.tsx`, `Pages.tsx::Lab`; SSE plus polling; real 90-second three-run story | Playwright judge flow; manual visual QA |
+| Security and privacy | Env-only credentials, redaction, React text escaping, bounded zod input, parameterized SQL, origin checks, throttling, automation role separation | Report, API and integration tests |
+| One command and documentation | `docker-compose.yml`, `Dockerfile`, `scripts/boot.ts`, README, demo script | Native build/test/e2e verified; Docker unavailable on build host and explicitly unexecuted |
+
+No slides or presentation artifacts are generated.

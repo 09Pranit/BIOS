@@ -1,0 +1,7 @@
+import {it,expect} from 'vitest';
+import {simulate} from '../packages/simulator/src/index.js';
+import {investigate} from '../packages/investigator/src/agent.js';
+import {validateReport} from '../packages/investigator/src/report.js';
+it('completes the fallback plan and validates every cited evidence ID',async()=>{const {telemetry}=simulate();const result=await investigate(telemetry);expect(result.report.analyzer.source).toBe('rules');expect(result.trace.map(s=>s.tool)).toContain('request_more_evidence');expect(validateReport(result.report,result.analysis.events)).toEqual(result.report);});
+it('rejects forged evidence and a causal inference mislabeled FACT',async()=>{const {telemetry}=simulate();const {report,analysis}=await investigate(telemetry);const fake=structuredClone(report);fake.claims[0].evidence[0].evidence_id='LOG-fake';expect(()=>validateReport(fake,analysis.events)).toThrow('Non-existent');const wrong=structuredClone(report);wrong.claims[0].statement='The database caused the outage';expect(()=>validateReport(wrong,analysis.events)).toThrow('FACT');});
+it('rejects exhausted budgets and safely falls back from invalid AI tool choices',async()=>{const {telemetry}=simulate();await expect(investigate(telemetry,{stepBudget:2})).rejects.toThrow('budget');const r=await investigate(telemetry,{driver:{choose:async()=>({tool:'report',evidence_ids:['fake']})}});expect(r.report.analyzer.source).toBe('rules');});

@@ -1,0 +1,63 @@
+services:
+  api:
+    build:
+      context: .
+      target: api
+    environment:
+      PORT: 3001
+      WEB_ORIGIN: http://localhost:8080
+      DEMO_JUDGE_MODE: ${DEMO_JUDGE_MODE:-true}
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+      MOJOAUTH_ISSUER: ${MOJOAUTH_ISSUER:-}
+      MOJOAUTH_CLIENT_ID: ${MOJOAUTH_CLIENT_ID:-}
+      MOJOAUTH_CLIENT_SECRET: ${MOJOAUTH_CLIENT_SECRET:-}
+      MOJOAUTH_REDIRECT_URI: ${MOJOAUTH_REDIRECT_URI:-http://localhost:8080/api/auth/mojo/callback}
+      MOJOAUTH_AUDIENCE: ${MOJOAUTH_AUDIENCE:-}
+      MOJOAUTH_REVIEWER_SUBJECTS: ${MOJOAUTH_REVIEWER_SUBJECTS:-}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      ANTHROPIC_MODEL: ${ANTHROPIC_MODEL:-}
+      LANGFUSE_PUBLIC_KEY: ${LANGFUSE_PUBLIC_KEY:-}
+      LANGFUSE_SECRET_KEY: ${LANGFUSE_SECRET_KEY:-}
+      LANGFUSE_BASE_URL: ${LANGFUSE_BASE_URL:-https://cloud.langfuse.com}
+      N8N_SHARED_SECRET: ${N8N_SHARED_SECRET:-}
+      N8N_BASE_URL: http://n8n:5678
+      N8N_WEBHOOK_URL: ${N8N_WEBHOOK_URL:-}
+      N8N_REVIEW_WEBHOOK_URL: ${N8N_REVIEW_WEBHOOK_URL:-}
+      NOTIFICATION_WEBHOOK_URL: ${NOTIFICATION_WEBHOOK_URL:-}
+    volumes:
+      - shield-data:/app/data
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3001/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 60s
+  web:
+    build:
+      context: .
+      target: web
+      args:
+        SITE_URL: ${SITE_URL:-http://localhost:8080}
+    ports:
+      - "127.0.0.1:8080:80"
+    depends_on:
+      api:
+        condition: service_healthy
+  n8n:
+    image: docker.n8n.io/n8nio/n8n:stable
+    ports:
+      - "127.0.0.1:5678:5678"
+    environment:
+      GENERIC_TIMEZONE: Asia/Kolkata
+      TZ: Asia/Kolkata
+      N8N_SECURE_COOKIE: "false"
+      N8N_DIAGNOSTICS_ENABLED: "false"
+      N8N_BLOCK_ENV_ACCESS_IN_NODE: "false"
+      SERVICESHIELD_API_URL: http://api:3001
+      WEBHOOK_URL: http://n8n:5678/
+    volumes:
+      - n8n-data:/home/node/.n8n
+      - ./n8n:/workflows:ro
+volumes:
+  shield-data:
+  n8n-data:

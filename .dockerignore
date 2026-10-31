@@ -1,0 +1,11 @@
+node_modules
+.tools
+.git
+.env
+data/*.sqlite*
+data/*.png
+apps/web/dist
+test-results
+playwright-report
+*-runtime.zip
+node-shasums.txt

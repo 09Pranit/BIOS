@@ -1,0 +1,1 @@
+const { spawn } = require('node:child_process'); const path = require('node:path'); const node = path.resolve('.tools/node'); const child = spawn(path.join(node,'node.exe'),process.argv.slice(2),{stdio:'inherit',env:{...process.env,PATH:node+path.delimiter+process.env.PATH},windowsHide:true}); child.on('exit',code=>process.exit(code??1));
