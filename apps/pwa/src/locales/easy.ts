@@ -141,6 +141,23 @@ export const easyTranslations: Record<string, readonly [string, string]> = {
   'Review different entries': ['अलग प्रविष्टियाँ जाँचें', 'ਵੱਖਰੀਆਂ ਐਂਟਰੀਆਂ ਦੀ ਜਾਂਚ ਕਰੋ'],
   'PIN, backup and recovery': ['PIN, बैकअप और बहाली', 'PIN, ਬੈਕਅੱਪ ਅਤੇ ਬਹਾਲੀ'],
   'Hub database': ['हब डेटाबेस', 'ਹੱਬ ਡਾਟਾਬੇਸ'],
+  'Use the offline record database': ['ऑफ़लाइन रिकॉर्ड डेटाबेस इस्तेमाल करें', 'ਆਫ਼ਲਾਈਨ ਰਿਕਾਰਡ ਡਾਟਾਬੇਸ ਵਰਤੋ'],
+  'Find the encrypted record stored on this device.': [
+    'इस डिवाइस पर सुरक्षित एन्क्रिप्टेड रिकॉर्ड खोजें।',
+    'ਇਸ ਡਿਵਾਈਸ ਉੱਤੇ ਸੁਰੱਖਿਅਤ ਇਨਕ੍ਰਿਪਟ ਕੀਤਾ ਰਿਕਾਰਡ ਲੱਭੋ।',
+  ],
+  'Create or edit the details, then choose Save on device.': [
+    'विवरण बनाएँ या बदलें, फिर डिवाइस पर सहेजें चुनें।',
+    'ਵੇਰਵਾ ਬਣਾਓ ਜਾਂ ਸੋਧੋ, ਫਿਰ ਡਿਵਾਈਸ ਉੱਤੇ ਸੰਭਾਲੋ ਚੁਣੋ।',
+  ],
+  'Synchronize when a village hub connection is available.': [
+    'गाँव के हब का कनेक्शन मिलने पर सिंक करें।',
+    'ਪਿੰਡ ਦੇ ਹੱਬ ਦਾ ਕਨੈਕਸ਼ਨ ਮਿਲਣ ਉੱਤੇ ਸਿੰਕ ਕਰੋ।',
+  ],
+  'Records work offline. Device management, enrollment, audit, and quarantine need a connection.': [
+    'रिकॉर्ड ऑफ़लाइन काम करते हैं। डिवाइस प्रबंधन, पंजीकरण, ऑडिट और अलग रखे बदलावों के लिए कनेक्शन चाहिए।',
+    'ਰਿਕਾਰਡ ਆਫ਼ਲਾਈਨ ਕੰਮ ਕਰਦੇ ਹਨ। ਡਿਵਾਈਸ ਪ੍ਰਬੰਧਨ, ਰਜਿਸਟ੍ਰੇਸ਼ਨ, ਆਡਿਟ ਅਤੇ ਵੱਖ ਰੱਖੀਆਂ ਸੋਧਾਂ ਲਈ ਕਨੈਕਸ਼ਨ ਚਾਹੀਦਾ ਹੈ।',
+  ],
   'Try the resilience lab': ['लचीलेपन की प्रयोगशाला आज़माएँ', 'ਲਚਕੀਲੇਪਣ ਦੀ ਲੈਬ ਅਜ਼ਮਾਓ'],
   'Check this child’s record': ['इस बच्चे का रिकॉर्ड जाँचें', 'ਇਸ ਬੱਚੇ ਦਾ ਰਿਕਾਰਡ ਜਾਂਚੋ'],
   'Check the name and details to make sure this is the right child.': [
@@ -351,7 +368,7 @@ export const easyTranslations: Record<string, readonly [string, string]> = {
       'रोज़ के कामों के लिए बड़ा पाठ, सरल नाम और सहायता इस्तेमाल करें। मानक डैशबोर्ड पर लौटने के लिए बंद करें। आपके रिकॉर्ड वही रहते हैं।',
       'ਰੋਜ਼ਾਨਾ ਕੰਮਾਂ ਲਈ ਵੱਡਾ ਪਾਠ, ਸੌਖੇ ਨਾਮ ਅਤੇ ਮਦਦ ਵਰਤੋ। ਮਿਆਰੀ ਡੈਸ਼ਬੋਰਡ ਉੱਤੇ ਮੁੜਨ ਲਈ ਬੰਦ ਕਰੋ। ਤੁਹਾਡੇ ਰਿਕਾਰਡ ਉਹੀ ਰਹਿੰਦੇ ਹਨ।',
     ],
-  'Hub database and enrollment': ['हब डेटाबेस और पंजीकरण', 'ਹੱਬ ਡਾਟਾਬੇਸ ਅਤੇ ਰਜਿਸਟ੍ਰੇਸ਼ਨ'],
+  'Record database and enrollment': ['रिकॉर्ड डेटाबेस और पंजीकरण', 'ਰਿਕਾਰਡ ਡਾਟਾਬੇਸ ਅਤੇ ਰਜਿਸਟ੍ਰੇਸ਼ਨ'],
   'New child': ['नया बच्चा', 'ਨਵਾਂ ਬੱਚਾ'],
   'Attendance and assessments': ['हाज़िरी और मूल्यांकन', 'ਹਾਜ਼ਰੀ ਅਤੇ ਮੁਲਾਂਕਣ'],
   'Add health record': ['स्वास्थ्य रिकॉर्ड जोड़ें', 'ਸਿਹਤ ਰਿਕਾਰਡ ਜੋੜੋ'],

@@ -27,6 +27,8 @@ import { vault } from '../lib/vault';
 import { localDate } from '../lib/entry';
 import { displayRole } from '../lib/presentation';
 import { Badge, bytes, Empty, Notice, PageTitle, Panel } from '../components/UI';
+import { ChildCreateSchema, ChildUpdateSchema } from '../../../../packages/sync-core/src/domain';
+import type { Field } from '../../../../packages/sync-core/src/policy';
 
 type ChildRecord = Record<string, any> & { id: string };
 type RecordRow = { record: ChildRecord; version: string; updatedAt: number };
@@ -86,6 +88,9 @@ const dateTime = (value: number | null | undefined, locale?: string) =>
     ? new Date(value).toLocaleString(locale)
     : 'Not recorded';
 const errorText = (error: unknown) => {
+  const issues = (error as any)?.issues;
+  if (Array.isArray(issues))
+    return issues.map((issue: any) => [issue.path?.join('.'), issue.message].filter(Boolean).join(': ')).join('; ');
   const message = error instanceof Error ? error.message : String(error);
   return /failed to fetch|networkerror|load failed|network request/i.test(message)
     ? 'The village hub is unreachable. Your form is still here; reconnect and retry. Use the Children or Classroom page for offline entry.'
@@ -100,6 +105,46 @@ const normalized = (form: ChildForm) => ({
   phone: form.phone.trim(),
   consent: form.consent,
 });
+const deviceChildren = (query: string, offset: number, limit: number): ChildPage => {
+  const search = query.trim().toLocaleLowerCase(),
+    operations = vault.state?.ops ?? [],
+    records = Object.values(vault.view.entities)
+      .filter((record: any) => record.type === 'child')
+      .filter((record: any) =>
+        search
+          ? [record.id, record.name, record.class, record.village, record.guardian, record.phone].some(
+              (value) => String(value ?? '').toLocaleLowerCase().includes(search),
+            )
+          : true,
+      )
+      .map((record: any) => {
+        const recordOps = operations.filter((operation) => operation.entityId === record.id);
+        return {
+          record,
+          version: 'device/' + recordOps.length,
+          updatedAt: Math.max(0, ...recordOps.map((operation) => operation.hlc.physical)),
+        };
+      })
+      .sort((a, b) => String(a.record.name ?? a.record.id).localeCompare(String(b.record.name ?? b.record.id)));
+  return { records: records.slice(offset, offset + limit), total: records.length, offset, limit };
+};
+const deviceDatabaseInfo = (): DatabaseInfo => {
+  const view = vault.view,
+    state = vault.state!;
+  return {
+    schemaVersion: 1,
+    engine: 'Encrypted IndexedDB',
+    counts: {
+      operations: view.operations,
+      children: Object.values(view.entities).filter((record: any) => record.type === 'child').length,
+      records: Object.keys(view.entities).length,
+      conflicts: view.conflicts.length,
+      quarantined: state.quarantined.length,
+      devices: 1,
+    },
+    storageBytes: new Blob([JSON.stringify(state)]).size,
+  };
+};
 
 export default function HubAdmin() {
   const { t, locale } = useI18n();
@@ -153,16 +198,9 @@ export default function HubAdmin() {
     const load = async () => {
       try {
         if (tab === 'Database') {
-          const params = new URLSearchParams({
-            q: query,
-            limit: String(limit),
-            offset: String(offset),
-            includeDeleted: 'true',
-          });
-          const [database, children] = await Promise.all([hub('database'), hub('children?' + params)]);
           if (current) {
-            setInfo(database as DatabaseInfo);
-            setPage(children as ChildPage);
+            setInfo(deviceDatabaseInfo());
+            setPage(deviceChildren(query, offset, limit));
           }
         } else if (tab === 'Devices') {
           const result = await hub('devices');
@@ -216,14 +254,15 @@ export default function HubAdmin() {
       formPanel.current?.querySelector<HTMLInputElement>('input')?.focus({ preventScroll: true });
     });
   };
-  const afterSave = async (message: string) => {
+  const afterLocalSave = async (message: string) => {
     setSaved(t(message));
     notify(t(message));
     refresh();
+    if (!navigator.onLine) return;
     try {
       await sync();
     } catch {
-      setSaved(t(message) + ' ' + t('The device pull did not finish; retry in Sync center.'));
+      setSaved(t(message) + ' ' + t('The hub copy is still pending; retry in Sync center.'));
     }
   };
   const saveChild = async (event: FormEvent<HTMLFormElement>) => {
@@ -246,7 +285,11 @@ export default function HubAdmin() {
       if (editor === 'new' && !values.consent)
         throw new Error('Shared-record consent must be confirmed before creating a record.');
       if (editor === 'new') {
-        await mutate('create-child', 'children', values);
+        const record = ChildCreateSchema.parse(values),
+          id = 'child-' + newId();
+        await vault.writeMany(
+          Object.entries(record).map(([field, value]) => ({ entityId: id, field: field as Field, value })),
+        );
       } else {
         const changes: Record<string, unknown> = {};
         for (const [field, value] of Object.entries(values)) {
@@ -257,16 +300,18 @@ export default function HubAdmin() {
           setSaved('No changes to save.');
           return;
         }
-        await mutate(
-          'edit-child:' + editor.record.id + ':' + editor.version,
-          'children/' + encodeURIComponent(editor.record.id),
-          { baseVersion: editor.version, ...changes },
-          'PATCH',
+        const record = ChildUpdateSchema.parse(changes);
+        await vault.writeMany(
+          Object.entries(record).map(([field, value]) => ({
+            entityId: editor.record.id,
+            field: field as Field,
+            value,
+          })),
         );
       }
       setEditor(null);
       setForm(blankForm());
-      await afterSave('Saved at hub. A sync was requested for this device.');
+      await afterLocalSave('Saved in the encrypted database on this device.');
     } catch (error) {
       setError(errorText(error));
     } finally {
@@ -279,15 +324,17 @@ export default function HubAdmin() {
     setError('');
     setSaved('');
     try {
-      await mutate(
-        action + ':' + row.record.id + ':' + row.version,
-        `children/${encodeURIComponent(row.record.id)}/${action}`,
-        { baseVersion: row.version },
+      await vault.write(
+        row.record.id,
+        'deleted',
+        action === 'archive',
+        action === 'archive' ? 'delete' : 'resurrect',
+        'child',
       );
-      await afterSave(
+      await afterLocalSave(
         action === 'archive'
-          ? 'Archived at hub. The record and its history are retained.'
-          : 'Restored at hub. A sync was requested for this device.',
+          ? 'Archived on this device. The record and its history are retained.'
+          : 'Restored in the database on this device.',
       );
     } catch (error) {
       setError(errorText(error));
@@ -301,20 +348,17 @@ export default function HubAdmin() {
     <>
       <PageTitle
         eyebrow={t('Village hub / Administration')}
-        title={t('Hub database')}
-        description={t('Inspect durable server records, enter data directly, and manage enrolled devices.')}
+        title={t('Record database')}
+        description={t('Browse and edit the encrypted records stored on this device, even while offline.')}
         action={
           <button className="button outline" onClick={refresh} disabled={loading || Boolean(busy)}>
-            <RefreshCw size={16} className={loading ? 'spin' : ''} /> {t('Refresh hub')}
+            <RefreshCw size={16} className={loading ? 'spin' : ''} /> {t('Refresh records')}
           </button>
         }
       />
       <Notice>
-        {t('These controls write directly to the village hub and need a connection.')}{' '}
-        <Link to="/app/children">{t('Children')}</Link> {t('and')}{' '}
-        <Link to="/app/school">{t('Classroom')}</Link>{' '}
         {t(
-          'provide encrypted offline entry. “Saved at hub” means the server acknowledged the transaction; local sync status is shown separately.',
+          'The Database tab uses this device’s encrypted offline storage. Sync copies pending changes to the village hub. Devices, enrollment, audit, and quarantine still need a connection.',
         )}
       </Notice>
       <div className="tabs" role="tablist" aria-label={t('Hub administration')}>
@@ -354,7 +398,7 @@ export default function HubAdmin() {
                 <div className="metrics">
                   {[
                     ['Children', info.counts.children],
-                    ['Durable operations', info.counts.operations],
+                    ['Encrypted operations', info.counts.operations],
                     ['Unresolved conflicts', info.counts.conflicts],
                     ['Quarantined', info.counts.quarantined],
                   ].map(([label, value]) => (
@@ -392,10 +436,10 @@ export default function HubAdmin() {
               >
                 <Search size={16} />
                 <input
-                  aria-label={t('Search hub children')}
+                  aria-label={t('Search database children')}
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  placeholder={t('Search server records…')}
+                  placeholder={t('Search offline records…')}
                 />
                 <button className="button plain" type="submit">
                   {t('Search database')}
@@ -408,7 +452,7 @@ export default function HubAdmin() {
             {editor && (
               <section ref={formPanel}>
                 <Panel
-                  title={editor === 'new' ? 'New child at hub' : 'Edit child at hub'}
+                  title={editor === 'new' ? 'New child record' : 'Edit child record'}
                   aside={
                     <button
                       className="icon-button"
@@ -538,7 +582,7 @@ export default function HubAdmin() {
                           ) : (
                             <CheckCircle2 size={16} />
                           )}{' '}
-                          {t(busy === 'child' ? 'Saving…' : 'Save at hub')}
+                          {t(busy === 'child' ? 'Saving…' : 'Save on device')}
                         </button>
                         <button
                           className="button outline"
@@ -551,7 +595,7 @@ export default function HubAdmin() {
                       </div>
                       <p className="fine">
                         {t(
-                          'Ctrl+Enter saves. Retry a failed submission without changing its contents when the server acknowledgement is uncertain; the request key is retained until a successful response.',
+                          'Ctrl+Enter saves to the encrypted database on this device. Synchronize when a hub connection is available.',
                         )}
                       </p>
                     </form>
@@ -561,7 +605,7 @@ export default function HubAdmin() {
             )}
             <Panel
               title={
-                page ? t('{count} server child records', { count: page.total }) : t('Server child records')
+                page ? t('{count} offline child records', { count: page.total }) : t('Offline child records')
               }
               className="flush-panel"
               aside={
@@ -580,7 +624,7 @@ export default function HubAdmin() {
                     <tr>
                       <th>{t('Child')}</th>
                       <th>{t('Class / village')}</th>
-                      <th>{t('Updated at hub')}</th>
+                      <th>{t('Updated on device')}</th>
                       <th>{t('Status')}</th>
                       <th>{t('Actions')}</th>
                     </tr>
@@ -607,7 +651,7 @@ export default function HubAdmin() {
                               ? 'Needs review'
                               : row.record.deleted
                                 ? 'Archived'
-                                : 'At hub'}
+                                : 'On device'}
                           </Badge>
                         </td>
                         <td>
@@ -621,7 +665,7 @@ export default function HubAdmin() {
                                 {!row.record.deleted && (
                                   <button
                                     className="button outline small-button"
-                                    aria-label={t('Edit {name} at hub', {
+                                    aria-label={t('Edit {name} on device', {
                                       name: row.record.name ?? row.record.id,
                                     })}
                                     disabled={Boolean(busy)}
@@ -633,7 +677,9 @@ export default function HubAdmin() {
                                 <button
                                   className="button outline small-button"
                                   aria-label={t(
-                                    row.record.deleted ? 'Restore {name} at hub' : 'Archive {name} at hub',
+                                    row.record.deleted
+                                      ? 'Restore {name} on device'
+                                      : 'Archive {name} on device',
                                     { name: row.record.name ?? row.record.id },
                                   )}
                                   disabled={Boolean(busy)}
@@ -653,9 +699,9 @@ export default function HubAdmin() {
               </div>
               {!loading && page?.records.length === 0 && (
                 <Empty
-                  title={t('No server child records found')}
+                  title={t('No offline child records found')}
                   description={t(
-                    'Change the search or create a record at the hub. Offline-only entries arrive after synchronization.',
+                    'Change the search or create a record. New entries are encrypted and saved on this device.',
                   )}
                 />
               )}

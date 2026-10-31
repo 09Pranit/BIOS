@@ -221,13 +221,14 @@ test('consecutive registration, reviewed CSV import, global search and dark them
   await page.screenshot({ path: 'docs/child-dark.png', fullPage: true });
 });
 
-test('hub database entry is durable, versioned, auditable, and syncs into the offline child roster', async ({
+test('record database stays durable offline and syncs into the child roster', async ({
   page,
 }) => {
   const name = 'Hub Entry Example';
   await unlock(page, 'Database Administrator', 'Hub Admin');
+  await page.waitForFunction(() => Boolean(navigator.serviceWorker.controller));
   await navigate(page, '/admin');
-  await expect(page.getByRole('heading', { name: 'Hub database', exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Record database', exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'New database record', exact: true }).click();
   await page.getByLabel('Hub child name', { exact: true }).fill(name);
   await page.getByLabel('Hub date of birth', { exact: true }).fill('2019-04-15');
@@ -236,38 +237,40 @@ test('hub database entry is durable, versioned, auditable, and syncs into the of
   await page.getByLabel('Hub guardian', { exact: true }).fill('Example Guardian');
   await page.getByLabel('Hub phone', { exact: true }).fill('not-a-phone');
   await page.getByLabel('Hub shared-record consent', { exact: true }).check();
-  await page.getByRole('button', { name: 'Save at hub', exact: true }).click();
+  await page.getByRole('button', { name: 'Save on device', exact: true }).click();
   await expect(page.getByText(/phone: Enter a phone number/)).toBeVisible();
   await expect(page.getByLabel('Hub child name', { exact: true })).toHaveValue(name);
   await page.getByLabel('Hub phone', { exact: true }).fill('+91 98765 43210');
-  await page.getByRole('button', { name: 'Save at hub', exact: true }).click();
+  await page.getByRole('button', { name: 'Save on device', exact: true }).click();
   await expect(page.getByLabel('Hub child name', { exact: true })).toHaveCount(0);
-  await page.getByLabel('Search hub children', { exact: true }).fill(name);
+  await page.getByLabel('Search database children', { exact: true }).fill(name);
   await page.getByRole('button', { name: 'Search database', exact: true }).click();
   const row = page.getByRole('row').filter({ hasText: name });
   await expect(row).toBeVisible();
   await expect(row).toContainText('Class 2');
 
+  await page.context().setOffline(true);
   await page.reload();
   await page.getByLabel('Device PIN', { exact: true }).fill('123456');
   await page.getByRole('button', { name: 'Unlock workspace', exact: true }).click();
-  await expect(page.getByRole('heading', { name: 'Hub database', exact: true })).toBeVisible();
-  await page.getByLabel('Search hub children', { exact: true }).fill(name);
+  await expect(page.getByRole('heading', { name: 'Record database', exact: true })).toBeVisible();
+  await page.getByLabel('Search database children', { exact: true }).fill(name);
   await page.getByRole('button', { name: 'Search database', exact: true }).click();
   await expect(row).toBeVisible();
-  await page.getByRole('button', { name: `Edit ${name} at hub`, exact: true }).click();
+  await page.getByRole('button', { name: `Edit ${name} on device`, exact: true }).click();
   await page.getByLabel('Hub class', { exact: true }).fill('Class 4');
-  await page.getByRole('button', { name: 'Save at hub', exact: true }).click();
+  await page.getByRole('button', { name: 'Save on device', exact: true }).click();
   await expect(page.getByLabel('Hub child name', { exact: true })).toHaveCount(0);
   await expect(row).toContainText('Class 4');
 
-  await page.getByRole('button', { name: `Archive ${name} at hub`, exact: true }).click();
+  await page.getByRole('button', { name: `Archive ${name} on device`, exact: true }).click();
   await expect(row).toContainText('Archived');
-  const restore = page.getByRole('button', { name: `Restore ${name} at hub`, exact: true });
+  const restore = page.getByRole('button', { name: `Restore ${name} on device`, exact: true });
   await expect(restore).toBeEnabled();
   await restore.click();
-  await expect(page.getByRole('button', { name: `Archive ${name} at hub`, exact: true })).toBeEnabled();
-  await expect(row).toContainText('At hub');
+  await expect(page.getByRole('button', { name: `Archive ${name} on device`, exact: true })).toBeEnabled();
+  await expect(row).toContainText('On device');
+  await page.context().setOffline(false);
   await page.locator('.toast').waitFor({ state: 'hidden' });
   await page.screenshot({ path: 'docs/hub-database-desktop.png', fullPage: true });
 
@@ -279,7 +282,6 @@ test('hub database entry is durable, versioned, auditable, and syncs into the of
   await page.getByRole('tab', { name: 'Audit', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Hub audit events', exact: true })).toBeVisible();
   await expect(page.getByText('invitation-created', { exact: true }).first()).toBeVisible();
-  await expect(page.getByText('manual-command', { exact: true }).first()).toBeVisible();
 
   await navigate(page, '/app/sync');
   await expect(page.getByRole('button', { name: 'Sync with village hub', exact: true })).toBeEnabled();

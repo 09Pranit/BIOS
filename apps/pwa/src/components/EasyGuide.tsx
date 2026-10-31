@@ -102,13 +102,13 @@ export default function EasyGuide() {
     };
   else if (pathname === '/admin' || pathname.startsWith('/app/admin'))
     guide = {
-      title: 'Work with the hub database',
+      title: 'Use the offline record database',
       steps: [
-        'Connect to the village hub and find the record you need.',
-        'Create or edit the details, then choose Save at hub.',
-        'Wait for the hub confirmation. Synchronize this device to see the change in the offline list.',
+        'Find the encrypted record stored on this device.',
+        'Create or edit the details, then choose Save on device.',
+        'Synchronize when a village hub connection is available.',
       ],
-      note: 'This page needs a connection. Use Children, Classroom or Health records for offline entry.',
+      note: 'Records work offline. Device management, enrollment, audit, and quarantine need a connection.',
     };
   else if (pathname === '/lab')
     guide = {

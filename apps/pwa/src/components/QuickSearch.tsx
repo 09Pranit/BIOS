@@ -18,7 +18,7 @@ import { useKuka } from '../lib/context';
 import { matchesChild } from '../lib/entry';
 import { easyPageLabel } from '../lib/easy';
 const pages = [
-  { title: 'Hub database and enrollment', path: '/admin', Icon: Database },
+  { title: 'Record database and enrollment', path: '/admin', Icon: Database },
   { title: 'New child', path: '/app/children?new=1', Icon: FilePlus2 },
   { title: 'Attendance and assessments', path: '/app/school', Icon: GraduationCap },
   { title: 'Add health record', path: '/app/health', Icon: Heart },

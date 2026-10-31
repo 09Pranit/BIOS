@@ -6,6 +6,57 @@ export const adminTranslations: Record<string, readonly [string, string]> = {
   Audit: ['ऑडिट', 'ਆਡਿਟ'],
   Quarantine: ['अलग रखे बदलाव', 'ਵੱਖ ਰੱਖੇ ਬਦਲਾਅ'],
   'Not recorded': ['दर्ज नहीं है', 'ਦਰਜ ਨਹੀਂ ਹੈ'],
+  'Record database': ['रिकॉर्ड डेटाबेस', 'ਰਿਕਾਰਡ ਡਾਟਾਬੇਸ'],
+  'Browse and edit the encrypted records stored on this device, even while offline.': [
+    'ऑफ़लाइन रहते हुए भी इस डिवाइस पर सुरक्षित एन्क्रिप्टेड रिकॉर्ड देखें और बदलें।',
+    'ਆਫ਼ਲਾਈਨ ਹੋਣ ਵੇਲੇ ਵੀ ਇਸ ਡਿਵਾਈਸ ਉੱਤੇ ਸੁਰੱਖਿਅਤ ਇਨਕ੍ਰਿਪਟ ਕੀਤੇ ਰਿਕਾਰਡ ਵੇਖੋ ਅਤੇ ਸੋਧੋ।',
+  ],
+  'Refresh records': ['रिकॉर्ड ताज़ा करें', 'ਰਿਕਾਰਡ ਤਾਜ਼ਾ ਕਰੋ'],
+  'The Database tab uses this device’s encrypted offline storage. Sync copies pending changes to the village hub. Devices, enrollment, audit, and quarantine still need a connection.': [
+    'डेटाबेस टैब इस डिवाइस के एन्क्रिप्टेड ऑफ़लाइन भंडारण का उपयोग करता है। सिंक लंबित बदलावों को गाँव के हब पर कॉपी करता है। डिवाइस, पंजीकरण, ऑडिट और अलग रखे बदलावों के लिए अभी भी कनेक्शन चाहिए।',
+    'ਡਾਟਾਬੇਸ ਟੈਬ ਇਸ ਡਿਵਾਈਸ ਦੀ ਇਨਕ੍ਰਿਪਟ ਕੀਤੀ ਆਫ਼ਲਾਈਨ ਸਟੋਰੇਜ ਵਰਤਦੀ ਹੈ। ਸਿੰਕ ਬਾਕੀ ਸੋਧਾਂ ਨੂੰ ਪਿੰਡ ਦੇ ਹੱਬ ਉੱਤੇ ਕਾਪੀ ਕਰਦਾ ਹੈ। ਡਿਵਾਈਸ, ਰਜਿਸਟ੍ਰੇਸ਼ਨ, ਆਡਿਟ ਅਤੇ ਵੱਖ ਰੱਖੀਆਂ ਸੋਧਾਂ ਲਈ ਹਾਲੇ ਵੀ ਕਨੈਕਸ਼ਨ ਚਾਹੀਦਾ ਹੈ।',
+  ],
+  'Encrypted operations': ['एन्क्रिप्टेड कार्रवाइयाँ', 'ਇਨਕ੍ਰਿਪਟ ਕੀਤੀਆਂ ਕਾਰਵਾਈਆਂ'],
+  'Search database children': ['डेटाबेस में बच्चे खोजें', 'ਡਾਟਾਬੇਸ ਵਿੱਚ ਬੱਚੇ ਲੱਭੋ'],
+  'Search offline records…': ['ऑफ़लाइन रिकॉर्ड खोजें…', 'ਆਫ਼ਲਾਈਨ ਰਿਕਾਰਡ ਲੱਭੋ…'],
+  'New child record': ['बच्चे का नया रिकॉर्ड', 'ਬੱਚੇ ਦਾ ਨਵਾਂ ਰਿਕਾਰਡ'],
+  'Edit child record': ['बच्चे का रिकॉर्ड बदलें', 'ਬੱਚੇ ਦਾ ਰਿਕਾਰਡ ਸੋਧੋ'],
+  'Save on device': ['डिवाइस पर सहेजें', 'ਡਿਵਾਈਸ ਉੱਤੇ ਸੰਭਾਲੋ'],
+  'Saved in the encrypted database on this device.': [
+    'इस डिवाइस के एन्क्रिप्टेड डेटाबेस में सहेजा गया।',
+    'ਇਸ ਡਿਵਾਈਸ ਦੇ ਇਨਕ੍ਰਿਪਟ ਕੀਤੇ ਡਾਟਾਬੇਸ ਵਿੱਚ ਸੰਭਾਲਿਆ ਗਿਆ।',
+  ],
+  'The hub copy is still pending; retry in Sync center.': [
+    'हब पर कॉपी अभी लंबित है; सिंक केंद्र में फिर कोशिश करें।',
+    'ਹੱਬ ਉੱਤੇ ਕਾਪੀ ਹਾਲੇ ਬਾਕੀ ਹੈ; ਸਿੰਕ ਕੇਂਦਰ ਵਿੱਚ ਮੁੜ ਕੋਸ਼ਿਸ਼ ਕਰੋ।',
+  ],
+  'Archived on this device. The record and its history are retained.': [
+    'इस डिवाइस पर संग्रहित किया गया। रिकॉर्ड और उसका इतिहास सुरक्षित हैं।',
+    'ਇਸ ਡਿਵਾਈਸ ਉੱਤੇ ਪੁਰਾਲੇਖ ਵਿੱਚ ਰੱਖਿਆ ਗਿਆ। ਰਿਕਾਰਡ ਅਤੇ ਇਸ ਦਾ ਇਤਿਹਾਸ ਸੰਭਾਲੇ ਹੋਏ ਹਨ।',
+  ],
+  'Restored in the database on this device.': [
+    'इस डिवाइस के डेटाबेस में बहाल किया गया।',
+    'ਇਸ ਡਿਵਾਈਸ ਦੇ ਡਾਟਾਬੇਸ ਵਿੱਚ ਬਹਾਲ ਕੀਤਾ ਗਿਆ।',
+  ],
+  'Ctrl+Enter saves to the encrypted database on this device. Synchronize when a hub connection is available.': [
+    'Ctrl+Enter इस डिवाइस के एन्क्रिप्टेड डेटाबेस में सहेजता है। हब कनेक्शन मिलने पर सिंक करें।',
+    'Ctrl+Enter ਇਸ ਡਿਵਾਈਸ ਦੇ ਇਨਕ੍ਰਿਪਟ ਕੀਤੇ ਡਾਟਾਬੇਸ ਵਿੱਚ ਸੰਭਾਲਦਾ ਹੈ। ਹੱਬ ਕਨੈਕਸ਼ਨ ਮਿਲਣ ਉੱਤੇ ਸਿੰਕ ਕਰੋ।',
+  ],
+  '{count} offline child records': ['बच्चों के {count} ऑफ़लाइन रिकॉर्ड', 'ਬੱਚਿਆਂ ਦੇ {count} ਆਫ਼ਲਾਈਨ ਰਿਕਾਰਡ'],
+  'Offline child records': ['बच्चों के ऑफ़लाइन रिकॉर्ड', 'ਬੱਚਿਆਂ ਦੇ ਆਫ਼ਲਾਈਨ ਰਿਕਾਰਡ'],
+  'Updated on device': ['डिवाइस पर बदलाव का समय', 'ਡਿਵਾਈਸ ਉੱਤੇ ਸੋਧ ਦਾ ਸਮਾਂ'],
+  'On device': ['डिवाइस पर', 'ਡਿਵਾਈਸ ਉੱਤੇ'],
+  'Edit {name} on device': ['डिवाइस पर {name} बदलें', 'ਡਿਵਾਈਸ ਉੱਤੇ {name} ਸੋਧੋ'],
+  'Restore {name} on device': ['डिवाइस पर {name} बहाल करें', 'ਡਿਵਾਈਸ ਉੱਤੇ {name} ਬਹਾਲ ਕਰੋ'],
+  'Archive {name} on device': [
+    'डिवाइस पर {name} संग्रहित करें',
+    'ਡਿਵਾਈਸ ਉੱਤੇ {name} ਪੁਰਾਲੇਖ ਵਿੱਚ ਰੱਖੋ',
+  ],
+  'No offline child records found': ['बच्चों का कोई ऑफ़लाइन रिकॉर्ड नहीं मिला', 'ਬੱਚਿਆਂ ਦਾ ਕੋਈ ਆਫ਼ਲਾਈਨ ਰਿਕਾਰਡ ਨਹੀਂ ਮਿਲਿਆ'],
+  'Change the search or create a record. New entries are encrypted and saved on this device.': [
+    'खोज बदलें या नया रिकॉर्ड बनाएँ। नई प्रविष्टियाँ एन्क्रिप्ट होकर इस डिवाइस पर सहेजी जाती हैं।',
+    'ਖੋਜ ਬਦਲੋ ਜਾਂ ਨਵਾਂ ਰਿਕਾਰਡ ਬਣਾਓ। ਨਵੀਆਂ ਐਂਟਰੀਆਂ ਇਨਕ੍ਰਿਪਟ ਹੋ ਕੇ ਇਸ ਡਿਵਾਈਸ ਉੱਤੇ ਸੰਭਾਲੀਆਂ ਜਾਂਦੀਆਂ ਹਨ।',
+  ],
   'The village hub is unreachable. Your form is still here; reconnect and retry. Use the Children or Classroom page for offline entry.':
     [
       'गाँव के हब से संपर्क नहीं हो रहा। आपका फ़ॉर्म यहीं है; फिर जुड़ें और कोशिश करें। ऑफ़लाइन प्रविष्टि के लिए बच्चे या कक्षा पेज इस्तेमाल करें।',

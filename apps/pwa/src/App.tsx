@@ -602,7 +602,7 @@ function Shell() {
               </NavLink>
               <NavLink to="/admin">
                 <Activity size={16} />
-                <span>{t('Hub database')}</span>
+                <span>{t('Record database')}</span>
               </NavLink>
               <NavLink to="/app/settings">
                 <Settings size={16} />
