@@ -4,10 +4,10 @@ import cors from 'cors';
 import rateLimit from 'express-rate-limit';
 import { z } from 'zod';
 import { randomUUID, timingSafeEqual } from 'node:crypto';
-import { SyncSchema, OpSchema, SCHOOL } from '../../../packages/sync-core/src/index';
-import { HubStore, HttpError, hash } from './store';
-import { installBusinessRoutes } from './business';
-import { siteRobotsHeaders } from './site';
+import { SyncSchema, OpSchema, SCHOOL } from '../../../packages/sync-core/src/index.js';
+import { HubStore, HttpError, hash } from './store.js';
+import { installBusinessRoutes } from './business.js';
+import { siteRobotsHeaders } from './site.js';
 export function createApp(store: HubStore, demo = true) {
   const app = express();
   const proxyHops = Number(process.env.TRUST_PROXY_HOPS ?? 0);

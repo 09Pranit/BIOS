@@ -1,8 +1,8 @@
 import type { Express, Request } from 'express';
 import { createHash } from 'node:crypto';
 import { z } from 'zod';
-import { canonical, type Op } from '../../../packages/sync-core/src/index';
-import type { Field } from '../../../packages/sync-core/src/policy';
+import { canonical, type Op } from '../../../packages/sync-core/src/index.js';
+import type { Field } from '../../../packages/sync-core/src/policy.js';
 import {
   ChildCreateSchema,
   ChildUpdateSchema,
@@ -14,9 +14,9 @@ import {
   ResolutionSchema,
   PaginationSchema,
   CalendarDateSchema,
-} from '../../../packages/sync-core/src/domain';
-import { HubStore, HttpError } from './store';
-import { lessons } from '../../../packages/content/lessons';
+} from '../../../packages/sync-core/src/domain.js';
+import { HubStore, HttpError } from './store.js';
+import { lessons } from '../../../packages/content/lessons.js';
 
 type AuthRequest = Request & { device: any };
 type Change = {

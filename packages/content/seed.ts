@@ -1,4 +1,4 @@
-import { makeOp, type Op } from '../sync-core/src/index';
+import { makeOp, type Op } from '../sync-core/src/index.js';
 export const demoChildren = [
   ['Aarohi Kaur', '6', 'Dhareri', 'Class 1'],
   ['Kabir Singh', '7', 'Dhareri', 'Class 2'],

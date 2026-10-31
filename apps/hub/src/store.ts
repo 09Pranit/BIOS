@@ -20,9 +20,9 @@ import {
   causalOrder,
   type Op,
   type Conflict,
-} from '../../../packages/sync-core/src/index';
-import type { Field } from '../../../packages/sync-core/src/policy';
-import { migrateHub, HUB_SCHEMA_VERSION } from './migrations';
+} from '../../../packages/sync-core/src/index.js';
+import type { Field } from '../../../packages/sync-core/src/policy.js';
+import { migrateHub, HUB_SCHEMA_VERSION } from './migrations.js';
 
 export const hash = (value: string) => createHash('sha256').update(value).digest('hex');
 export class HttpError extends Error {

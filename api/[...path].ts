@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
-import { createApp } from '../apps/hub/src/app';
-import { HubStore } from '../apps/hub/src/store';
-import { seedOperations } from '../packages/content/seed';
+import { createApp } from '../apps/hub/src/app.js';
+import { HubStore } from '../apps/hub/src/store.js';
+import { seedOperations } from '../packages/content/seed.js';
 
 if (process.env.VERCEL) process.env.TRUST_PROXY_HOPS ??= '1';
 

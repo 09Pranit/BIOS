@@ -2,7 +2,7 @@ import express, { type Express, type RequestHandler, type Response } from 'expre
 import { existsSync, readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { basename, join, posix, resolve } from 'node:path';
-import { parseSiteUrl, publicRouteMeta } from '../../../packages/site/config';
+import { parseSiteUrl, publicRouteMeta } from '../../../packages/site/config.js';
 
 const privateRobots = 'noindex, nofollow, noarchive';
 const escapeHtml = (value: string) =>
