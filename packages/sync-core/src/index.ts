@@ -3,7 +3,8 @@ import { policies, reasonFor, type Field } from './policy.js';
 import { validateDomainOperation } from './domain.js';
 export { policies, reasonFor } from './policy.js';
 export const SCHOOL = 'kuka-demo-school';
-export const isSeedDevice = (id: string) => id === 'seed' || id === 'seed-doctor-v1';
+export const isSeedDevice = (id: string) =>
+  ['seed', 'seed-doctor-v1', 'seed-conflict-a-v1', 'seed-conflict-b-v1'].includes(id);
 export const HlcSchema = z.object({
   physical: z.number().int().nonnegative(),
   logical: z.number().int().nonnegative(),

@@ -2,7 +2,7 @@ import 'dotenv/config';
 import { resolve } from 'node:path';
 import { createApp } from './app';
 import { HubStore, loadHubKey } from './store';
-import { seedDoctorOperations, seedOperations } from '../../../packages/content/seed';
+import { seedConflictOperations, seedDoctorOperations, seedOperations } from '../../../packages/content/seed';
 import { databasePath } from './config';
 import { installSiteRoutes } from './site';
 import { accessAddresses, createHubServer, serverSettings } from './server';
@@ -13,7 +13,11 @@ const demo = process.env.DEMO_JUDGE_MODE !== 'false',
   path = databasePath();
 const store = new HubStore(path, loadHubKey(path, demo));
 if (demo && process.env.SEED_DEMO_DATA !== 'false')
-  store.ingest(store.all().length ? seedDoctorOperations() : seedOperations(), undefined, true);
+  store.ingest(
+    store.all().length ? [...seedDoctorOperations(), ...seedConflictOperations()] : seedOperations(),
+    undefined,
+    true,
+  );
 const app = createApp(store, demo);
 installSiteRoutes(app, { distDir: resolve('dist'), siteUrl: process.env.SITE_URL });
 const server = createHubServer(app, settings);

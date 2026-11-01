@@ -56,6 +56,8 @@ The Doctor’s register includes 12 fictional patients with realistic names, vis
 
 Demo hubs add these visits on startup, including existing demo databases. Repeated starts preserve existing records and do not duplicate visits. Set `SEED_DEMO_DATA=false` to skip seeding; controlled production mode also skips it. The Vercel deployment is an in-memory demonstration: server records and sessions can reset when its function restarts. Use the local SQLite hub for durable server storage.
 
+The Conflict inbox also includes three labeled synthetic assessment disagreements linked to the existing Aarohi Kaur, Kabir Singh and Meher Kaur records. Names are read from the student records. Each example keeps both competing scores until a reviewer chooses or enters a value; restarting a persistent hub does not reopen a resolved example.
+
 ### Forgotten device PIN
 
 There is no default PIN or PIN-reset backdoor. On the unlock screen, **Forgot PIN?** opens recovery without clearing local records:

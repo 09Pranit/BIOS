@@ -62,6 +62,33 @@ export const demoChildren = [
   ['Pihu Sharma', '6', 'Daun Kalan', 'Class 1'],
   ['Fateh Singh', '9', 'Lang', 'Class 4'],
 ];
+export function seedConflictOperations(): Op[] {
+  // Separate simulated devices keep the two accounts concurrent and stable on restart.
+  return ['a', 'b'].flatMap((device, side) => {
+    const log: Op[] = [];
+    [
+      [62, 78],
+      [71, 85],
+      [54, 69],
+    ].forEach((scores, i) => {
+      log.push(
+        makeOp(
+          log,
+          `seed-conflict-${device}-v1`,
+          side === 0 ? 'Synthetic demo · classroom tablet' : 'Synthetic demo · school register',
+          `child-${String(i + 1).padStart(3, '0')}:demo-conflict-maths:attempt-1`,
+          'score',
+          scores[side],
+          'set',
+          'assessment',
+          1793448000000,
+        ),
+      );
+    });
+    return log;
+  });
+}
+
 export function seedOperations(): Op[] {
   let log: Op[] = [];
   const date = '2026-10-31';
@@ -105,5 +132,5 @@ export function seedOperations(): Op[] {
       );
     if (i < 8) add(`${id}:math-foundations:attempt-1`, 'score', 55 + i * 5, 'set', 'assessment');
   });
-  return [...log, ...seedDoctorOperations()];
+  return [...log, ...seedDoctorOperations(), ...seedConflictOperations()];
 }

@@ -382,9 +382,13 @@ export function Conflicts() {
         conflicts.map((c) => (
           <Panel
             key={c.id}
-            title={`${vault.view.entities[c.entityId]?.name ?? c.entityId} · ${language === 'en' ? c.field : t(fieldLabels[c.field] ?? c.field)}`}
+            title={`${vault.view.entities[c.entityId]?.name ?? vault.view.entities[c.entityId.split(':')[0]]?.name ?? c.entityId} · ${language === 'en' ? c.field : t(fieldLabels[c.field] ?? c.field)}`}
+            translateTitle={false}
             aside={<Badge tone="coral">{t('Human review required')}</Badge>}
           >
+            {c.versions.some((op) => ['seed-conflict-a-v1', 'seed-conflict-b-v1'].includes(op.deviceId)) && (
+              <p className="eyebrow">{t('Synthetic demo conflict')}</p>
+            )}
             <p className="conflict-reason">
               {t(
                 c.field === 'deleted'

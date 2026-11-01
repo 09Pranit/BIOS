@@ -11,7 +11,7 @@ async function unlock(page: Page, name: string, role?: string) {
 async function navigate(page: Page, path: string) {
   if ((page.viewportSize()?.width ?? 1440) < 700)
     await page.getByRole('button', { name: 'Open navigation' }).click();
-  await page.locator(`.sidebar nav a[href="${path}"]`).click();
+  await page.locator(`.sidebar nav a[href="${path.split('#')[0]}"]`).click();
 }
 test('two independent browser contexts: offline entry, reload, concurrent conflict, human resolution, convergence', async ({
   browser,
@@ -48,10 +48,10 @@ test('two independent browser contexts: offline entry, reload, concurrent confli
     await expect(page.locator('.connection-pill')).not.toContainText('Syncing', { timeout: 30000 });
   }
   await navigate(a, '/app/conflicts');
-  await expect(a.getByRole('heading', { name: /child-001.*attendance/ })).toBeVisible();
+  await expect(a.getByRole('heading', { name: /Aarohi Kaur.*attendance/ })).toBeVisible();
   const conflict = a
     .locator('.panel')
-    .filter({ has: a.getByRole('heading', { name: /child-001.*attendance/ }) });
+    .filter({ has: a.getByRole('heading', { name: /Aarohi Kaur.*attendance/ }) });
   await expect(conflict.locator('.conflict-versions article')).toHaveCount(2);
   await conflict.getByRole('button', { name: 'Keep this account' }).first().click();
   for (const page of [a, b, a]) {
@@ -61,7 +61,7 @@ test('two independent browser contexts: offline entry, reload, concurrent confli
     await expect(page.locator('.connection-pill')).not.toContainText('Syncing', { timeout: 30000 });
   }
   await navigate(b, '/app/conflicts');
-  await expect(b.getByRole('heading', { name: 'No unresolved conflicts' })).toBeVisible();
+  await expect(b.getByRole('heading', { name: /Aarohi Kaur.*attendance/ })).toHaveCount(0);
   await navigate(a, '/app/today');
   await a.evaluate(() => window.scrollTo(0, 0));
   await a.getByRole('status').waitFor({ state: 'hidden' });
