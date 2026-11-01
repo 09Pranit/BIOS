@@ -56,7 +56,7 @@ The Doctor’s register includes 12 fictional patients with realistic names, vis
 
 Demo hubs add these visits on startup, including existing demo databases. Repeated starts preserve existing records and do not duplicate visits. Set `SEED_DEMO_DATA=false` to skip seeding; controlled production mode also skips it. The Vercel deployment is an in-memory demonstration: server records and sessions can reset when its function restarts. Use the local SQLite hub for durable server storage.
 
-The Conflict inbox also includes three labeled synthetic assessment disagreements linked to the existing Aarohi Kaur, Kabir Singh and Meher Kaur records. Names are read from the student records. Each example keeps both competing scores until a reviewer chooses or enters a value; restarting a persistent hub does not reopen a resolved example.
+The Conflict inbox also includes three labeled synthetic assessment disagreements linked to the existing Aarohi Kaur, Kabir Singh and Meher Kaur records. Names are read from the student records. Each example keeps both competing scores until a reviewer chooses or enters a value; restarting a persistent hub does not reopen a resolved example. Existing demo browsers install these bundled examples locally after the health endpoint confirms demo mode, even when their sync session is expired. This preserves pending writes, credentials, drafts and the last-sync cursor; it does not repair the expired session or report unsynchronized records as backed up.
 
 ### Forgotten device PIN
 

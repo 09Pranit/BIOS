@@ -21,11 +21,13 @@ import {
   frontier,
   signOperation,
   isSeedDevice,
+  SCHOOL,
   type Op,
 } from '../../../../packages/sync-core/src/index';
 import type { Field } from '../../../../packages/sync-core/src/policy';
 import { getActiveWorkspaceName, rememberActiveWorkspace } from './workspaces';
 import { timeoutSignal } from './platform';
+import { seedConflictOperations } from '../../../../packages/content/seed';
 export type Identity = {
   deviceId: string;
   actorId: string;
@@ -324,6 +326,30 @@ export class Vault {
           state.entryDrafts[key] = value;
         }
       }
+    });
+  }
+  /** Install only the bundled demo examples; never acknowledge or replace local work. */
+  async ensureDemoConflicts(demo: boolean) {
+    if (
+      demo !== true ||
+      this.state?.identity.schoolId !== SCHOOL ||
+      !this.state.ops.some((op) => op.deviceId === 'seed')
+    )
+      return 0;
+    const examples = seedConflictOperations();
+    if (examples.every((example) => this.state!.ops.some((op) => op.opId === example.opId))) return 0;
+    return this.change((state) => {
+      const records = materialize(state.ops).entities;
+      if (
+        examples.some((op) => {
+          const child = records[op.entityId.split(':')[0]];
+          return child?.type !== 'child' || !child.name || child.deleted || child.tags?.includes('patient');
+        })
+      )
+        return 0;
+      const added = examples.filter((example) => !state.ops.some((op) => op.opId === example.opId)).length;
+      state.ops = union(state.ops, examples);
+      return added;
     });
   }
   async renewSession() {

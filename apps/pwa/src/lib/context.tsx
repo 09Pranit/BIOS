@@ -46,6 +46,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       try {
         const r = await fetch('/api/health', { signal: timeoutSignal(4000) });
         if (!r.ok) throw new Error();
+        const info = await r.json();
+        if (await vault.ensureDemoConflicts(info.demo === true)) refresh();
         await sync();
       } catch {
         setStatus('Offline');
@@ -63,7 +65,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       window.removeEventListener('focus', check);
       window.removeEventListener('offline', offline);
     };
-  }, [unlocked, sync]);
+  }, [unlocked, sync, refresh]);
   useEffect(() => {
     if (!unlocked) return;
     let timer: ReturnType<typeof setTimeout>;

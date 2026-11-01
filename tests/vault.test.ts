@@ -6,6 +6,7 @@ import { randomBytes } from 'node:crypto';
 import { Vault } from '../apps/pwa/src/lib/vault';
 import { HubStore } from '../apps/hub/src/store';
 import { createApp } from '../apps/hub/src/app';
+import { seedOperations, seedConflictOperations } from '../packages/content/seed';
 import { digest, union, makeOp, signOperation, materialize } from '../packages/sync-core/src/index';
 let store: HubStore,
   server: Server,
@@ -32,6 +33,43 @@ async function device(name: string) {
   return v;
 }
 describe('encrypted local durability and real HTTP synchronization', () => {
+  it('adds demo conflicts to an existing failed-sync workspace without changing 35 pending writes', async () => {
+    store.ingest(
+      seedOperations().filter((op) => op.deviceId === 'seed'),
+      undefined,
+      true,
+    );
+    const a = await device('Existing demo');
+    await a.sync();
+    for (let i = 0; i < 35; i++) await a.write(`local-score-${i}`, 'score', i, 'set', 'assessment');
+    await a.saveEntryDrafts({ 'unfinished-note': 'Preserve my draft' });
+    const pending = structuredClone(a.pending);
+    const before = structuredClone(a.state!);
+    store.db.exec('DELETE FROM devices');
+    await expect(a.sync()).rejects.toThrow('Device session expired');
+    expect(await a.ensureDemoConflicts(false)).toBe(0);
+    expect(await a.ensureDemoConflicts(true)).toBe(6);
+    expect(await a.ensureDemoConflicts(true)).toBe(0);
+    expect(a.pending).toEqual(pending);
+    expect(a.state!.identity).toEqual(before.identity);
+    expect(a.state!.acked).toEqual(before.acked);
+    expect(a.state!.cursor).toBe(before.cursor);
+    expect(a.state!.lastSync).toBe(before.lastSync);
+    expect(a.state!.entryDrafts).toEqual(before.entryDrafts);
+    expect(a.state!.ops.filter((op) => !op.deviceId.startsWith('seed-conflict-'))).toEqual(before.ops);
+    a.lock();
+    await a.unlock('123456');
+    expect(a.pending).toEqual(pending);
+    expect(a.view.conflicts).toHaveLength(3);
+    const conflict = a.view.conflicts[0];
+    await a.write(conflict.entityId, 'score', 80, 'resolve', 'assessment');
+    expect(await a.ensureDemoConflicts(true)).toBe(0);
+    expect(a.view.conflicts).toHaveLength(2);
+    expect(a.pending).toHaveLength(36);
+    expect(a.state!.ops.filter((op) => op.deviceId.startsWith('seed-conflict-'))).toEqual(
+      seedConflictOperations(),
+    );
+  });
   it('keeps doctor entries separate from students and preserves concurrent visits through reload and sync', async () => {
     const a = await device('Doctor A');
     const b = await device('Doctor B');
