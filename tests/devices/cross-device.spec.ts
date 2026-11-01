@@ -6,7 +6,7 @@ async function enroll(page: Page) {
   await page.getByLabel('Choose a device PIN', { exact: true }).fill('123456');
   await page.getByRole('button', { name: 'Create demo workspace', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Overview', exact: true })).toBeVisible();
-  await expect(page.locator('.connection-pill')).toContainText(/Synced|Needs attention/, { timeout: 30000 });
+  await expect(page.locator('.connection-pill')).toContainText('Synced', { timeout: 30000 });
 }
 async function navigate(page: Page, path: string) {
   if ((page.viewportSize()?.width ?? 1440) <= 700)

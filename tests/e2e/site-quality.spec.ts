@@ -134,11 +134,5 @@ for (const [name, viewport] of [
     await expect(page.locator('.connection-pill')).toContainText('Synced', { timeout: 30000 });
     await page.locator('.toast').waitFor({ state: 'hidden' });
     await scan();
-    await page.getByRole('switch', { name: 'Easy mode', exact: true }).click();
-    await expect(
-      page.getByRole('heading', { name: 'What would you like to do?', exact: true }),
-    ).toBeVisible();
-    await page.locator('.toast').waitFor({ state: 'hidden' });
-    await scan();
   });
 }

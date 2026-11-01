@@ -2,7 +2,6 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, t
 import { shellTranslations } from '../locales/shell';
 import { entryTranslations } from '../locales/entry';
 import { workspaceTranslations } from '../locales/workspace';
-import { easyTranslations } from '../locales/easy';
 import { lessonTranslations } from '../locales/lessons';
 import { editorialTranslations } from '../locales/editorial';
 import { backupTranslations } from '../locales/backup';
@@ -19,7 +18,6 @@ const messages: Record<string, readonly [string, string]> = {
   ...shellTranslations,
   ...entryTranslations,
   ...workspaceTranslations,
-  ...easyTranslations,
   ...lessonTranslations,
   ...editorialTranslations,
   ...backupTranslations,

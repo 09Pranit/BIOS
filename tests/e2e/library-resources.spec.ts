@@ -124,14 +124,8 @@ for (const [name, viewport] of [
     await expect(cards).toHaveCount(total);
     await loadedPosters(page);
     await scan(page);
-    await page.getByRole('switch', { name: 'Easy mode', exact: true }).click();
-    await page.locator('.toast').waitFor({ state: 'hidden' });
-    await scan(page);
     await page.getByRole('button', { name: 'Use light theme', exact: true }).click();
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
-    await scan(page);
-    await page.getByRole('switch', { name: 'Easy mode', exact: true }).click();
-    await page.locator('.toast').waitFor({ state: 'hidden' });
     await scan(page);
     if (name === 'desktop') await page.getByRole('button', { name: 'Use dark theme', exact: true }).click();
     await page.evaluate(() => scrollTo(0, 0));

@@ -6,7 +6,7 @@ async function enroll(page: Page, actor: string) {
   await page.getByLabel('Choose a device PIN', { exact: true }).fill('123456');
   await page.getByRole('button', { name: 'Create demo workspace', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Overview', exact: true })).toBeVisible();
-  await expect(page.locator('.connection-pill')).toContainText(/Synced|Needs attention/, {
+  await expect(page.locator('.connection-pill')).toContainText('Synced', {
     timeout: 30000,
   });
   await page.waitForFunction(() => Boolean(navigator.serviceWorker.controller));
@@ -17,12 +17,12 @@ async function navigate(page: Page, path: string) {
 }
 
 async function sync(page: Page) {
-  await navigate(page, '/app/sync');
-  const button = page.getByRole('button', { name: 'Sync with village hub', exact: true });
+  await navigate(page, '/app/settings#sync');
+  const button = page.getByRole('button', { name: 'Sync now', exact: true });
   await expect(button).toBeEnabled();
   await button.click();
   await expect(button).toBeEnabled({ timeout: 30000 });
-  await expect(page.locator('.connection-pill')).toContainText(/Synced|Needs attention/);
+  await expect(page.locator('.connection-pill')).toContainText('Synced');
   await expect(page.getByText('Quarantined operations: 0', { exact: true })).toBeVisible();
 }
 

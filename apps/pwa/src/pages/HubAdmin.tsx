@@ -78,7 +78,7 @@ const blankForm = (): ChildForm => ({
   name: '',
   dob: '',
   class: 'Class 1',
-  village: 'Dhareri',
+  village: 'Daun Kalan',
   guardian: '',
   phone: '',
   consent: false,
@@ -93,7 +93,7 @@ const errorText = (error: unknown) => {
     return issues.map((issue: any) => [issue.path?.join('.'), issue.message].filter(Boolean).join(': ')).join('; ');
   const message = error instanceof Error ? error.message : String(error);
   return /failed to fetch|networkerror|load failed|network request/i.test(message)
-    ? 'The village hub is unreachable. Your form is still here; reconnect and retry. Use the Children or Classroom page for offline entry.'
+    ? 'The remote service is unreachable. Your form is still here; reconnect and retry. Use the Children or Classroom page for offline entry.'
     : message;
 };
 const normalized = (form: ChildForm) => ({
@@ -347,7 +347,7 @@ export default function HubAdmin() {
   return (
     <>
       <PageTitle
-        eyebrow={t('Village hub / Administration')}
+        eyebrow={t('Administration')}
         title={t('Record database')}
         description={t('Browse and edit the encrypted records stored on this device, even while offline.')}
         action={
@@ -358,7 +358,7 @@ export default function HubAdmin() {
       />
       <Notice>
         {t(
-          'The Database tab uses this device’s encrypted offline storage. Sync copies pending changes to the village hub. Devices, enrollment, audit, and quarantine still need a connection.',
+          'The Database tab uses this device’s encrypted offline storage. Sync copies pending changes to remote backup. Devices, enrollment, audit, and quarantine still need a connection.',
         )}
       </Notice>
       <div className="tabs" role="tablist" aria-label={t('Hub administration')}>

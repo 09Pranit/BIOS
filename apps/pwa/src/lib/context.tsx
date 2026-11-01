@@ -4,13 +4,6 @@ import { useI18n } from './i18n';
 import { timeoutSignal } from './platform';
 export const AppContext = createContext<any>(null);
 export const useKuka = () => useContext(AppContext);
-function savedEasyMode() {
-  try {
-    return localStorage.getItem('smriva-easy-mode') === 'true';
-  } catch {
-    return false;
-  }
-}
 export function AppProvider({ children }: { children: ReactNode }) {
   const { language: lang, setLanguage: setLang } = useI18n();
   const [version, setVersion] = useState(0),
@@ -18,18 +11,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
     [status, setStatus] = useState('Connecting'),
     [error, setError] = useState(''),
     [toast, setToast] = useState(''),
-    [lens, setLens] = useState(false),
-    [easyMode, setEasyMode] = useState(savedEasyMode),
     [offlineReady, setOfflineReady] = useState(false),
     [offlineUnavailable, setOfflineUnavailable] = useState(false);
-  useEffect(() => {
-    document.documentElement.dataset.mode = easyMode ? 'easy' : 'standard';
-    try {
-      localStorage.setItem('smriva-easy-mode', String(easyMode));
-    } catch {
-      /* Keep the preference for this session when storage is restricted. */
-    }
-  }, [easyMode]);
   const syncing = useRef(false),
     toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null),
     refresh = useCallback(() => {
@@ -49,12 +32,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
     try {
       await vault.sync();
       refresh();
-      setStatus(
-        vault.view.conflicts.length || vault.state?.quarantined.length ? 'Needs attention' : 'Synced',
-      );
+      setStatus('Synced');
     } catch (e: any) {
       setError(e.message);
-      setStatus(e.message?.includes('fetch') || !navigator.onLine ? 'Offline' : 'Needs attention');
+      setStatus(e.message?.includes('fetch') || !navigator.onLine ? 'Offline' : 'Sync failed');
     } finally {
       syncing.current = false;
     }
@@ -83,19 +64,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
       window.removeEventListener('offline', offline);
     };
   }, [unlocked, sync]);
-  useEffect(() => {
-    if (easyMode) return;
-    const key = (e: KeyboardEvent) => {
-      if (e.defaultPrevented || e.ctrlKey || e.metaKey || e.altKey) return;
-      if (
-        e.key.toLowerCase() === 'l' &&
-        !['INPUT', 'TEXTAREA', 'SELECT'].includes((e.target as HTMLElement).tagName)
-      )
-        setLens((v) => !v);
-    };
-    window.addEventListener('keydown', key);
-    return () => window.removeEventListener('keydown', key);
-  }, [easyMode]);
   useEffect(() => {
     if (!unlocked) return;
     let timer: ReturnType<typeof setTimeout>;
@@ -170,12 +138,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setError,
         toast,
         notify,
-        lens: easyMode ? false : lens,
-        setLens,
         lang,
         setLang,
-        easyMode,
-        setEasyMode,
         offlineReady,
         offlineUnavailable,
         write,

@@ -3,7 +3,6 @@ import { formatDisplayDate, languages, translate, validLanguage } from '../apps/
 import { shellTranslations } from '../apps/pwa/src/locales/shell';
 import { entryTranslations } from '../apps/pwa/src/locales/entry';
 import { workspaceTranslations } from '../apps/pwa/src/locales/workspace';
-import { easyTranslations } from '../apps/pwa/src/locales/easy';
 import { lessonTranslations } from '../apps/pwa/src/locales/lessons';
 import { editorialTranslations } from '../apps/pwa/src/locales/editorial';
 import { backupTranslations } from '../apps/pwa/src/locales/backup';
@@ -46,7 +45,6 @@ describe('offline interface languages', () => {
       ...shellTranslations,
       ...entryTranslations,
       ...workspaceTranslations,
-      ...easyTranslations,
       ...lessonTranslations,
       ...editorialTranslations,
       ...backupTranslations,

@@ -26,7 +26,6 @@ import {
 } from 'lucide-react';
 import { formatDisplayDate, languages, useI18n, type Language } from '../lib/i18n';
 import { useKuka } from '../lib/context';
-import EasyDashboard from '../components/EasyDashboard';
 import { displayRole } from '../lib/presentation';
 import { vault } from '../lib/vault';
 import { newId } from '../lib/platform';
@@ -80,13 +79,12 @@ function SearchField({
   label?: string;
 }) {
   const { t, locale } = useI18n();
-  const { easyMode } = useKuka();
   return (
     <label className="search-field">
       <Search size={16} />
       <input
         aria-label={t(label)}
-        placeholder={easyMode ? t('Type a name or village…') : t('Search name, ID, village…')}
+        placeholder={t('Search name, ID, village…')}
         value={value}
         onChange={(e) => onChange(e.target.value)}
       />
@@ -117,7 +115,7 @@ function ClassFilter({ value, onChange }: { value: string; onChange: (value: str
 }
 export function Today() {
   const { t, locale } = useI18n();
-  const { version, status, lens, easyMode } = useKuka(),
+  const { version, status } = useKuka(),
     children = childrenOnDevice(),
     s = vault.state!,
     entities = vault.view.entities,
@@ -130,11 +128,10 @@ export function Today() {
     .sort(compareOpsByClock)
     .reverse()
     .slice(0, 8);
-  if (easyMode) return <EasyDashboard />;
   return (
     <>
       <PageTitle
-        eyebrow={t('Dhareri village hub')}
+        eyebrow={t('Smriva workspace')}
         title={t('Overview')}
         description={t('Attendance, child records and health visits for this hub.')}
         action={
@@ -199,7 +196,7 @@ export function Today() {
                 </span>
                 <ChevronRight size={16} />
               </Link>
-              <Link to="/app/sync">
+              <Link to="/app/settings#sync">
                 <RefreshCw size={18} />
                 <span>
                   <strong>{t('Pending sync')}</strong>
@@ -213,7 +210,7 @@ export function Today() {
           <Panel
             title={t('Recent changes')}
             aside={
-              <Link className="text-link" to="/app/sync">
+              <Link className="text-link" to="/app/settings#sync">
                 {t('View operation ledger')}{' '}
               </Link>
             }
@@ -315,10 +312,6 @@ export function Today() {
             <h2>{t('Workspace details')}</h2>
             <dl className="detail-list">
               <div>
-                <dt>{t('Hub')}</dt>
-                <dd>Dhareri</dd>
-              </div>
-              <div>
                 <dt>{t('Children')}</dt>
                 <dd>{children.length}</dd>
               </div>
@@ -376,18 +369,6 @@ export function Today() {
           </section>
         </aside>
       </div>
-      {lens && (
-        <Panel title={t('System details')}>
-          <code className="code-line">
-            {JSON.stringify({
-              operations: s.ops.length,
-              pending: vault.pending.length,
-              cursor: s.cursor,
-              conflicts: conflicts.length,
-            })}
-          </code>
-        </Panel>
-      )}
     </>
   );
 }
@@ -437,7 +418,7 @@ function RosterImport({ close }: { close: () => void }) {
           onClick={() =>
             downloadCSV('smriva-roster-template.csv', [
               ['name', 'dob', 'class', 'village', 'guardian', 'consent'],
-              ['Example Child', '2019-04-15', 'Class 1', 'Dhareri', 'Example Guardian', 'true'],
+              ['Example Child', '2019-04-15', 'Class 1', 'Daun Kalan', 'Example Guardian', 'true'],
             ])
           }
         >
@@ -543,7 +524,7 @@ function RosterImport({ close }: { close: () => void }) {
 }
 export function Children() {
   const { t, locale, language } = useI18n();
-  const { version, easyMode } = useKuka(),
+  const { version } = useKuka(),
     children = childrenOnDevice(),
     [search, setSearch] = useState(''),
     [grade, setGrade] = useState('All classes'),
@@ -582,17 +563,13 @@ export function Children() {
   return (
     <>
       <PageTitle
-        eyebrow={t('Dhareri village hub')}
+        eyebrow={t('Smriva workspace')}
         title={t('Children')}
-        description={
-          easyMode
-            ? t('Find a child by name, or choose New child to add their details.')
-            : t('Search, register, import, and correct child records.')
-        }
+        description={t('Search, register, import, and correct child records.')}
         action={
           <div className="button-row no-margin">
             <button className="button outline" onClick={() => setImporting(true)}>
-              <Upload size={16} /> {easyMode ? t('Add a list from a file') : t('Import CSV')}
+              <Upload size={16} /> {t('Import CSV')}
             </button>
             <details className="new-menu">
               <summary className="button primary">
@@ -637,7 +614,7 @@ export function Children() {
             ])
           }
         >
-          <Download size={16} /> {easyMode ? t('Download list') : t('Export')}
+          <Download size={16} /> {t('Export')}
         </button>
       </div>
       <Panel
@@ -717,7 +694,7 @@ export function Children() {
 }
 export function School() {
   const { t, locale } = useI18n();
-  const { version, write, refresh, notify, easyMode } = useKuka(),
+  const { version, write, refresh, notify } = useKuka(),
     children = childrenOnDevice(),
     [params, setParams] = useSearchParams(),
     tab = params.get('tab') === 'assessments' ? 'Assessments' : 'Attendance',
@@ -875,13 +852,9 @@ export function School() {
   return (
     <>
       <PageTitle
-        eyebrow={t('Dhareri village hub')}
+        eyebrow={t('Smriva workspace')}
         title={t('Classroom')}
-        description={
-          easyMode
-            ? t('Choose a class and fill in the rows. Each saved entry stays on this device, even offline.')
-            : t('Enter attendance and scores. Changes commit to encrypted storage on this device.')
-        }
+        description={t('Enter attendance and scores. Changes commit to encrypted storage on this device.')}
       />
       <div className="tabs">
         {['Attendance', 'Assessments'].map((tabName) => (
@@ -938,15 +911,9 @@ export function School() {
           </>
         )}
         <span className="fine no-margin">
-          {easyMode
-            ? tab === 'Attendance'
-              ? t('Choose a status for each child. Each choice saves immediately.')
-              : t(
-                  'Enter a score from 0 to 100, then select another row to save. Unfinished entries stay as drafts.',
-                )
-            : tab === 'Attendance'
-              ? t('P / A / L / E on a focused row; ↑ ↓ to navigate.')
-              : t('Enter saves and moves down. Unfinished inputs are kept as encrypted local drafts.')}
+          {tab === 'Attendance'
+            ? t('P / A / L / E on a focused row; ↑ ↓ to navigate.')
+            : t('Enter saves and moves down. Unfinished inputs are kept as encrypted local drafts.')}
         </span>
       </div>
       {tab === 'Attendance' && (
@@ -1234,7 +1201,7 @@ export function School() {
 }
 export function Health() {
   const { t, locale } = useI18n();
-  const { write, version, easyMode } = useKuka(),
+  const { write, version } = useKuka(),
     children = childrenOnDevice(),
     [search, setSearch] = useState(''),
     [child, setChild] = useState(''),
@@ -1259,13 +1226,9 @@ export function Health() {
   return (
     <>
       <PageTitle
-        eyebrow={t('Dhareri village hub')}
+        eyebrow={t('Smriva workspace')}
         title={t('Health records')}
-        description={
-          easyMode
-            ? t('Choose the child, fill in the visit details, then select Save health record.')
-            : t('Select a child, enter the event, and save locally. Every event is retained separately.')
-        }
+        description={t('Select a child, enter the event, and save locally. Every event is retained separately.')}
       />
       <div className="health-entry-layout">
         <Panel title={t('New health record')}>
@@ -1318,9 +1281,7 @@ export function Health() {
               {t('Find a child')}{' '}
               <input
                 aria-label={t('Find child for health record')}
-                placeholder={
-                  easyMode ? t('Type the child’s name or village…') : t('Name, internal ID, village…')
-                }
+                placeholder={t('Name, internal ID, village…')}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
@@ -1388,11 +1349,6 @@ export function Health() {
                 </div>
                 <label>
                   {t('MUAC (cm, optional)')} <input name="muac" type="number" step="0.1" min="3" max="60" />
-                  {easyMode && (
-                    <span className="fine no-margin">
-                      {t('Mid-upper arm circumference, in centimetres. Leave blank if not measured.')}{' '}
-                    </span>
-                  )}
                 </label>
               </>
             ) : (

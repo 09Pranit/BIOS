@@ -29,7 +29,6 @@ export const entryTranslations: Record<string, readonly [string, string]> = {
   'Class 3': ['कक्षा 3', 'ਜਮਾਤ 3'],
   'Class 4': ['कक्षा 4', 'ਜਮਾਤ 4'],
   'Class 5': ['कक्षा 5', 'ਜਮਾਤ 5'],
-  'Dhareri village hub': ['धरेड़ी ग्राम केंद्र', 'ਧਰੇੜੀ ਪਿੰਡ ਕੇਂਦਰ'],
   Overview: ['एक नज़र', 'ਸੰਖੇਪ ਜਾਣਕਾਰੀ'],
   'Records, data entry, and sync status for this workspace.': [
     'इस कार्यक्षेत्र के रिकॉर्ड, जानकारी भरने के काम और साझा करने की स्थिति।',
@@ -104,7 +103,6 @@ export const entryTranslations: Record<string, readonly [string, string]> = {
     'ਇਸ ਡਿਵਾਈਸ ਉੱਤੇ {count} ਇਨਕ੍ਰਿਪਟ ਕੀਤੀਆਂ ਤਬਦੀਲੀਆਂ ਸੁਰੱਖਿਅਤ ਹਨ। {pending} ਦੀ ਕੇਂਦਰ ਉੱਤੇ ਕਾਪੀ ਬਣਨੀ ਬਾਕੀ ਹੈ।',
   ],
   'Backup and recovery': ['सुरक्षित प्रति और बहाली', 'ਸੁਰੱਖਿਅਤ ਕਾਪੀ ਅਤੇ ਬਹਾਲੀ'],
-  'System details': ['तकनीकी जानकारी', 'ਤਕਨੀਕੀ ਜਾਣਕਾਰੀ'],
   'Import child roster': ['बच्चों की सूची फ़ाइल से जोड़ें', 'ਬੱਚਿਆਂ ਦੀ ਸੂਚੀ ਫ਼ਾਈਲ ਤੋਂ ਜੋੜੋ'],
   'Upload a CSV, review every row, then commit the import. Maximum 100 children per file.': [
     'CSV फ़ाइल चुनें, हर पंक्ति जाँचें, फिर सूची जोड़ें। एक फ़ाइल में अधिकतम 100 बच्चे।',

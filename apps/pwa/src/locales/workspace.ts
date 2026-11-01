@@ -1,6 +1,23 @@
 import { labTranslations } from './lab';
 // English source keys map to Hindi and Punjabi. Stored records and signed values are never translated.
 export const workspaceTranslations: Record<string, readonly [string, string]> = {
+  'Sync now': ['अभी सिंक करें', 'ਹੁਣ ਸਿੰਕ ਕਰੋ'],
+  'Local storage and remote backup are different promises. See exactly where your work lives.': [
+    'स्थानीय संग्रह और दूरस्थ बैकअप अलग हैं। देखें कि आपका काम कहाँ सुरक्षित है।',
+    'ਸਥਾਨਕ ਸਟੋਰੇਜ ਅਤੇ ਦੂਰਲਾ ਬੈਕਅੱਪ ਵੱਖ ਹਨ। ਵੇਖੋ ਕਿ ਤੁਹਾਡਾ ਕੰਮ ਕਿੱਥੇ ਸੰਭਾਲਿਆ ਹੈ।',
+  ],
+  'Your local records remain saved. Reconnect and retry.': [
+    'आपके स्थानीय रिकॉर्ड सुरक्षित हैं। दोबारा जुड़कर प्रयास करें।',
+    'ਤੁਹਾਡੇ ਸਥਾਨਕ ਰਿਕਾਰਡ ਸੰਭਾਲੇ ਹੋਏ ਹਨ। ਮੁੜ ਜੁੜ ਕੇ ਕੋਸ਼ਿਸ਼ ਕਰੋ।',
+  ],
+  'Not yet acknowledged by the backup service': [
+    'बैकअप सेवा ने अभी पुष्टि नहीं की है',
+    'ਬੈਕਅੱਪ ਸੇਵਾ ਨੇ ਹਾਲੇ ਪੁਸ਼ਟੀ ਨਹੀਂ ਕੀਤੀ',
+  ],
+  'Synchronize records, download a backup, or save your recovery code before changing devices.': [
+    'रिकॉर्ड सिंक करें, बैकअप डाउनलोड करें, या डिवाइस बदलने से पहले रिकवरी कोड सहेजें।',
+    'ਰਿਕਾਰਡ ਸਿੰਕ ਕਰੋ, ਬੈਕਅੱਪ ਡਾਊਨਲੋਡ ਕਰੋ, ਜਾਂ ਡਿਵਾਈਸ ਬਦਲਣ ਤੋਂ ਪਹਿਲਾਂ ਰਿਕਵਰੀ ਕੋਡ ਸੰਭਾਲੋ।',
+  ],
   ...labTranslations,
   'A deletion and an edit happened independently. Both must be reviewed before the record changes.': [
     'एक व्यक्ति ने रिकॉर्ड हटाया और दूसरे ने उसी समय अलग से बदलाव किया। रिकॉर्ड बदलने से पहले दोनों की जाँच ज़रूरी है।',
@@ -152,15 +169,10 @@ export const workspaceTranslations: Record<string, readonly [string, string]> = 
   'Workspace / Synchronization': ['कार्यक्षेत्र / सिंक', 'ਕਾਰਜ-ਖੇਤਰ / ਸਿੰਕ'],
   'Save & share': ['सहेजें और साझा करें', 'ਸੰਭਾਲੋ ਅਤੇ ਸਾਂਝਾ ਕਰੋ'],
   'Sync center': ['सिंक केंद्र', 'ਸਿੰਕ ਕੇਂਦਰ'],
-  'Your entries save on this device first. Copy them to the village hub when a connection is available.': [
-    'आपकी प्रविष्टियाँ पहले इस डिवाइस पर सहेजी जाती हैं। कनेक्शन मिलने पर इन्हें गाँव के हब पर कॉपी करें।',
-    'ਤੁਹਾਡੀਆਂ ਐਂਟਰੀਆਂ ਪਹਿਲਾਂ ਇਸ ਡਿਵਾਈਸ ਉੱਤੇ ਸੰਭਾਲੀਆਂ ਜਾਂਦੀਆਂ ਹਨ। ਕਨੈਕਸ਼ਨ ਮਿਲਣ ਉੱਤੇ ਇਨ੍ਹਾਂ ਨੂੰ ਪਿੰਡ ਦੇ ਹੱਬ ਉੱਤੇ ਕਾਪੀ ਕਰੋ।',
-  ],
   'Local durability and hub backup are different promises. See exactly where your work lives.': [
     'डिवाइस पर सहेजना और हब पर बैकअप अलग बातें हैं। देखें कि आपका काम कहाँ सुरक्षित है।',
     'ਡਿਵਾਈਸ ਉੱਤੇ ਸੰਭਾਲਣਾ ਅਤੇ ਹੱਬ ਉੱਤੇ ਬੈਕਅੱਪ ਵੱਖਰੀਆਂ ਗੱਲਾਂ ਹਨ। ਵੇਖੋ ਤੁਹਾਡਾ ਕੰਮ ਕਿੱਥੇ ਸੁਰੱਖਿਅਤ ਹੈ।',
   ],
-  'Sync with village hub': ['गाँव के हब से सिंक करें', 'ਪਿੰਡ ਦੇ ਹੱਬ ਨਾਲ ਸਿੰਕ ਕਰੋ'],
   'Your local records remain saved. Reconnect to the hub and retry.': [
     'आपके स्थानीय रिकॉर्ड सुरक्षित हैं। हब से जुड़कर फिर कोशिश करें।',
     'ਤੁਹਾਡੇ ਸਥਾਨਕ ਰਿਕਾਰਡ ਸੁਰੱਖਿਅਤ ਹਨ। ਹੱਬ ਨਾਲ ਜੁੜ ਕੇ ਮੁੜ ਕੋਸ਼ਿਸ਼ ਕਰੋ।',
@@ -190,10 +202,6 @@ export const workspaceTranslations: Record<string, readonly [string, string]> = 
   'Committed chunks': ['सहेजे गए हिस्से', 'ਸੰਭਾਲੇ ਹਿੱਸੇ'],
   Checkpoint: ['जाँच बिंदु', 'ਜਾਂਚ ਬਿੰਦੂ'],
   'Ready for the first journey': ['पहली बार सिंक करने के लिए तैयार', 'ਪਹਿਲੀ ਵਾਰ ਸਿੰਕ ਕਰਨ ਲਈ ਤਿਆਰ'],
-  'Connect to your village hub and start synchronization.': [
-    'अपने गाँव के हब से जुड़कर सिंक शुरू करें।',
-    'ਆਪਣੇ ਪਿੰਡ ਦੇ ਹੱਬ ਨਾਲ ਜੁੜ ਕੇ ਸਿੰਕ ਸ਼ੁਰੂ ਕਰੋ।',
-  ],
   'Payload counts include serialized request and response bodies. HTTP/TLS headers and retransmission bytes are not measured.':
     [
       'डेटा की मात्रा में भेजे और प्राप्त किए गए संदेश शामिल हैं। HTTP/TLS हेडर और दोबारा भेजे बाइट नहीं गिने गए।',

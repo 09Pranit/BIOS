@@ -16,7 +16,7 @@ test('two tabs sharing one browser preserve simultaneous offline registrations a
   await a.getByLabel('Choose a device PIN', { exact: true }).fill('123456');
   await a.getByRole('button', { name: 'Create demo workspace', exact: true }).click();
   await expect(a.getByRole('heading', { name: 'Overview', exact: true })).toBeVisible();
-  await expect(a.locator('.connection-pill')).toContainText(/Synced|Needs attention/, { timeout: 30000 });
+  await expect(a.locator('.connection-pill')).toContainText('Synced', { timeout: 30000 });
   await a.waitForFunction(() => Boolean(navigator.serviceWorker.controller));
 
   // This second page shares IndexedDB and the enrolled identity with the first page.
@@ -59,9 +59,9 @@ test('two tabs sharing one browser preserve simultaneous offline registrations a
 
   await context.setOffline(false);
   for (const page of [a, b]) {
-    await page.locator('.sidebar nav a[href="/app/sync"]').click();
-    await expect(page.getByRole('button', { name: 'Sync with village hub', exact: true })).toBeEnabled();
-    await page.getByRole('button', { name: 'Sync with village hub', exact: true }).click();
+    await page.locator('.sidebar nav a[href="/app/settings"]').click();
+    await expect(page.getByRole('button', { name: 'Sync now', exact: true })).toBeEnabled();
+    await page.getByRole('button', { name: 'Sync now', exact: true }).click();
     await expect(page.locator('.connection-pill')).toContainText('Synced', { timeout: 30000 });
     await expect(page.getByText('Quarantined operations: 0', { exact: true })).toBeVisible();
   }

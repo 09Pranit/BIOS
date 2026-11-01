@@ -10,7 +10,7 @@ async function enroll(page: Page, actor: string, pin: string) {
   await page.getByLabel('Choose a device PIN', { exact: true }).fill(pin);
   await page.getByRole('button', { name: 'Create demo workspace', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Overview', exact: true })).toBeVisible();
-  await expect(page.locator('.connection-pill')).toContainText(/Synced|Needs attention/, {
+  await expect(page.locator('.connection-pill')).toContainText('Synced', {
     timeout: 30000,
   });
   await page.waitForFunction(() => Boolean(navigator.serviceWorker.controller));
@@ -48,7 +48,7 @@ async function importFile(page: Page, buffer: Buffer, name = 'smriva-encrypted-b
 }
 
 async function logDigest(page: Page) {
-  await navigate(page, '/app/sync');
+  await navigate(page, '/app/settings#sync');
   const digest = page.locator('.hash');
   await expect(digest).toHaveText(/^[a-f\d]{64}$/);
   return (await digest.textContent())!;

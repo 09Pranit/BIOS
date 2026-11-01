@@ -18,7 +18,6 @@ import {
   LockKeyhole,
   Activity,
   CheckCircle2,
-  Code2,
   GraduationCap,
   Building2,
   Sun,
@@ -32,12 +31,9 @@ import { activateWorkspace, enroll, Vault, vault } from './lib/vault';
 import { listWorkspaces, rememberActiveWorkspace } from './lib/workspaces';
 import { Badge, Notice, Submit, time } from './components/UI';
 import QuickSearch from './components/QuickSearch';
-import EasyModeToggle from './components/EasyModeToggle';
-import EasyGuide from './components/EasyGuide';
 import { displayRole } from './lib/presentation';
-import { easyPageLabel, easyConnectionLabel } from './lib/easy';
 import { Today, Children, School, Health } from './pages/DataEntry';
-import { ChildDetail, Conflicts, SyncCenter, SettingsPage, Library, Admin, About } from './pages/Workspace';
+import { ChildDetail, Conflicts, SettingsPage, Library, Admin, About } from './pages/Workspace';
 import Lab from './pages/Lab';
 import PublicHome from './components/PublicHome';
 import RouteMetadata, { isWorkspaceRoute } from './components/RouteMetadata';
@@ -49,7 +45,6 @@ const nav = [
   ['/app/school', 'Classroom', GraduationCap],
   ['/app/health', 'Health records', Heart],
   ['/app/library', 'Learning library', BookOpen],
-  ['/app/sync', 'Sync center', RefreshCw],
   ['/app/conflicts', 'Conflict inbox', ShieldCheck],
 ] as const;
 function Brand() {
@@ -467,8 +462,7 @@ function Recovery() {
 
 function Shell() {
   const { t, locale } = useI18n();
-  const { unlocked, refresh, status, sync, lens, setLens, offlineReady, offlineUnavailable, easyMode } =
-      useKuka(),
+  const { unlocked, refresh, status, sync, offlineReady, offlineUnavailable } = useKuka(),
     [mobile, setMobile] = useState(false),
     [collapsed, setCollapsed] = useState(false),
     location = useLocation();
@@ -502,11 +496,6 @@ function Shell() {
           <Menu size={19} />
         </button>
         <Brand />
-        <div className="repo-breadcrumb">
-          <span className="repo-owner">{t('Village hub')}</span>
-          <span>/</span>
-          <strong>Dhareri</strong>
-        </div>
         <div className="global-actions">
           <QuickSearch />
           <details className="new-menu">
@@ -544,7 +533,7 @@ function Shell() {
         {nav.map(([path, label, Icon]) => (
           <NavLink key={path} to={path}>
             <Icon size={16} />
-            <span>{t(easyMode ? easyPageLabel(path, label) : label)}</span>
+            <span>{t(label)}</span>
             {path.includes('conflicts') && <span className="counter">{conflicts}</span>}
             {path.includes('children') && (
               <span className="counter">
@@ -564,67 +553,42 @@ function Shell() {
       <aside className="sidebar" aria-label={t('Workspace navigation')}>
         <div className="sidebar-heading">
           <Building2 size={16} />
-          <strong>{t('Dhareri village hub')}</strong>
+          <strong>{t('Smriva workspace')}</strong>
         </div>
         <div className="nav-label">{t('Workspace')}</div>
         <nav aria-label={t('Main navigation')}>
           {nav.map(([path, label, Icon]) => (
             <NavLink key={path} to={path}>
               <Icon size={16} />
-              <span>{t(easyMode ? easyPageLabel(path, label) : label)}</span>
+              <span>{t(label)}</span>
               {path.includes('conflicts') && conflicts > 0 && <span className="counter">{conflicts}</span>}
               {path.includes('sync') && pending > 0 && <span className="counter">{pending}</span>}
             </NavLink>
           ))}
         </nav>
-        {easyMode ? (
-          <>
-            <nav aria-label={t('Workspace settings')}>
-              <NavLink to="/app/settings">
-                <Settings size={16} />
-                <span>{t('Settings & help')}</span>
-              </NavLink>
-            </nav>
-            <details className="advanced-navigation">
-              <summary>{t('More tools')}</summary>
-              <nav aria-label={t('More workspace tools')}>
-                <NavLink to="/lab">
-                  <FlaskConical size={16} />
-                  <span>{t('Connection test')}</span>
-                </NavLink>
-                <NavLink to="/admin">
-                  <Activity size={16} />
-                  <span>{t('Village hub tools')}</span>
-                </NavLink>
-              </nav>
-            </details>
-          </>
-        ) : (
-          <>
-            <div className="nav-label tools-label">{t('Tools')}</div>
-            <nav aria-label={t('Workspace tools')}>
-              <NavLink to="/lab">
-                <FlaskConical size={16} />
-                <span>{t('Resilience lab')}</span>
-              </NavLink>
-              <NavLink to="/admin">
-                <Activity size={16} />
-                <span>{t('Record database')}</span>
-              </NavLink>
-              <NavLink to="/app/settings">
-                <Settings size={16} />
-                <span>{t('Settings & recovery')}</span>
-              </NavLink>
-            </nav>
-          </>
-        )}
+        <div className="nav-label tools-label">{t('Tools')}</div>
+        <nav aria-label={t('Workspace tools')}>
+          <NavLink to="/lab">
+            <FlaskConical size={16} />
+            <span>{t('Resilience lab')}</span>
+          </NavLink>
+          <NavLink to="/admin">
+            <Activity size={16} />
+            <span>{t('Record database')}</span>
+          </NavLink>
+          <NavLink to="/app/settings">
+            <Settings size={16} />
+            <span>{t('Settings, sync & recovery')}</span>
+            {pending > 0 && <span className="counter">{pending}</span>}
+          </NavLink>
+        </nav>
         <div className="sidebar-bottom">
           <div className="local-card">
             <ShieldCheck size={16} />
             <div>
-              <strong>{easyMode ? t('Your records stay private') : t('Encrypted local storage')}</strong>
+              <strong>{t('Encrypted local storage')}</strong>
               <p>{t('Entries save on this device first.')}</p>
-              <Link to="/app/sync">{easyMode ? t('Check saved records') : t('View backup status')}</Link>
+              <Link to="/app/settings#sync">{t('View backup status')}</Link>
             </div>
           </div>
           <div className="sidebar-user">
@@ -647,43 +611,18 @@ function Shell() {
           <LanguageSwitcher />
           <div className="mode-and-breadcrumb">
             <div className="breadcrumb">
-              <strong>
-                {t(
-                  easyMode
-                    ? easyPageLabel(
-                        nav.find(([path]) => location.pathname.startsWith(path))?.[0] ?? '',
-                        section,
-                      )
-                    : section,
-                )}
-              </strong>
+              <strong>{t(section)}</strong>
             </div>
-            <EasyModeToggle />
           </div>
           <div className="top-actions">
             <ThemeToggle />
-            {!easyMode && (
-              <button
-                className={'lens-toggle ' + (lens ? 'system' : '')}
-                onClick={() => setLens(!lens)}
-                title={t('Toggle operation details (L)')}
-              >
-                <Code2 size={15} />
-                {lens ? t('System details on') : t('System details')}
-              </button>
-            )}
             <button
               className={'connection-pill ' + (status === 'Offline' ? 'offline' : '')}
               onClick={() => void sync()}
               disabled={status === 'Syncing'}
-              aria-label={
-                easyMode
-                  ? t('Share saved records: {status}', { status: t(easyConnectionLabel(status)) })
-                  : undefined
-              }
             >
               {status === 'Offline' ? <WifiOff size={14} /> : <Wifi size={14} />}{' '}
-              {t(easyMode ? easyConnectionLabel(status) : status)}
+              {t(status)}
               <RefreshCw size={13} className={status === 'Syncing' ? 'spin' : ''} />
             </button>
           </div>
@@ -692,28 +631,25 @@ function Shell() {
           <span>
             <ShieldCheck size={13} /> {t('Saved on this device')}
           </span>
-          <Link to="/app/sync">
-            {pending} {easyMode ? t('waiting to share') : t('pending')}
+          <Link to="/app/settings#sync">
+            {pending} {t('pending')}
           </Link>
           <Link to="/app/conflicts">
-            {conflicts} {easyMode ? t('differences to check') : t('conflicts')}
+            {conflicts} {t('conflicts')}
           </Link>
           <span className="shell-ready">
             {offlineReady
               ? t('Offline ready')
               : offlineUnavailable
                 ? t('Offline installation unavailable in this browser')
-                : easyMode
-                  ? t('Preparing for offline use…')
-                  : t('Preparing offline shell…')}
+                : t('Preparing offline shell…')}
           </span>
           <span>
-            {t(easyMode ? 'Last copied to village hub' : 'Last hub backup')}:{' '}
+            {t('Last backup')}:{' '}
             {time(vault.state?.lastSync ?? 0, locale)}
           </span>
         </div>
         <main id="main" className="main-content" tabIndex={-1}>
-          {easyMode && location.pathname !== '/app/today' && <EasyGuide />}
           <Routes>
             <Route path="/app/today" element={<Today />} />
             <Route path="/app/children" element={<Children />} />
@@ -721,7 +657,7 @@ function Shell() {
             <Route path="/app/school" element={<School />} />
             <Route path="/app/health" element={<Health />} />
             <Route path="/app/library" element={<Library />} />
-            <Route path="/app/sync" element={<SyncCenter />} />
+            <Route path="/app/sync" element={<Navigate to="/app/settings#sync" replace />} />
             <Route path="/app/conflicts" element={<Conflicts />} />
             <Route path="/app/settings" element={<SettingsPage />} />
             <Route path="/admin" element={<Admin />} />
@@ -730,28 +666,14 @@ function Shell() {
           </Routes>
         </main>
         <nav className="mobile-bottom-nav" aria-label={t('Quick navigation')}>
-          {[nav[0], nav[1], nav[2], nav[5]].map(([path, label, Icon]) => (
+          {[nav[0], nav[1], nav[2], ['/app/settings', 'Settings', Settings] as const].map(
+            ([path, label, Icon]) => (
             <NavLink key={path} to={path}>
               <Icon size={18} />
-              <span>
-                {t(
-                  easyMode
-                    ? path === '/app/school'
-                      ? t('Attendance')
-                      : path === '/app/sync'
-                        ? t('Share')
-                        : easyPageLabel(path, label)
-                    : label === 'Overview'
-                      ? t('Overview')
-                      : label === 'Classroom'
-                        ? t('Classroom')
-                        : label === 'Sync center'
-                          ? t('Sync')
-                          : label,
-                )}
-              </span>
+              <span>{t(label)}</span>
             </NavLink>
-          ))}
+            ),
+          )}
         </nav>
         <footer className="app-footer">
           <span>{t('Smriva · Demonstration project · No real personal records')}</span>

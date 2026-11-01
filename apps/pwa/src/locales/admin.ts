@@ -1,5 +1,10 @@
 /** Village-hub interface; server enums, record values and audit payloads stay unchanged. */
 export const adminTranslations: Record<string, readonly [string, string]> = {
+  Administration: ['प्रशासन', 'ਪ੍ਰਬੰਧਨ'],
+  'The remote service is unreachable. Your form is still here; reconnect and retry. Use the Children or Classroom page for offline entry.': [
+    'दूरस्थ सेवा उपलब्ध नहीं है। आपका फ़ॉर्म यहीं है; दोबारा जुड़कर प्रयास करें। ऑफ़लाइन प्रविष्टि के लिए बच्चे या कक्षा पृष्ठ का उपयोग करें।',
+    'ਦੂਰਲੀ ਸੇਵਾ ਉਪਲਬਧ ਨਹੀਂ ਹੈ। ਤੁਹਾਡਾ ਫ਼ਾਰਮ ਇੱਥੇ ਹੀ ਹੈ; ਮੁੜ ਜੁੜ ਕੇ ਕੋਸ਼ਿਸ਼ ਕਰੋ। ਆਫ਼ਲਾਈਨ ਐਂਟਰੀ ਲਈ ਬੱਚੇ ਜਾਂ ਕਲਾਸਰੂਮ ਸਫ਼ਾ ਵਰਤੋ।',
+  ],
   Database: ['डेटाबेस', 'ਡਾਟਾਬੇਸ'],
   Devices: ['डिवाइस', 'ਡਿਵਾਈਸ'],
   Enrollment: ['पंजीकरण', 'ਰਜਿਸਟ੍ਰੇਸ਼ਨ'],
@@ -12,10 +17,6 @@ export const adminTranslations: Record<string, readonly [string, string]> = {
     'ਆਫ਼ਲਾਈਨ ਹੋਣ ਵੇਲੇ ਵੀ ਇਸ ਡਿਵਾਈਸ ਉੱਤੇ ਸੁਰੱਖਿਅਤ ਇਨਕ੍ਰਿਪਟ ਕੀਤੇ ਰਿਕਾਰਡ ਵੇਖੋ ਅਤੇ ਸੋਧੋ।',
   ],
   'Refresh records': ['रिकॉर्ड ताज़ा करें', 'ਰਿਕਾਰਡ ਤਾਜ਼ਾ ਕਰੋ'],
-  'The Database tab uses this device’s encrypted offline storage. Sync copies pending changes to the village hub. Devices, enrollment, audit, and quarantine still need a connection.': [
-    'डेटाबेस टैब इस डिवाइस के एन्क्रिप्टेड ऑफ़लाइन भंडारण का उपयोग करता है। सिंक लंबित बदलावों को गाँव के हब पर कॉपी करता है। डिवाइस, पंजीकरण, ऑडिट और अलग रखे बदलावों के लिए अभी भी कनेक्शन चाहिए।',
-    'ਡਾਟਾਬੇਸ ਟੈਬ ਇਸ ਡਿਵਾਈਸ ਦੀ ਇਨਕ੍ਰਿਪਟ ਕੀਤੀ ਆਫ਼ਲਾਈਨ ਸਟੋਰੇਜ ਵਰਤਦੀ ਹੈ। ਸਿੰਕ ਬਾਕੀ ਸੋਧਾਂ ਨੂੰ ਪਿੰਡ ਦੇ ਹੱਬ ਉੱਤੇ ਕਾਪੀ ਕਰਦਾ ਹੈ। ਡਿਵਾਈਸ, ਰਜਿਸਟ੍ਰੇਸ਼ਨ, ਆਡਿਟ ਅਤੇ ਵੱਖ ਰੱਖੀਆਂ ਸੋਧਾਂ ਲਈ ਹਾਲੇ ਵੀ ਕਨੈਕਸ਼ਨ ਚਾਹੀਦਾ ਹੈ।',
-  ],
   'Encrypted operations': ['एन्क्रिप्टेड कार्रवाइयाँ', 'ਇਨਕ੍ਰਿਪਟ ਕੀਤੀਆਂ ਕਾਰਵਾਈਆਂ'],
   'Search database children': ['डेटाबेस में बच्चे खोजें', 'ਡਾਟਾਬੇਸ ਵਿੱਚ ਬੱਚੇ ਲੱਭੋ'],
   'Search offline records…': ['ऑफ़लाइन रिकॉर्ड खोजें…', 'ਆਫ਼ਲਾਈਨ ਰਿਕਾਰਡ ਲੱਭੋ…'],
@@ -57,11 +58,6 @@ export const adminTranslations: Record<string, readonly [string, string]> = {
     'खोज बदलें या नया रिकॉर्ड बनाएँ। नई प्रविष्टियाँ एन्क्रिप्ट होकर इस डिवाइस पर सहेजी जाती हैं।',
     'ਖੋਜ ਬਦਲੋ ਜਾਂ ਨਵਾਂ ਰਿਕਾਰਡ ਬਣਾਓ। ਨਵੀਆਂ ਐਂਟਰੀਆਂ ਇਨਕ੍ਰਿਪਟ ਹੋ ਕੇ ਇਸ ਡਿਵਾਈਸ ਉੱਤੇ ਸੰਭਾਲੀਆਂ ਜਾਂਦੀਆਂ ਹਨ।',
   ],
-  'The village hub is unreachable. Your form is still here; reconnect and retry. Use the Children or Classroom page for offline entry.':
-    [
-      'गाँव के हब से संपर्क नहीं हो रहा। आपका फ़ॉर्म यहीं है; फिर जुड़ें और कोशिश करें। ऑफ़लाइन प्रविष्टि के लिए बच्चे या कक्षा पेज इस्तेमाल करें।',
-      'ਪਿੰਡ ਦੇ ਹੱਬ ਨਾਲ ਸੰਪਰਕ ਨਹੀਂ ਹੋ ਰਿਹਾ। ਤੁਹਾਡਾ ਫਾਰਮ ਇੱਥੇ ਹੀ ਹੈ; ਮੁੜ ਜੁੜੋ ਅਤੇ ਕੋਸ਼ਿਸ਼ ਕਰੋ। ਆਫ਼ਲਾਈਨ ਐਂਟਰੀ ਲਈ ਬੱਚੇ ਜਾਂ ਜਮਾਤ ਪੰਨਾ ਵਰਤੋ।',
-    ],
   'The device pull did not finish; retry in Sync center.': [
     'डिवाइस पर रिकॉर्ड लाना पूरा नहीं हुआ; सिंक केंद्र में फिर कोशिश करें।',
     'ਡਿਵਾਈਸ ਉੱਤੇ ਰਿਕਾਰਡ ਲਿਆਉਣਾ ਪੂਰਾ ਨਹੀਂ ਹੋਇਆ; ਸਿੰਕ ਕੇਂਦਰ ਵਿੱਚ ਮੁੜ ਕੋਸ਼ਿਸ਼ ਕਰੋ।',
@@ -91,16 +87,11 @@ export const adminTranslations: Record<string, readonly [string, string]> = {
     'हब पर बहाल किया गया। इस डिवाइस के लिए सिंक का अनुरोध किया गया।',
     'ਹੱਬ ਉੱਤੇ ਬਹਾਲ ਕੀਤਾ ਗਿਆ। ਇਸ ਡਿਵਾਈਸ ਲਈ ਸਿੰਕ ਦੀ ਬੇਨਤੀ ਕੀਤੀ ਗਈ।',
   ],
-  'Village hub / Administration': ['गाँव का हब / प्रशासन', 'ਪਿੰਡ ਦਾ ਹੱਬ / ਪ੍ਰਬੰਧਨ'],
   'Inspect durable server records, enter data directly, and manage enrolled devices.': [
     'सर्वर पर स्थायी रिकॉर्ड देखें, सीधे डेटा दर्ज करें और पंजीकृत डिवाइस प्रबंधित करें।',
     'ਸਰਵਰ ਉੱਤੇ ਪੱਕੇ ਰਿਕਾਰਡ ਵੇਖੋ, ਸਿੱਧਾ ਡਾਟਾ ਦਰਜ ਕਰੋ ਅਤੇ ਰਜਿਸਟਰਡ ਡਿਵਾਈਸਾਂ ਦਾ ਪ੍ਰਬੰਧ ਕਰੋ।',
   ],
   'Refresh hub': ['हब रीफ़्रेश करें', 'ਹੱਬ ਰਿਫ੍ਰੈਸ਼ ਕਰੋ'],
-  'These controls write directly to the village hub and need a connection.': [
-    'ये नियंत्रण सीधे गाँव के हब पर लिखते हैं और इन्हें कनेक्शन चाहिए।',
-    'ਇਹ ਕੰਟਰੋਲ ਸਿੱਧੇ ਪਿੰਡ ਦੇ ਹੱਬ ਉੱਤੇ ਲਿਖਦੇ ਹਨ ਅਤੇ ਇਨ੍ਹਾਂ ਲਈ ਕਨੈਕਸ਼ਨ ਚਾਹੀਦਾ ਹੈ।',
-  ],
   and: ['और', 'ਅਤੇ'],
   'provide encrypted offline entry. “Saved at hub” means the server acknowledged the transaction; local sync status is shown separately.':
     [

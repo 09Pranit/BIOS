@@ -6,7 +6,7 @@ async function unlock(page: Page, name: string, role?: string) {
   await page.getByLabel('Choose a device PIN').fill('123456');
   await page.getByRole('button', { name: 'Create demo workspace' }).click();
   await expect(page.getByRole('heading', { name: 'Overview', exact: true })).toBeVisible();
-  await expect(page.locator('.connection-pill')).toContainText(/Synced|Needs attention/, { timeout: 30000 });
+  await expect(page.locator('.connection-pill')).toContainText('Synced', { timeout: 30000 });
 }
 async function navigate(page: Page, path: string) {
   if ((page.viewportSize()?.width ?? 1440) < 700)
@@ -42,9 +42,9 @@ test('two independent browser contexts: offline entry, reload, concurrent confli
   await ca.setOffline(false);
   await cb.setOffline(false);
   for (const page of [a, b, a, b]) {
-    await navigate(page, '/app/sync');
-    await expect(page.getByRole('button', { name: 'Sync with village hub' })).toBeEnabled();
-    await page.getByRole('button', { name: 'Sync with village hub' }).click();
+    await navigate(page, '/app/settings#sync');
+    await expect(page.getByRole('button', { name: 'Sync now' })).toBeEnabled();
+    await page.getByRole('button', { name: 'Sync now' }).click();
     await expect(page.locator('.connection-pill')).not.toContainText('Syncing', { timeout: 30000 });
   }
   await navigate(a, '/app/conflicts');
@@ -55,9 +55,9 @@ test('two independent browser contexts: offline entry, reload, concurrent confli
   await expect(conflict.locator('.conflict-versions article')).toHaveCount(2);
   await conflict.getByRole('button', { name: 'Keep this account' }).first().click();
   for (const page of [a, b, a]) {
-    await navigate(page, '/app/sync');
-    await expect(page.getByRole('button', { name: 'Sync with village hub' })).toBeEnabled();
-    await page.getByRole('button', { name: 'Sync with village hub' }).click();
+    await navigate(page, '/app/settings#sync');
+    await expect(page.getByRole('button', { name: 'Sync now' })).toBeEnabled();
+    await page.getByRole('button', { name: 'Sync now' }).click();
     await expect(page.locator('.connection-pill')).not.toContainText('Syncing', { timeout: 30000 });
   }
   await navigate(b, '/app/conflicts');
@@ -107,7 +107,7 @@ test('original lessons and quiz attempts work offline and remain in the operatio
   await page.getByRole('button', { name: 'Check & save my progress' }).click();
   await expect(page.getByText('That’s right. Your progress is saved.', { exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Close dialog' }).click();
-  await navigate(page, '/app/sync');
+  await navigate(page, '/app/settings#sync');
   await page.reload();
   await page.getByLabel('Device PIN', { exact: true }).fill('123456');
   await page.getByRole('button', { name: 'Unlock workspace' }).click();
@@ -296,9 +296,9 @@ test('record database stays durable offline and syncs into the child roster', as
   await expect(page.getByRole('heading', { name: 'Hub audit events', exact: true })).toBeVisible();
   await expect(page.getByText('invitation-created', { exact: true }).first()).toBeVisible();
 
-  await navigate(page, '/app/sync');
-  await expect(page.getByRole('button', { name: 'Sync with village hub', exact: true })).toBeEnabled();
-  await page.getByRole('button', { name: 'Sync with village hub', exact: true }).click();
+  await navigate(page, '/app/settings#sync');
+  await expect(page.getByRole('button', { name: 'Sync now', exact: true })).toBeEnabled();
+  await page.getByRole('button', { name: 'Sync now', exact: true }).click();
   await expect(page.locator('.connection-pill')).not.toContainText('Syncing', { timeout: 30000 });
   await navigate(page, '/app/children');
   await page.getByLabel('Search children', { exact: true }).fill(name);

@@ -39,7 +39,7 @@ export default function PublicHome() {
             </h1>
             <p className="public-intro">
               Take attendance. Record a visit. Come back to an unfinished entry. Smriva keeps this work on
-              your device, then copies it to the village hub when a connection is available.
+              your device, then copies it to remote backup when a connection is available.
             </p>
             <div className="public-actions">
               <a className="button primary" href="/app/today">
@@ -115,10 +115,9 @@ export default function PublicHome() {
             <article>
               <span>Getting started</span>
               <div>
-                <h3>A choice of views</h3>
+                <h3>Three interface languages</h3>
                 <p>
-                  Keep the compact tables, or switch to Easy mode for larger controls and guidance. Choose
-                  English, Hindi or Punjabi at the top of the workspace.
+                  Choose English, Hindi or Punjabi at the top of the workspace without changing saved records.
                 </p>
               </div>
             </article>
@@ -156,14 +155,7 @@ export default function PublicHome() {
             <summary>Does Smriva work without internet?</summary>
             <p>
               After the first connected setup and app download, you can unlock and enter records offline.
-              Synchronization, new enrollment and hub database tools require a connection to the village hub.
-            </p>
-          </details>
-          <details>
-            <summary>Will Easy mode change my records?</summary>
-            <p>
-              No. Both modes use the same records and forms. The switch changes text, controls and guidance.
-              You can return to the original compact dashboard at any time.
+              Synchronization, new enrollment and remote administration require a connection.
             </p>
           </details>
           <details>

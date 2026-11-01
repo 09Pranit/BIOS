@@ -1,6 +1,5 @@
 import { registerSW } from 'virtual:pwa-register';
 import './style.css';
-import './easy-mode.css';
 import './public-site.css';
 import './government-resources.css';
 import './library-experience.css';

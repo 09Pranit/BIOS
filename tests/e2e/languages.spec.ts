@@ -140,7 +140,7 @@ test('top language buttons support keyboard switching and preserve an unfinished
   ).toContain(childName);
 });
 
-test('Hindi and Punjabi layouts remain accessible at 390px in standard and Easy mode with both themes', async ({
+test('Hindi and Punjabi layouts remain accessible at 390px with both themes', async ({
   page,
 }) => {
   test.setTimeout(180000);
@@ -148,39 +148,26 @@ test('Hindi and Punjabi layouts remain accessible at 390px in standard and Easy 
   await enroll(page, 'Mobile Language Worker');
   for (const language of ['hi', 'pa'] as const) {
     await switchLanguage(page, language);
-    for (const easy of [false, true]) {
-      const toggle = page.getByRole('switch');
-      if ((await toggle.getAttribute('aria-checked')) !== String(easy)) await toggle.click();
-      await expect(toggle).toHaveAttribute('aria-checked', String(easy));
-      await expect(
-        page.getByRole('heading', {
-          name: easy ? labels[language].easyHeading : labels[language].overview,
-          exact: true,
-        }),
-      ).toBeVisible();
-      if (easy && language === 'pa') {
-        await expect(page.locator('.easy-today .easy-section-heading > span')).not.toContainText(/M\d/);
+    await expect(page.getByRole('heading', { name: labels[language].overview, exact: true })).toBeVisible();
+    for (const theme of ['dark', 'light']) {
+      if ((await page.locator('html').getAttribute('data-theme')) !== theme) {
+        await page
+          .getByRole('button', {
+            name: theme === 'light' ? labels[language].lightTheme : labels[language].darkTheme,
+            exact: true,
+          })
+          .click();
       }
-      for (const theme of ['dark', 'light']) {
-        if ((await page.locator('html').getAttribute('data-theme')) !== theme) {
-          await page
-            .getByRole('button', {
-              name: theme === 'light' ? labels[language].lightTheme : labels[language].darkTheme,
-              exact: true,
-            })
-            .click();
-        }
-        await expect(page.locator('html')).toHaveAttribute('data-theme', theme);
-        for (const name of ['English', 'हिन्दी', 'ਪੰਜਾਬੀ']) {
-          const button = languageButton(page, name);
-          await expect(button).toBeVisible();
-          const box = await button.boundingBox();
-          expect(box!.height).toBeGreaterThanOrEqual(44);
-          expect(box!.width).toBeGreaterThanOrEqual(44);
-        }
-        await page.locator('.toast').waitFor({ state: 'hidden' });
-        await accessible(page);
+      await expect(page.locator('html')).toHaveAttribute('data-theme', theme);
+      for (const name of ['English', 'हिन्दी', 'ਪੰਜਾਬੀ']) {
+        const button = languageButton(page, name);
+        await expect(button).toBeVisible();
+        const box = await button.boundingBox();
+        expect(box!.height).toBeGreaterThanOrEqual(44);
+        expect(box!.width).toBeGreaterThanOrEqual(44);
       }
+      await page.locator('.toast').waitFor({ state: 'hidden' });
+      await accessible(page);
     }
   }
   await page.evaluate(() => scrollTo(0, 0));

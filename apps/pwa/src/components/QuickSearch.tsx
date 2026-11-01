@@ -16,18 +16,17 @@ import { Modal } from './UI';
 import { vault } from '../lib/vault';
 import { useKuka } from '../lib/context';
 import { matchesChild } from '../lib/entry';
-import { easyPageLabel } from '../lib/easy';
 const pages = [
   { title: 'Record database and enrollment', path: '/admin', Icon: Database },
   { title: 'New student', path: '/app/children?new=student', Icon: FilePlus2 },
   { title: 'Attendance and assessments', path: '/app/school', Icon: GraduationCap },
   { title: 'Add health record', path: '/app/health', Icon: Heart },
-  { title: 'Sync center', path: '/app/sync', Icon: RefreshCw },
+  { title: 'Settings and sync', path: '/app/settings#sync', Icon: RefreshCw },
   { title: 'Conflict inbox', path: '/app/conflicts', Icon: ShieldCheck },
 ];
 export default function QuickSearch() {
   const { t } = useI18n();
-  const { version, easyMode } = useKuka(),
+  const { version } = useKuka(),
     [open, setOpen] = useState(false),
     [query, setQuery] = useState(''),
     [active, setActive] = useState(0),
@@ -50,17 +49,7 @@ export default function QuickSearch() {
     ...pages
       .map((p) => ({
         ...p,
-        title: t(
-          easyMode
-            ? p.path === '/admin'
-              ? 'Village hub tools'
-              : p.path.includes('?new')
-                ? 'Add a record'
-                : p.path === '/app/school'
-                  ? 'Attendance & marks'
-                  : easyPageLabel(p.path, p.title)
-            : p.title,
-        ),
+        title: t(p.title),
       }))
       .filter((p) => p.title.toLowerCase().includes(query.toLowerCase())),
     ...children.map((c) => ({
@@ -81,11 +70,11 @@ export default function QuickSearch() {
       <button
         className="global-search"
         onClick={() => setOpen(true)}
-        aria-label={t(easyMode ? 'Find a child or activity Ctrl K' : 'Search or jump to… Ctrl K')}
+        aria-label={t('Search or jump to… Ctrl K')}
         aria-keyshortcuts="Control+K Meta+K"
       >
         <Search size={16} />
-        <span>{t(easyMode ? 'Find a child or activity' : 'Search or jump to…')}</span>{' '}
+        <span>{t('Search or jump to…')}</span>{' '}
         <kbd aria-hidden="true">Ctrl K</kbd>
       </button>
       {open && (
@@ -96,11 +85,7 @@ export default function QuickSearch() {
               ref={input}
               autoFocus
               aria-label={t('Search workspace')}
-              placeholder={t(
-                easyMode
-                  ? 'Type a child’s name, village, or activity…'
-                  : 'Search by name, ID, village, or page…',
-              )}
+              placeholder={t('Search by name, ID, village, or page…')}
               value={query}
               onChange={(e) => {
                 setQuery(e.target.value);
@@ -141,11 +126,7 @@ export default function QuickSearch() {
             {!results.length && <p className="muted">{t('No matching records or pages.')}</p>}
           </div>
           <p className="fine">
-            {t(
-              easyMode
-                ? 'Search works offline. Choose a result to open it. Close this window to go back.'
-                : 'Search runs on this device. ↑ ↓ to navigate, Enter to open, Esc to close.',
-            )}
+            {t('Search runs on this device. ↑ ↓ to navigate, Enter to open, Esc to close.')}
           </p>
         </Modal>
       )}

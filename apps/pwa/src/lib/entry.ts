@@ -1,5 +1,5 @@
 export const grades = ['Class 1', 'Class 2', 'Class 3', 'Class 4', 'Class 5'];
-export const villages = ['Dhareri', 'Daun Kalan', 'Baran', 'Lang'];
+export const villages = ['Daun Kalan', 'Baran', 'Lang'];
 export const localDate = () => {
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;

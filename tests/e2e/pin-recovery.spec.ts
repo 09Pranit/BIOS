@@ -121,5 +121,5 @@ test('same-browser recovery restores hub records under a new PIN and preserves t
   await expect(page.getByLabel('Saved workspace', { exact: true })).toBeEnabled();
   await unlock(page, '123456');
   await expect(page.locator('.sidebar-user')).toContainText('Recovery PIN Worker');
-  await expect(page.locator('.connection-pill')).toContainText('Needs attention', { timeout: 30000 });
+  await expect(page.locator('.connection-pill')).toContainText('Synced', { timeout: 30000 });
 });

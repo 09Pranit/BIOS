@@ -55,7 +55,7 @@ import { Bird, VillageArt } from '../components/Art';
 import { lessons } from '../lib/content';
 import GovernmentResources from '../components/GovernmentResources';
 import { governmentResources } from '../lib/government-resources';
-import { digest, reasonFor, compareOpsByClock, type Op } from '../../../../packages/sync-core/src/index';
+import { reasonFor, compareOpsByClock, type Op } from '../../../../packages/sync-core/src/index';
 const today = localCalendarDate;
 const fieldLabels: Record<string, string> = {
   name: 'Child’s name',
@@ -130,7 +130,7 @@ export function ChildForm({
   profile?: 'student' | 'patient';
 }) {
   const { t, locale, language } = useI18n();
-  const { refresh, notify, easyMode } = useKuka(),
+  const { refresh, notify } = useKuka(),
     [busy, setBusy] = useState(false),
     [error, setError] = useState(''),
     [formKey, setFormKey] = useState(0),
@@ -138,7 +138,7 @@ export function ChildForm({
     [observedAtStart] = useState(() => vault.state!.ops.slice()),
     [defaults, setDefaults] = useState({
       class: child?.class ?? 'Class 1',
-      village: child?.village ?? 'Dhareri',
+      village: child?.village ?? 'Daun Kalan',
     }),
     newTitle = profile === 'patient' ? 'New patient' : 'New student';
   return (
@@ -217,18 +217,12 @@ export function ChildForm({
             name="guardian"
             defaultValue={initialChild?.guardian}
             maxLength={80}
-            aria-describedby={easyMode ? 'guardian-help' : undefined}
           />
         </label>
-        {easyMode && (
-          <p id="guardian-help" className="fine">
-            {t('Parent or caregiver: enter the name of the person responsible for this child.')}
-          </p>
-        )}
         <label>
           {t('Village')}
           <select aria-label={t('Village')} name="village" defaultValue={defaults.village}>
-            {['Dhareri', 'Daun Kalan', 'Baran', 'Lang'].map((v) => (
+            {['Daun Kalan', 'Baran', 'Lang'].map((v) => (
               <option key={v}>{v}</option>
             ))}
           </select>
@@ -239,13 +233,6 @@ export function ChildForm({
             'Guardian consent obtained for a shared health and school record. Use synthetic details in this demo.',
           )}
         </label>
-        {easyMode && (
-          <p className="fine">
-            {t(
-              'Before checking this box, confirm that the parent or caregiver agreed to keep and share the child’s school and health records in this workspace. This demonstration uses made-up details.',
-            )}
-          </p>
-        )}
         {error && <Notice tone="coral">{error}</Notice>}
         <div className="form-actions">
           <Submit
@@ -271,7 +258,7 @@ export function ChildForm({
 export function ChildDetail() {
   const { t, locale, language } = useI18n();
   const { id } = useParams(),
-    { write, version, lens } = useKuka(),
+    { write, version } = useKuka(),
     child = vault.view.entities[id!],
     [edit, setEdit] = useState(false);
   if (!child)
@@ -430,7 +417,6 @@ export function ChildDetail() {
                 <span>{typeof o.value === 'string' ? o.value : JSON.stringify(o.value)}</span>
                 <small>
                   {o.actorId} · {new Date(o.hlc.physical).toLocaleString(locale)}{' '}
-                  {lens && `· ${o.opId} · deps ${o.deps.length}`}
                 </small>
               </div>
             </div>
@@ -443,7 +429,7 @@ export function ChildDetail() {
 }
 export function Conflicts() {
   const { t, locale, language } = useI18n();
-  const { version, write, lens, easyMode } = useKuka(),
+  const { version, write } = useKuka(),
     conflicts = vault.view.conflicts,
     [error, setError] = useState(''),
     [custom, setCustom] = useState<Record<string, string>>({});
@@ -451,12 +437,8 @@ export function Conflicts() {
     <>
       <PageTitle
         eyebrow={t('Record review')}
-        title={t(easyMode ? 'Check differences' : 'Conflict inbox')}
-        description={t(
-          easyMode
-            ? 'Two people entered different information. Check both entries before deciding which is correct. The originals are kept.'
-            : 'Compare both entries before choosing a value. The original versions stay in the record.',
-        )}
+        title={t('Conflict inbox')}
+        description={t('Compare both entries before choosing a value. The original versions stay in the record.')}
         action={
           <Badge tone={conflicts.length ? 'coral' : 'green'}>
             {conflicts.length} {t('open differences')}
@@ -468,18 +450,12 @@ export function Conflicts() {
         <Panel>
           <Empty
             icon={<ShieldCheck size={35} />}
-            title={t(easyMode ? 'No differences to check' : 'No unresolved conflicts')}
-            description={t(
-              easyMode
-                ? 'When entries disagree, both versions will appear here so someone can check them. Nothing needs a decision right now.'
-                : 'When people make incompatible changes independently, both accounts will appear here. Try a real concurrent edit in the resilience lab.',
-            )}
+            title={t('No unresolved conflicts')}
+            description={t('When people make incompatible changes independently, both accounts will appear here. Try a real concurrent edit in the resilience lab.')}
           />
-          {!easyMode && (
-            <Link to="/lab" className="button outline centered">
-              {t('Explore the lab')} <ArrowRight size={15} />
-            </Link>
-          )}
+          <Link to="/lab" className="button outline centered">
+            {t('Explore the lab')} <ArrowRight size={15} />
+          </Link>
         </Panel>
       ) : (
         conflicts.map((c) => (
@@ -502,27 +478,12 @@ export function Conflicts() {
                   <p className="eyebrow">{o.actorId}</p>
                   <h3>{typeof o.value === 'object' ? JSON.stringify(o.value) : String(o.value)}</h3>
                   <p className="fine">
-                    {!easyMode && (
-                      <>
-                        {t('Device')} {o.deviceId.slice(-12)}
-                        <br />
-                      </>
-                    )}
+                    {t('Device')} {o.deviceId.slice(-12)}
+                    <br />
                     {new Date(o.hlc.physical).toLocaleString(locale)}
-                    {!easyMode && (
-                      <>
-                        <br />
-                        {o.kind} · {o.opId}
-                      </>
-                    )}
+                    <br />
+                    {o.kind} · {o.opId}
                   </p>
-                  {lens && !easyMode && (
-                    <p className="code-line">
-                      {t('HLC')} {o.hlc.physical}:{o.hlc.logical}
-                      <br />
-                      {t('causal parents:')} {o.deps.join(', ') || 'none'}
-                    </p>
-                  )}
                   <button
                     className="button outline"
                     onClick={async () => {
@@ -575,11 +536,7 @@ export function Conflicts() {
               </div>
             )}
             <p className="fine">
-              {t(
-                easyMode
-                  ? 'Your decision is saved as a new entry. Both original entries are kept. If someone makes a different decision, it will come back for review.'
-                  : 'The resolution is a new operation with causal references to the alternatives. Independent conflicting resolutions remain reviewable.',
-              )}
+              {t('The resolution is a new operation with causal references to the alternatives. Independent conflicting resolutions remain reviewable.')}
             </p>
           </Panel>
         ))
@@ -588,35 +545,25 @@ export function Conflicts() {
   );
 }
 export function SyncCenter() {
-  const { t, locale, language } = useI18n();
-  const { status, sync, error, version, lens, easyMode } = useKuka(),
-    [root, setRoot] = useState('Computing…'),
-    s = vault.state!,
-    report = s.report;
-  useEffect(() => {
-    digest(s.ops).then(setRoot);
-  }, [version]);
-  const pending = new Set(vault.pending.map((o) => o.opId));
+  const { t, locale } = useI18n();
+  const { status, sync, error } = useKuka(),
+    s = vault.state!;
   const overview = (
     <>
-      <PageTitle
-        eyebrow={t('Village hub')}
-        title={t(easyMode ? 'Save & share' : 'Sync center')}
-        description={t(
-          easyMode
-            ? 'Your entries save on this device first. Copy them to the village hub when a connection is available.'
-            : 'Local durability and hub backup are different promises. See exactly where your work lives.',
-        )}
-        action={
+      <Panel
+        title={t('Sync center')}
+        aside={
           <button className="button primary" disabled={status === 'Syncing'} onClick={() => void sync()}>
             <RefreshCw size={16} className={status === 'Syncing' ? 'spin' : ''} />{' '}
-            {t('Sync with village hub')}
+            {t('Sync now')}
           </button>
         }
-      />
+      >
+        <p>{t('Local storage and remote backup are different promises. See exactly where your work lives.')}</p>
+      </Panel>
       {error && (
         <Notice tone="coral">
-          {error} {t('Your local records remain saved. Reconnect to the hub and retry.')}
+          {error} {t('Your local records remain saved. Reconnect and retry.')}
         </Notice>
       )}
       <div className="metrics">
@@ -628,185 +575,29 @@ export function SyncCenter() {
         />
         <Metric
           icon={<CloudUpload size={20} />}
-          label={t(easyMode ? 'Waiting to share' : 'Waiting for backup')}
+          label={t('Waiting for backup')}
           value={vault.pending.length}
-          note={t(easyMode ? 'Copy when connected' : 'Not yet acknowledged by hub')}
+          note={t('Not yet acknowledged by the backup service')}
           tone="amber"
         />
         <Metric
           icon={<ShieldCheck size={20} />}
           label={t('Differences to check')}
           value={vault.view.conflicts.length}
-          note={t(easyMode ? 'Original entries are kept' : 'Every alternative kept')}
+          note={t('Every alternative kept')}
           tone="peach"
         />
         <Metric
           icon={<Clock size={20} />}
-          label={t(easyMode ? 'Last copied to hub' : 'Last hub backup')}
+          label={t('Last backup')}
           value={time(s.lastSync, locale)}
-          note={
-            easyMode
-              ? s.lastSync
-                ? t('Completed {date}', { date: new Date(s.lastSync).toLocaleString(locale) })
-                : t('No completed copy yet')
-              : t('Durable cursor: {cursor}', { cursor: s.cursor })
-          }
+          note={t('Durable cursor: {cursor}', { cursor: s.cursor })}
           tone="blue"
         />
       </div>
     </>
   );
-  const technical = (
-    <>
-      <div className="dashboard-grid">
-        <Panel title={t('Last successful transfer')} aside={<Badge>{t(status)}</Badge>}>
-          {report ? (
-            <dl className="detail-list">
-              <div>
-                <dt>{t('Operations pushed / pulled')}</dt>
-                <dd>
-                  {report.sent} / {report.received}
-                </dd>
-              </div>
-              <div>
-                <dt>{t('JSON payload sent + received')}</dt>
-                <dd>{bytes(report.bytes)}</dd>
-              </div>
-              <div>
-                <dt>{t('End-to-end duration')}</dt>
-                <dd>
-                  {report.duration} {t('ms')}
-                </dd>
-              </div>
-              <div>
-                <dt>{t('Committed chunks')}</dt>
-                <dd>{report.chunks}</dd>
-              </div>
-              <div>
-                <dt>{t('Checkpoint')}</dt>
-                <dd>{new Date(report.checkpoint).toLocaleString(locale)}</dd>
-              </div>
-            </dl>
-          ) : (
-            <Empty
-              title={t('No transfer report yet')}
-              description={t('Connect to your village hub and start synchronization.')}
-            />
-          )}
-          <p className="fine">
-            {t(
-              'Payload counts include serialized request and response bodies. HTTP/TLS headers and retransmission bytes are not measured.',
-            )}
-          </p>
-        </Panel>
-        <Panel title={t('Log checks')}>
-          <div className="integrity-seal">
-            <ShieldCheck size={32} />
-            <div>
-              <strong>
-                {s.ops.length} {t('immutable operations')}
-              </strong>
-              <p>{t('Preserved locally, including original alternatives')}</p>
-            </div>
-          </div>
-          <p className="eyebrow">{t('Log checksum · SHA-256')}</p>
-          <code className="hash">{root}</code>
-          <p className="fine">
-            {t(
-              'This digest detects log differences. Compare it with the hub digest after full synchronization. It is a whole-log digest, not a Merkle repair tree.',
-            )}
-          </p>
-          <p className="fine">
-            {t('Quarantined operations:')} {s.quarantined.length}
-          </p>
-          {!easyMode &&
-            s.quarantined.map((q) => (
-              <Notice key={q.opId} tone="coral">
-                {q.opId}: {q.reason}
-              </Notice>
-            ))}
-        </Panel>
-      </div>
-      <Panel
-        title={t('Operation ledger')}
-        aside={<span className="fine">{t('Showing latest 40 · originals never removed')}</span>}
-      >
-        <div className="table-scroll">
-          <table>
-            <thead>
-              <tr>
-                <th>{t('OPERATION')}</th>
-                <th>{t('RECORD & FIELD')}</th>
-                <th>{t('AUTHOR')}</th>
-                <th>{t('BACKUP STATE')}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {s.ops
-                .slice()
-                .sort(compareOpsByClock)
-                .slice(-40)
-                .reverse()
-                .map((o) => (
-                  <tr key={o.opId}>
-                    <td>
-                      <code>{o.opId.length > 30 ? '…' + o.opId.slice(-20) : o.opId}</code>
-                      <small>
-                        {o.kind} {t('· HLC')} {o.hlc.logical}
-                      </small>
-                    </td>
-                    <td>
-                      {o.entityId}
-                      <small>{o.field}</small>
-                    </td>
-                    <td>{o.actorId}</td>
-                    <td>
-                      <Badge tone={pending.has(o.opId) ? 'amber' : 'green'}>
-                        {t(pending.has(o.opId) ? 'Only on this device' : 'At hub / received')}
-                      </Badge>
-                    </td>
-                  </tr>
-                ))}
-            </tbody>
-          </table>
-        </div>
-      </Panel>
-    </>
-  );
-  return (
-    <>
-      {overview}
-      {easyMode && vault.view.conflicts.length > 0 && (
-        <Notice tone="amber">
-          {t('Some entries disagree. Original entries are kept.')}{' '}
-          <Link to="/app/conflicts">{t('Check the differences before making a decision.')}</Link>
-        </Notice>
-      )}
-      {easyMode && s.quarantined.length > 0 && (
-        <Panel title={t('Changes need attention')}>
-          <p>
-            {s.quarantined.length}{' '}
-            {t(
-              'changes were set aside by the hub. Your saved local records are kept. Ask an administrator to check the reasons below.',
-            )}
-          </p>
-          {s.quarantined.map((q) => (
-            <Notice key={q.opId} tone="coral">
-              {q.reason}
-            </Notice>
-          ))}
-        </Panel>
-      )}
-      {easyMode ? (
-        <details className="easy-technical-details">
-          <summary>{t('Technical details and change history')}</summary>
-          {technical}
-        </details>
-      ) : (
-        technical
-      )}
-    </>
-  );
+  return overview;
 }
 export function Library() {
   const { t, locale, language } = useI18n();
@@ -1105,9 +896,12 @@ export function SettingsPage() {
     <>
       <PageTitle
         eyebrow={t('This device')}
-        title={t('Settings & recovery')}
-        description={t('Download a backup, or save your recovery code before changing devices.')}
+        title={t('Settings, sync & recovery')}
+        description={t('Synchronize records, download a backup, or save your recovery code before changing devices.')}
       />
+      <section id="sync" className="settings-sync">
+        <SyncCenter />
+      </section>
       <div className="dashboard-grid">
         <Panel title={t('Encrypted backup & restore')}>
           <h3>{t('Save a backup')}</h3>
@@ -1354,7 +1148,7 @@ export function About() {
       <Panel title="What this build does">
         <p>
           Every local write commits an encrypted operation log to IndexedDB before the interface confirms it.
-          The village hub uses SQLite transactions, immutable operation IDs, bounded delta batches, durable
+          The shared service uses SQLite transactions, immutable operation IDs, bounded delta batches, durable
           cursors, authenticated device sessions, and encrypted storage.
         </p>
         <p>
