@@ -15,7 +15,7 @@ import {
   PaginationSchema,
   CalendarDateSchema,
 } from '../../../packages/sync-core/src/domain.js';
-import { HubStore, HttpError } from './store.js';
+import { HubStore, HttpError, SESSION_TTL_MS } from './store.js';
 import { lessons } from '../../../packages/content/lessons.js';
 
 type AuthRequest = Request & { device: any };
@@ -113,7 +113,7 @@ export function installBusinessRoutes(app: Express, store: HubStore) {
     }),
   );
   app.post('/api/session/renew', (req: any, res) => {
-    const expires = Date.now() + 7 * 86400000;
+    const expires = Date.now() + SESSION_TTL_MS;
     store.db
       .prepare('UPDATE devices SET expires=?,last_seen=? WHERE id=?')
       .run(expires, Date.now(), req.device.id);

@@ -60,6 +60,7 @@ export type Change = {
 export type ExpectedVersion = { entityId: string; version: string };
 export type RecordEnvelope = { record: Record<string, any>; version: string; updatedAt: number };
 const roles: Role[] = ['Teacher', 'Health Worker', 'Reviewer', 'Hub Admin'];
+export const SESSION_TTL_MS = 60 * 60 * 1000;
 const emptyVersion = hash(canonical([]));
 
 export class HubStore {
@@ -132,7 +133,7 @@ export class HubStore {
     const id = 'device-' + randomBytes(8).toString('hex'),
       token = randomBytes(32).toString('hex'),
       recovery = randomBytes(18).toString('base64url'),
-      expires = Date.now() + 7 * 86400000;
+      expires = Date.now() + SESSION_TTL_MS;
     this.db
       .prepare(
         'INSERT INTO devices(id,school,actor,role,token_hash,recovery_hash,expires,last_seen,signing_secret) VALUES(?,?,?,?,?,?,?,?,?)',

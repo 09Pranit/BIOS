@@ -3,7 +3,7 @@ import { once } from 'node:events';
 import type { Server } from 'node:http';
 import { randomBytes, randomUUID } from 'node:crypto';
 import { createApp } from '../apps/hub/src/app';
-import { HubStore } from '../apps/hub/src/store';
+import { HubStore, SESSION_TTL_MS } from '../apps/hub/src/store';
 import { makeOp, materialize, signOperation, type Op } from '../packages/sync-core/src/index';
 
 let store: HubStore, server: Server, url: string;
@@ -78,12 +78,14 @@ describe('manual database HTTP API', () => {
     const renewal = await request(identity, '/api/session/renew', 'POST', {});
     expect(renewal.response.status).toBe(200);
     expect(renewal.data.expires).toBeGreaterThan(Date.now());
+    expect(renewal.data.expires).toBeLessThanOrEqual(Date.now() + SESSION_TTL_MS);
     expect((await request(identity, '/api/session')).response.status).toBe(200);
   });
 
   it('authenticates database queries and exposes session and database metadata', async () => {
     expect((await request(undefined, '/api/children')).response.status).toBe(401);
     const identity = store.enroll('Reviewer', 'Reviewer');
+    expect(identity.expires).toBeLessThanOrEqual(Date.now() + SESSION_TTL_MS);
     const session = await request(identity, '/api/session');
     expect(session.response.status).toBe(200);
     expect(session.data).toMatchObject({

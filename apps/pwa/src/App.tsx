@@ -32,19 +32,25 @@ import { listWorkspaces, rememberActiveWorkspace } from './lib/workspaces';
 import { Badge, Notice, Submit, time } from './components/UI';
 import QuickSearch from './components/QuickSearch';
 import { displayRole } from './lib/presentation';
-import { Today, Children, School, Health } from './pages/DataEntry';
+import { Today, ClinicToday, Children, School, Health } from './pages/DataEntry';
 import { ChildDetail, Conflicts, SettingsPage, Library, Admin, About } from './pages/Workspace';
 import Lab from './pages/Lab';
 import PublicHome from './components/PublicHome';
 import RouteMetadata, { isWorkspaceRoute } from './components/RouteMetadata';
 import DeviceGate from './components/DeviceGate';
 import { newId, timeoutSignal } from './lib/platform';
-const nav = [
+const schoolNav = [
   ['/app/today', 'Overview', LayoutDashboard],
   ['/app/children', 'Children', Users],
   ['/app/school', 'Classroom', GraduationCap],
   ['/app/health', 'Health records', Heart],
   ['/app/library', 'Learning library', BookOpen],
+  ['/app/conflicts', 'Conflict inbox', ShieldCheck],
+] as const;
+const clinicNav = [
+  ['/app/today', 'Clinic overview', LayoutDashboard],
+  ['/app/children', 'Patients', Users],
+  ['/app/health', 'Clinical records', Heart],
   ['/app/conflicts', 'Conflict inbox', ShieldCheck],
 ] as const;
 function Brand() {
@@ -467,12 +473,28 @@ function Shell() {
     [collapsed, setCollapsed] = useState(false),
     location = useLocation();
   useEffect(() => setMobile(false), [location.pathname, location.search]);
+  useEffect(() => {
+    if (!unlocked) return;
+    const renewIfNeeded = () => {
+      const expires = vault.state?.identity.expires ?? 0;
+      if (navigator.onLine && expires - Date.now() <= 10 * 60 * 1000)
+        void vault
+          .renewSession()
+          .then(refresh)
+          .catch(() => {});
+    };
+    renewIfNeeded();
+    const timer = window.setInterval(renewIfNeeded, 5 * 60 * 1000);
+    return () => window.clearInterval(timer);
+  }, [unlocked, refresh]);
   if (!unlocked) return <Unlock />;
   const conflicts = vault.view.conflicts.length,
     identity = vault.state!.identity,
-    pending = vault.pending.length;
+    pending = vault.pending.length,
+    clinic = identity.role === 'Health Worker',
+    activeNav = clinic ? clinicNav : schoolNav;
   const section =
-    nav.find(([path]) => location.pathname.startsWith(path))?.[1] ??
+    activeNav.find(([path]) => location.pathname.startsWith(path))?.[1] ??
     (location.pathname.startsWith('/lab')
       ? 'Resilience lab'
       : location.pathname === '/admin'
@@ -505,9 +527,11 @@ function Shell() {
               <ChevronDown size={14} />
             </summary>
             <div className="new-menu-options">
-              <Link to="/app/children?new=student">
-                <GraduationCap size={15} /> {t('Student')}
-              </Link>
+              {!clinic && (
+                <Link to="/app/children?new=student">
+                  <GraduationCap size={15} /> {t('Student')}
+                </Link>
+              )}
               <Link to="/app/children?new=patient">
                 <Heart size={15} /> {t('Patient')}
               </Link>
@@ -530,7 +554,7 @@ function Shell() {
         </div>
       </header>
       <nav className="repo-tabs" aria-label={t('Workspace sections')}>
-        {nav.map(([path, label, Icon]) => (
+        {activeNav.map(([path, label, Icon]) => (
           <NavLink key={path} to={path}>
             <Icon size={16} />
             <span>{t(label)}</span>
@@ -557,7 +581,7 @@ function Shell() {
         </div>
         <div className="nav-label">{t('Workspace')}</div>
         <nav aria-label={t('Main navigation')}>
-          {nav.map(([path, label, Icon]) => (
+          {activeNav.map(([path, label, Icon]) => (
             <NavLink key={path} to={path}>
               <Icon size={16} />
               <span>{t(label)}</span>
@@ -566,16 +590,20 @@ function Shell() {
             </NavLink>
           ))}
         </nav>
-        <div className="nav-label tools-label">{t('Tools')}</div>
+        <div className="nav-label tools-label">{t(clinic ? 'Clinic tools' : 'Tools')}</div>
         <nav aria-label={t('Workspace tools')}>
-          <NavLink to="/lab">
-            <FlaskConical size={16} />
-            <span>{t('Resilience lab')}</span>
-          </NavLink>
-          <NavLink to="/admin">
-            <Activity size={16} />
-            <span>{t('Record database')}</span>
-          </NavLink>
+          {!clinic && (
+            <>
+              <NavLink to="/lab">
+                <FlaskConical size={16} />
+                <span>{t('Resilience lab')}</span>
+              </NavLink>
+              <NavLink to="/admin">
+                <Activity size={16} />
+                <span>{t('Record database')}</span>
+              </NavLink>
+            </>
+          )}
           <NavLink to="/app/settings">
             <Settings size={16} />
             <span>{t('Settings, sync & recovery')}</span>
@@ -621,8 +649,7 @@ function Shell() {
               onClick={() => void sync()}
               disabled={status === 'Syncing'}
             >
-              {status === 'Offline' ? <WifiOff size={14} /> : <Wifi size={14} />}{' '}
-              {t(status)}
+              {status === 'Offline' ? <WifiOff size={14} /> : <Wifi size={14} />} {t(status)}
               <RefreshCw size={13} className={status === 'Syncing' ? 'spin' : ''} />
             </button>
           </div>
@@ -645,33 +672,35 @@ function Shell() {
                 : t('Preparing offline shell…')}
           </span>
           <span>
-            {t('Last backup')}:{' '}
-            {time(vault.state?.lastSync ?? 0, locale)}
+            {t('Last backup')}: {time(vault.state?.lastSync ?? 0, locale)}
           </span>
         </div>
         <main id="main" className="main-content" tabIndex={-1}>
           <Routes>
-            <Route path="/app/today" element={<Today />} />
-            <Route path="/app/children" element={<Children />} />
+            <Route path="/app/today" element={clinic ? <ClinicToday /> : <Today />} />
+            <Route path="/app/children" element={<Children clinic={clinic} />} />
             <Route path="/app/children/:id" element={<ChildDetail />} />
-            <Route path="/app/school" element={<School />} />
+            <Route path="/app/school" element={clinic ? <Navigate to="/app/health" replace /> : <School />} />
             <Route path="/app/health" element={<Health />} />
-            <Route path="/app/library" element={<Library />} />
+            <Route
+              path="/app/library"
+              element={clinic ? <Navigate to="/app/health" replace /> : <Library />}
+            />
             <Route path="/app/sync" element={<Navigate to="/app/settings#sync" replace />} />
             <Route path="/app/conflicts" element={<Conflicts />} />
             <Route path="/app/settings" element={<SettingsPage />} />
-            <Route path="/admin" element={<Admin />} />
-            <Route path="/lab/*" element={<Lab />} />
+            <Route path="/admin" element={clinic ? <Navigate to="/app/today" replace /> : <Admin />} />
+            <Route path="/lab/*" element={clinic ? <Navigate to="/app/today" replace /> : <Lab />} />
             <Route path="*" element={<Navigate to="/app/today" />} />
           </Routes>
         </main>
         <nav className="mobile-bottom-nav" aria-label={t('Quick navigation')}>
-          {[nav[0], nav[1], nav[2], ['/app/settings', 'Settings', Settings] as const].map(
+          {[activeNav[0], activeNav[1], activeNav[2], ['/app/settings', 'Settings', Settings] as const].map(
             ([path, label, Icon]) => (
-            <NavLink key={path} to={path}>
-              <Icon size={18} />
-              <span>{t(label)}</span>
-            </NavLink>
+              <NavLink key={path} to={path}>
+                <Icon size={18} />
+                <span>{t(label)}</span>
+              </NavLink>
             ),
           )}
         </nav>

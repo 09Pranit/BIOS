@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type KeyboardEvent } from 'react';
+import { useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import {
   Plus,
@@ -372,6 +372,152 @@ export function Today() {
     </>
   );
 }
+
+function ClinicMetric({
+  icon,
+  value,
+  label,
+  note,
+}: {
+  icon: ReactNode;
+  value: number;
+  label: string;
+  note: string;
+}) {
+  return (
+    <div className="metric">
+      <div className="metric-icon blue">{icon}</div>
+      <div className="metric-top">
+        <span>{label}</span>
+        <strong>{value}</strong>
+      </div>
+      <p>{note}</p>
+    </div>
+  );
+}
+
+export function ClinicToday() {
+  const { t, locale } = useI18n();
+  const { status } = useKuka();
+  const patients = childrenOnDevice();
+  const visits = patients.reduce((total, patient) => total + (patient.visits?.length ?? 0), 0);
+  const clinicalFields = new Set(['visits', 'growth', 'doses', 'doseStatus', 'allergy', 'prescription']);
+  const recent = vault
+    .state!.ops.filter(
+      (operation) => clinicalFields.has(operation.field) && !operation.entityId.startsWith('lab-'),
+    )
+    .slice()
+    .sort(compareOpsByClock)
+    .reverse()
+    .slice(0, 8);
+  return (
+    <>
+      <PageTitle
+        eyebrow={t('Clinic workspace')}
+        title={t('Clinic overview')}
+        description={t(
+          'Offline patient registration, community visits and clinical follow-up in one workspace.',
+        )}
+        action={
+          <Link className="button primary" to="/app/children?new=patient">
+            <Plus size={16} /> {t('New patient')}
+          </Link>
+        }
+      />
+      <div className="entry-shortcuts">
+        <Link className="button primary" to="/app/health">
+          <Heart size={16} /> {t('Add clinical record')}
+        </Link>
+        <Link className="button outline" to="/app/children">
+          <Users size={16} /> {t('Open patients')}
+        </Link>
+        <Link className="button outline" to="/app/conflicts">
+          <ShieldCheck size={16} /> {t('Review conflicts')}
+        </Link>
+        <span className="shortcut-note">{t('Every entry is encrypted and saved locally first.')}</span>
+      </div>
+      <div className="metrics">
+        <ClinicMetric
+          icon={<Users size={18} />}
+          value={patients.length}
+          label={t('Patients')}
+          note={t('Available on this device')}
+        />
+        <ClinicMetric
+          icon={<Heart size={18} />}
+          value={visits}
+          label={t('Clinical visits')}
+          note={t('Recorded history retained')}
+        />
+        <ClinicMetric
+          icon={<ShieldCheck size={18} />}
+          value={vault.view.conflicts.length}
+          label={t('Conflicts')}
+          note={t('Alternatives preserved for review')}
+        />
+        <ClinicMetric
+          icon={<RefreshCw size={18} />}
+          value={vault.pending.length}
+          label={t('Waiting to sync')}
+          note={t(status)}
+        />
+      </div>
+      <div className="dashboard-grid">
+        <Panel title={t('Patient list')} className="flush-panel">
+          <div className="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>{t('Patient')}</th>
+                  <th>{t('Date of birth')}</th>
+                  <th>{t('Visits')}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {patients.slice(0, 8).map((patient) => (
+                  <tr key={patient.id}>
+                    <td>
+                      <Link to={'/app/children/' + patient.id}>{patient.name ?? patient.id}</Link>
+                    </td>
+                    <td>{patient.dob ?? t('Not recorded')}</td>
+                    <td>{patient.visits?.length ?? 0}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          {!patients.length && (
+            <Empty
+              title={t('No patients yet')}
+              description={t('Register a patient to begin offline care records.')}
+            />
+          )}
+        </Panel>
+        <Panel title={t('Recent clinical changes')} className="flush-panel">
+          {recent.length ? (
+            <div className="compact-events">
+              {recent.map((operation) => (
+                <div key={operation.opId}>
+                  <Heart size={15} />
+                  <span>
+                    <strong>{t(operation.field)}</strong>
+                    <small>{operation.actorId}</small>
+                  </span>
+                  <time>{time(operation.hlc.physical, locale)}</time>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <Empty
+              title={t('No clinical changes yet')}
+              description={t('Visits and observations will appear here.')}
+            />
+          )}
+        </Panel>
+      </div>
+    </>
+  );
+}
 function RosterImport({ close }: { close: () => void }) {
   const { t, locale } = useI18n();
   const { refresh, notify } = useKuka(),
@@ -522,7 +668,7 @@ function RosterImport({ close }: { close: () => void }) {
     </Modal>
   );
 }
-export function Children() {
+export function Children({ clinic = false }: { clinic?: boolean }) {
   const { t, locale, language } = useI18n();
   const { version } = useKuka(),
     children = childrenOnDevice(),
@@ -563,33 +709,49 @@ export function Children() {
   return (
     <>
       <PageTitle
-        eyebrow={t('Smriva workspace')}
-        title={t('Children')}
-        description={t('Search, register, import, and correct child records.')}
+        eyebrow={t(clinic ? 'Clinic workspace' : 'Smriva workspace')}
+        title={t(clinic ? 'Patients' : 'Children')}
+        description={t(
+          clinic
+            ? 'Search, register and update patient records offline.'
+            : 'Search, register, import, and correct child records.',
+        )}
         action={
           <div className="button-row no-margin">
-            <button className="button outline" onClick={() => setImporting(true)}>
-              <Upload size={16} /> {t('Import CSV')}
-            </button>
-            <details className="new-menu">
-              <summary className="button primary">
-                <Plus size={16} /> {t('New')} <ChevronDown size={14} />
-              </summary>
-              <div className="new-menu-options">
-                <button type="button" onClick={() => setAdd('student')}>
-                  <GraduationCap size={15} /> {t('Student')}
-                </button>
-                <button type="button" onClick={() => setAdd('patient')}>
-                  <Heart size={15} /> {t('Patient')}
-                </button>
-              </div>
-            </details>
+            {!clinic && (
+              <button className="button outline" onClick={() => setImporting(true)}>
+                <Upload size={16} /> {t('Import CSV')}
+              </button>
+            )}
+            {clinic ? (
+              <button className="button primary" onClick={() => setAdd('patient')}>
+                <Plus size={16} /> {t('New patient')}
+              </button>
+            ) : (
+              <details className="new-menu">
+                <summary className="button primary">
+                  <Plus size={16} /> {t('New')} <ChevronDown size={14} />
+                </summary>
+                <div className="new-menu-options">
+                  <button type="button" onClick={() => setAdd('student')}>
+                    <GraduationCap size={15} /> {t('Student')}
+                  </button>
+                  <button type="button" onClick={() => setAdd('patient')}>
+                    <Heart size={15} /> {t('Patient')}
+                  </button>
+                </div>
+              </details>
+            )}
           </div>
         }
       />
       <div className="toolbar records-toolbar">
-        <SearchField value={search} onChange={setSearch} />
-        <ClassFilter value={grade} onChange={setGrade} />
+        <SearchField
+          value={search}
+          onChange={setSearch}
+          label={clinic ? 'Search patients' : 'Search children'}
+        />
+        {!clinic && <ClassFilter value={grade} onChange={setGrade} />}
         <select aria-label={t('Record status')} value={review} onChange={(e) => setReview(e.target.value)}>
           <option value="All records">{t('All records')}</option>
           <option value="Needs review">{t('Needs review')}</option>
@@ -608,10 +770,18 @@ export function Children() {
         <button
           className="button outline"
           onClick={() =>
-            downloadCSV('smriva-children.csv', [
-              ['name', 'dob', 'class', 'village', 'guardian', 'consent'],
-              ...shown.map((c) => [c.name, c.dob, c.class, c.village, c.guardian, c.consent]),
-            ])
+            downloadCSV(
+              clinic ? 'smriva-patients.csv' : 'smriva-children.csv',
+              clinic
+                ? [
+                    ['name', 'dob', 'guardian', 'visits', 'consent'],
+                    ...shown.map((c) => [c.name, c.dob, c.guardian, c.visits?.length ?? 0, c.consent]),
+                  ]
+                : [
+                    ['name', 'dob', 'class', 'village', 'guardian', 'consent'],
+                    ...shown.map((c) => [c.name, c.dob, c.class, c.village, c.guardian, c.consent]),
+                  ],
+            )
           }
         >
           <Download size={16} /> {t('Export')}
@@ -632,8 +802,8 @@ export function Children() {
               <tr>
                 <th>{t('Child')}</th>
                 <th>{t('Date of birth')}</th>
-                <th>{t('Class')}</th>
-                <th>{t('Village')}</th>
+                {!clinic && <th>{t('Class')}</th>}
+                <th>{t(clinic ? 'Guardian' : 'Village')}</th>
                 <th>{t('Records')}</th>
                 <th>{t('Status')}</th>
               </tr>
@@ -653,17 +823,19 @@ export function Children() {
                     </Link>
                   </td>
                   <td>{c.dob ?? t('Review required')}</td>
-                  <td>{t(c.class ?? 'Needs review')}</td>
+                  {!clinic && <td>{t(c.class ?? 'Needs review')}</td>}
                   <td>
-                    {c.village}
-                    <small>{c.guardian || t('No guardian recorded')}</small>
+                    {clinic ? c.guardian || t('No guardian recorded') : c.village}
+                    {!clinic && <small>{c.guardian || t('No guardian recorded')}</small>}
                   </td>
                   <td>
                     <span className="record-tags">
-                      <span>
-                        <GraduationCap size={13} /> {t('School')}{' '}
-                      </span>
-                      {c.visits?.length > 0 && (
+                      {!clinic && (
+                        <span>
+                          <GraduationCap size={13} /> {t('School')}{' '}
+                        </span>
+                      )}
+                      {(clinic || c.visits?.length > 0) && (
                         <span>
                           <Heart size={13} /> {t('Health')}{' '}
                         </span>
@@ -1228,7 +1400,9 @@ export function Health() {
       <PageTitle
         eyebrow={t('Smriva workspace')}
         title={t('Health records')}
-        description={t('Select a child, enter the event, and save locally. Every event is retained separately.')}
+        description={t(
+          'Select a child, enter the event, and save locally. Every event is retained separately.',
+        )}
       />
       <div className="health-entry-layout">
         <Panel title={t('New health record')}>
