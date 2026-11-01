@@ -136,10 +136,7 @@ export function ChildForm({
     [formKey, setFormKey] = useState(0),
     [initialChild] = useState(() => (child ? { ...child } : undefined)),
     [observedAtStart] = useState(() => vault.state!.ops.slice()),
-    [defaults, setDefaults] = useState({
-      class: child?.class ?? 'Class 1',
-      village: child?.village ?? 'Daun Kalan',
-    }),
+    [defaultClass, setDefaultClass] = useState(child?.class ?? 'Class 1'),
     newTitle = profile === 'patient' ? 'New patient' : 'New student';
   return (
     <Modal title={t(child ? 'Edit record' : newTitle)} close={close}>
@@ -158,7 +155,9 @@ export function ChildForm({
               { entityId: id, field: 'dob', value: String(data.get('dob')) },
               { entityId: id, field: 'guardian', value: String(data.get('guardian') ?? '') },
               { entityId: id, field: 'class', value: String(data.get('class')) },
-              { entityId: id, field: 'village', value: String(data.get('village')) },
+              // Village is retained for older records and sync compatibility,
+              // but is no longer requested when creating or editing a person.
+              { entityId: id, field: 'village', value: initialChild?.village ?? 'Not specified' },
               { entityId: id, field: 'consent', value: true },
             ];
             if (!initialChild)
@@ -172,7 +171,7 @@ export function ChildForm({
             refresh();
             notify(t('Record saved on this device · encrypted'));
             if (data.get('continue') === 'yes') {
-              setDefaults({ class: String(data.get('class')), village: String(data.get('village')) });
+              setDefaultClass(String(data.get('class')));
               setError('');
               setFormKey((v) => v + 1);
             } else close();
@@ -202,7 +201,7 @@ export function ChildForm({
           </label>
           <label>
             {t('Class')}
-            <select aria-label={t('Class')} name="class" defaultValue={defaults.class}>
+            <select aria-label={t('Class')} name="class" defaultValue={defaultClass}>
               {[1, 2, 3, 4, 5].map((n) => (
                 <option key={n} value={'Class ' + n}>
                   {t('Class')} {n}
@@ -218,14 +217,6 @@ export function ChildForm({
             defaultValue={initialChild?.guardian}
             maxLength={80}
           />
-        </label>
-        <label>
-          {t('Village')}
-          <select aria-label={t('Village')} name="village" defaultValue={defaults.village}>
-            {['Daun Kalan', 'Baran', 'Lang'].map((v) => (
-              <option key={v}>{v}</option>
-            ))}
-          </select>
         </label>
         <label className="checkbox-label">
           <input type="checkbox" required defaultChecked={Boolean(child?.consent)} />{' '}

@@ -185,12 +185,11 @@ test('consecutive registration, reviewed CSV import, global search and dark them
   await dialog.getByLabel(/Child’s name/).fill('Entry Example One');
   await dialog.getByLabel('Date of birth', { exact: true }).fill('2019-04-15');
   await dialog.getByLabel('Class', { exact: true }).selectOption('Class 3');
-  await dialog.getByLabel('Village', { exact: true }).selectOption('Baran');
   await dialog.getByRole('checkbox').check();
   await dialog.getByRole('button', { name: 'Save and add another' }).click();
   await expect(dialog.getByLabel(/Child’s name/)).toHaveValue('');
   await expect(dialog.getByLabel('Class', { exact: true })).toHaveValue('Class 3');
-  await expect(dialog.getByLabel('Village', { exact: true })).toHaveValue('Baran');
+  await expect(dialog.getByLabel('Village', { exact: true })).toHaveCount(0);
   await dialog.getByLabel(/Child’s name/).fill('Entry Example Two');
   await dialog.getByLabel('Date of birth', { exact: true }).fill('2019-06-10');
   await dialog.getByRole('checkbox').check();
