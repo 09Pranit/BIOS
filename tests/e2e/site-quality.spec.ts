@@ -94,7 +94,7 @@ for (const [name, viewport] of [
   ['desktop', { width: 1440, height: 1000 }],
   ['mobile', { width: 390, height: 844 }],
 ] as const) {
-  test(`public and standard/Easy workspaces have no detected WCAG A/AA or axe best-practice violations on ${name}`, async ({
+  test(`public and workspace pages have no detected WCAG A/AA or axe best-practice violations on ${name}`, async ({
     page,
   }) => {
     await page.setViewportSize(viewport);
