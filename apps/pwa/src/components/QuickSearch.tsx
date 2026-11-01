@@ -7,7 +7,6 @@ import {
   ArrowRight,
   FilePlus2,
   GraduationCap,
-  Heart,
   RefreshCw,
   ShieldCheck,
   Database,
@@ -16,11 +15,11 @@ import { Modal } from './UI';
 import { vault } from '../lib/vault';
 import { useKuka } from '../lib/context';
 import { matchesChild } from '../lib/entry';
+import { isPatientRecord } from '../lib/presentation';
 const pages = [
   { title: 'Record database and enrollment', path: '/admin', Icon: Database },
   { title: 'New student', path: '/app/children?new=student', Icon: FilePlus2 },
   { title: 'Attendance and assessments', path: '/app/school', Icon: GraduationCap },
-  { title: 'Add health record', path: '/app/health', Icon: Heart },
   { title: 'Settings and sync', path: '/app/settings#sync', Icon: RefreshCw },
   { title: 'Conflict inbox', path: '/app/conflicts', Icon: ShieldCheck },
 ];
@@ -43,7 +42,14 @@ export default function QuickSearch() {
     return () => window.removeEventListener('keydown', key);
   }, []);
   const children = Object.values(vault.view.entities)
-    .filter((c) => c.type === 'child' && !c.deleted && !c.id.startsWith('lab-') && matchesChild(c, query))
+    .filter(
+      (c) =>
+        c.type === 'child' &&
+        !c.deleted &&
+        !c.id.startsWith('lab-') &&
+        !isPatientRecord(c) &&
+        matchesChild(c, query),
+    )
     .slice(0, 8);
   const results = [
     ...pages
@@ -56,7 +62,7 @@ export default function QuickSearch() {
       title: c.name ?? t('Identity needs review'),
       path: '/app/children/' + c.id,
       Icon: Users,
-      detail: `${c.id} · ${c.class} · ${c.village}`,
+      detail: `${c.id} · ${c.class}`,
     })),
   ];
   const choose = (path: string) => {
@@ -74,8 +80,7 @@ export default function QuickSearch() {
         aria-keyshortcuts="Control+K Meta+K"
       >
         <Search size={16} />
-        <span>{t('Search or jump to…')}</span>{' '}
-        <kbd aria-hidden="true">Ctrl K</kbd>
+        <span>{t('Search or jump to…')}</span> <kbd aria-hidden="true">Ctrl K</kbd>
       </button>
       {open && (
         <Modal title={t('Search records and pages')} close={() => setOpen(false)}>

@@ -28,7 +28,7 @@ export default defineConfig({
       manifest: {
         name: 'Smriva · Last-mile continuity',
         short_name: 'Smriva',
-        description: 'Offline village health and education',
+        description: 'Offline education records',
         theme_color: '#171d1b',
         background_color: '#171d1b',
         display: 'standalone',
@@ -45,7 +45,7 @@ export default defineConfig({
         navigateFallback: '/app-shell.html',
         navigateFallbackDenylist: [/^\/api\//],
         navigateFallbackAllowlist: [
-          /^(?:\/(?:\?|$)|\/about(?:\?|$)|\/app\/(?:today|children(?:\/[^/?]+)?|school|health|library|sync|conflicts|settings)(?:[/?]|$)|\/(?:admin|recover)(?:[/?]|$)|\/lab(?:[/?]|$))/,
+          /^(?:\/(?:\?|$)|\/about(?:\?|$)|\/app\/(?:today|children(?:\/[^/?]+)?|school|library|sync|conflicts|settings)(?:[/?]|$)|\/(?:admin|recover)(?:[/?]|$)|\/lab(?:[/?]|$))/,
         ],
         runtimeCaching: [
           {

@@ -80,7 +80,7 @@ test('mobile workspace and real lab recovery scenario', async ({ page }) => {
   await page.screenshot({ path: 'docs/dashboard-mobile.png', fullPage: true });
   await navigate(page, '/lab');
   await page.getByRole('button', { name: 'Initialize two real devices' }).click();
-  await expect(page.getByText('Device A · Health worker', { exact: true })).toBeVisible({ timeout: 30000 });
+  await expect(page.getByText('Device A · Teacher', { exact: true })).toBeVisible({ timeout: 30000 });
   await page.getByRole('button', { name: 'Create concurrent scenario' }).click();
   await expect(page.getByRole('button', { name: 'Create concurrent scenario' })).toBeEnabled({
     timeout: 30000,
@@ -93,30 +93,6 @@ test('mobile workspace and real lab recovery scenario', async ({ page }) => {
   await page.getByRole('button', { name: 'Lost phone drill (lab device A)' }).click();
   await expect(page.locator('.event-log')).toContainText('Digest match: true', { timeout: 30000 });
   await page.screenshot({ path: 'docs/lab-mobile.png', fullPage: true });
-});
-test('original lessons and quiz attempts work offline and remain in the operation ledger after reload', async ({
-  page,
-  context,
-}) => {
-  await unlock(page, 'Offline Learner');
-  await page.waitForFunction(() => Boolean(navigator.serviceWorker.controller));
-  await navigate(page, '/app/library');
-  await context.setOffline(true);
-  await page.getByRole('button', { name: 'Open Little numbers, big discoveries' }).click();
-  await page.getByRole('button', { name: 'B 4', exact: true }).click();
-  await page.getByRole('button', { name: 'Check & save my progress' }).click();
-  await expect(page.getByText('That’s right. Your progress is saved.', { exact: true })).toBeVisible();
-  await page.getByRole('button', { name: 'Close dialog' }).click();
-  await navigate(page, '/app/settings#sync');
-  await page.reload();
-  await page.getByLabel('Device PIN', { exact: true }).fill('123456');
-  await page.getByRole('button', { name: 'Unlock workspace' }).click();
-  await expect(
-    page.locator('tr').filter({ hasText: 'lesson-division' }).filter({ hasText: 'progress' }),
-  ).toBeVisible();
-  await navigate(page, '/app/today');
-  await page.getByRole('link', { name: 'lesson-division', exact: true }).click();
-  await expect(page.getByRole('heading', { name: 'Learning library', exact: true })).toBeVisible();
 });
 test('keyboard attendance and bulk remaining entry preserve existing marks', async ({ page }) => {
   await unlock(page, 'Entry Worker');
@@ -233,9 +209,7 @@ test('consecutive registration, reviewed CSV import, global search and dark them
   await page.screenshot({ path: 'docs/child-dark.png', fullPage: true });
 });
 
-test('record database stays durable offline and syncs into the child roster', async ({
-  page,
-}) => {
+test('record database stays durable offline and syncs into the child roster', async ({ page }) => {
   const name = 'Hub Entry Example';
   await unlock(page, 'Database Administrator', 'Hub Admin');
   await page.waitForFunction(() => Boolean(navigator.serviceWorker.controller));

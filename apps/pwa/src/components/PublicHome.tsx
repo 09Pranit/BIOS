@@ -31,15 +31,15 @@ export default function PublicHome() {
       <main id="public-main" tabIndex={-1}>
         <section className="public-hero" aria-labelledby="public-title">
           <div className="public-hero-copy">
-            <p className="public-kicker">School registers &amp; community care</p>
+            <p className="public-kicker">School registers &amp; education</p>
             <h1 id="public-title">
               Offline records.
               <br />
               Connected communities.
             </h1>
             <p className="public-intro">
-              Take attendance. Record a visit. Come back to an unfinished entry. Smriva keeps this work on
-              your device, then copies it to remote backup when a connection is available.
+              Take attendance. Record assessment scores. Come back to an unfinished entry. Smriva keeps this
+              work on your device, then copies it to remote backup when a connection is available.
             </p>
             <div className="public-actions">
               <a className="button primary" href="/app/today">
@@ -90,25 +90,25 @@ export default function PublicHome() {
           </figure>
         </section>
         <section className="public-features" aria-labelledby="public-work-title">
-          <h2 id="public-work-title">One workspace for school and care.</h2>
+          <h2 id="public-work-title">One workspace for school records.</h2>
           <div className="public-use-list">
             <article>
               <span>School</span>
               <div>
                 <h3>A school register</h3>
                 <p>
-                  Mark attendance, enter assessment scores and find a child’s earlier records. The learning
-                  library has four lessons you can use offline.
+                  Mark attendance, enter assessment scores and find a student’s earlier records. Official
+                  government schemes are listed in the workspace.
                 </p>
               </div>
             </article>
             <article>
-              <span>Care</span>
+              <span>Progress</span>
               <div>
-                <h3>A record of care</h3>
+                <h3>A record of learning</h3>
                 <p>
-                  Add consent-linked visits, vaccinations and growth observations. Earlier entries stay in the
-                  history when a correction is made.
+                  Keep student assessments and attendance together. Earlier entries remain available when a
+                  record is corrected.
                 </p>
               </div>
             </article>
@@ -166,11 +166,11 @@ export default function PublicHome() {
             </p>
           </details>
           <details>
-            <summary>Is this ready for real clinical records?</summary>
+            <summary>Is this ready for a school deployment?</summary>
             <p>
-              This is a hackathon prototype using synthetic records, not a certified clinical system.
-              Deployment needs HTTPS, managed keys and an organization-specific privacy and clinical-safety
-              review. Smriva records observations; it does not diagnose or prescribe.
+              This is a hackathon prototype using synthetic school records. Deployment needs HTTPS, managed
+              keys and an organization-specific privacy and security review. Smriva records observations; it
+              does not diagnose or prescribe.
             </p>
           </details>
         </section>

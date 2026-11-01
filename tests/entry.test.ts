@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { matchesChild, parseRoster, parseScore, toCSV } from '../apps/pwa/src/lib/entry';
 describe('data entry validation', () => {
+  it('imports school records without requesting a village', () => {
+    expect(parseRoster('name,dob,class,consent\nExample Student,2019-04-15,Class 1,true')[0].village).toBe('Not specified');
+  });
   it('keeps zero scores and rejects blank, out-of-range and non-numeric scores', () => {
     expect(parseScore('0')).toBe(0);
     expect(parseScore('87.5')).toBe(87.5);

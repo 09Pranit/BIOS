@@ -8,9 +8,6 @@ import {
   ChildUpdateSchema,
   AttendanceBatchSchema,
   AssessmentBatchSchema,
-  VisitSchema,
-  GrowthSchema,
-  VaccinationSchema,
   ResolutionSchema,
   PaginationSchema,
   CalendarDateSchema,
@@ -28,7 +25,7 @@ type Change = {
 };
 type Expected = { entityId: string; version: string };
 const versionMap = z.record(z.string(), z.string().min(1));
-const roleSchema = z.enum(['Teacher', 'Health Worker', 'Reviewer', 'Hub Admin']);
+const roleSchema = z.enum(['Teacher', 'Reviewer', 'Hub Admin']);
 const reviewers = ['Reviewer', 'Hub Admin'];
 const can = (device: any, roles: string[]) => {
   if (!roles.includes(device.role))
@@ -74,7 +71,7 @@ export function installBusinessRoutes(app: Express, store: HubStore) {
   });
   const child = (id: string, school: string, options: { archived?: boolean; consent?: boolean } = {}) => {
     const data = store.getRecord(id, school);
-    if (!data || data.record.type !== 'child')
+    if (!data || data.record.type !== 'child' || data.record.tags?.includes('patient'))
       throw new HttpError(404, 'CHILD_NOT_FOUND', 'Child record not found in this workspace.');
     if (data.record.deleted && !options.archived)
       throw new HttpError(409, 'CHILD_ARCHIVED', 'Restore this child before entering new records.');
@@ -124,7 +121,7 @@ export function installBusinessRoutes(app: Express, store: HubStore) {
     res.json({
       protocol: 1,
       manualEntry: true,
-      roles: ['Teacher', 'Health Worker', 'Reviewer', 'Hub Admin'],
+      roles: ['Teacher', 'Reviewer', 'Hub Admin'],
       role: req.device.role,
       idempotencyHeader: 'Idempotency-Key',
       optimisticConcurrency: 'baseVersion',
@@ -170,6 +167,7 @@ export function installBusinessRoutes(app: Express, store: HubStore) {
       });
     const rows = result.records.filter(
       (item: any) =>
+        !item.record.tags?.includes('patient') &&
         (!req.query.class || item.record.class === req.query.class) &&
         (!req.query.village || item.record.village === req.query.village),
     );
@@ -260,7 +258,10 @@ export function installBusinessRoutes(app: Express, store: HubStore) {
           limit: 200000,
           offset: 0,
         })
-        .records.filter((r: any) => !req.query.class || r.record.class === req.query.class);
+        .records.filter(
+          (r: any) =>
+            !r.record.tags?.includes('patient') && (!req.query.class || r.record.class === req.query.class),
+        );
     const rows = children.map(({ record }: any) => {
       const id = `${record.id}:${date}`,
         entry = store.getRecord(id, req.device.school);
@@ -363,54 +364,6 @@ export function installBusinessRoutes(app: Express, store: HubStore) {
     }
     const result = command(req, changes, expected);
     res.json({ ...result, records: changes.map((c) => store.getRecord(c.entityId, req.device.school)) });
-  });
-  for (const [route, field, schema] of [
-    ['visits', 'visits', VisitSchema],
-    ['growth', 'growth', GrowthSchema],
-    ['vaccinations', 'doses', VaccinationSchema],
-  ] as const)
-    app.post('/api/children/:id/' + route, (req: any, res) => {
-      can(req.device, ['Health Worker', ...reviewers]);
-      child(req.params.id, req.device.school, { consent: true });
-      const data = schema.parse(req.body),
-        value = field === 'visits' ? { ...data, worker: req.device.actor } : data;
-      const result = command(req, [
-        { entityId: req.params.id, entityType: 'child', field, value, kind: 'add' },
-      ]);
-      res
-        .status(result.replayed ? 200 : 201)
-        .json({ ...store.getRecord(req.params.id, req.device.school), ...result });
-    });
-  app.get('/api/health/events', (req: any, res) => {
-    const p = pagination(req),
-      records = req.query.childId
-        ? [child(String(req.query.childId), req.device.school, { archived: true })]
-        : store.listRecords({
-            school: req.device.school,
-            type: 'child',
-            includeDeleted: false,
-            limit: 200000,
-            offset: 0,
-          }).records;
-    const events = records
-      .flatMap(({ record }: any) =>
-        ['visits', 'growth', 'doses'].flatMap((kind) =>
-          (record[kind] ?? []).map((event: any) => ({
-            ...event,
-            kind,
-            childId: record.id,
-            childName: record.name,
-          })),
-        ),
-      )
-      .filter((e: any) => !req.query.kind || e.kind === req.query.kind)
-      .sort((a: any, b: any) => String(b.date).localeCompare(String(a.date)) || a.opId.localeCompare(b.opId));
-    res.json({
-      events: events.slice(p.offset, p.offset + p.limit),
-      total: events.length,
-      limit: p.limit,
-      offset: p.offset,
-    });
   });
   app.get('/api/conflicts', (req: any, res) =>
     res.json({ conflicts: store.listConflicts(req.device.school) }),

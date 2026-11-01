@@ -25,7 +25,7 @@ import { newId, submitForm } from '../lib/platform';
 import { useKuka } from '../lib/context';
 import { vault } from '../lib/vault';
 import { localDate } from '../lib/entry';
-import { displayRole } from '../lib/presentation';
+import { displayRole, isPatientRecord } from '../lib/presentation';
 import { Badge, bytes, Empty, Notice, PageTitle, Panel } from '../components/UI';
 import { ChildCreateSchema, ChildUpdateSchema } from '../../../../packages/sync-core/src/domain';
 import type { Field } from '../../../../packages/sync-core/src/policy';
@@ -90,7 +90,9 @@ const dateTime = (value: number | null | undefined, locale?: string) =>
 const errorText = (error: unknown) => {
   const issues = (error as any)?.issues;
   if (Array.isArray(issues))
-    return issues.map((issue: any) => [issue.path?.join('.'), issue.message].filter(Boolean).join(': ')).join('; ');
+    return issues
+      .map((issue: any) => [issue.path?.join('.'), issue.message].filter(Boolean).join(': '))
+      .join('; ');
   const message = error instanceof Error ? error.message : String(error);
   return /failed to fetch|networkerror|load failed|network request/i.test(message)
     ? 'The remote service is unreachable. Your form is still here; reconnect and retry. Use the Children or Classroom page for offline entry.'
@@ -109,11 +111,14 @@ const deviceChildren = (query: string, offset: number, limit: number): ChildPage
   const search = query.trim().toLocaleLowerCase(),
     operations = vault.state?.ops ?? [],
     records = Object.values(vault.view.entities)
-      .filter((record: any) => record.type === 'child')
+      .filter((record: any) => record.type === 'child' && !isPatientRecord(record))
       .filter((record: any) =>
         search
           ? [record.id, record.name, record.class, record.village, record.guardian, record.phone].some(
-              (value) => String(value ?? '').toLocaleLowerCase().includes(search),
+              (value) =>
+                String(value ?? '')
+                  .toLocaleLowerCase()
+                  .includes(search),
             )
           : true,
       )
@@ -125,7 +130,9 @@ const deviceChildren = (query: string, offset: number, limit: number): ChildPage
           updatedAt: Math.max(0, ...recordOps.map((operation) => operation.hlc.physical)),
         };
       })
-      .sort((a, b) => String(a.record.name ?? a.record.id).localeCompare(String(b.record.name ?? b.record.id)));
+      .sort((a, b) =>
+        String(a.record.name ?? a.record.id).localeCompare(String(b.record.name ?? b.record.id)),
+      );
   return { records: records.slice(offset, offset + limit), total: records.length, offset, limit };
 };
 const deviceDatabaseInfo = (): DatabaseInfo => {
@@ -564,7 +571,7 @@ export default function HubAdmin() {
                           onChange={(e) => setForm({ ...form, consent: e.target.checked })}
                         />{' '}
                         {t(
-                          'Guardian consent confirmed for the shared health and education record. Enter synthetic details in this demonstration.',
+                          'Guardian consent confirmed for the education record. Enter synthetic details in this demonstration.',
                         )}
                       </label>
                       {editor !== 'new' && (
@@ -877,7 +884,7 @@ export default function HubAdmin() {
                       onChange={(e) => setInviteRole(e.target.value)}
                       disabled={Boolean(busy)}
                     >
-                      {['Teacher', 'Health Worker', 'Reviewer', 'Hub Admin'].map((role) => (
+                      {['Teacher', 'Reviewer', 'Hub Admin'].map((role) => (
                         <option key={role} value={role}>
                           {t(displayRole(role))}
                         </option>

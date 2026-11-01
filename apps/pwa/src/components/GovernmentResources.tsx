@@ -1,9 +1,9 @@
 import { useI18n } from '../lib/i18n';
 import { useEffect, useMemo, useState } from 'react';
-import { ArrowUpRight, Building2, GraduationCap, HeartPulse, Search, WifiOff, X } from 'lucide-react';
+import { ArrowUpRight, Building2, GraduationCap, Search, WifiOff, X } from 'lucide-react';
 import { governmentResources } from '../lib/government-resources';
 
-const categories = ['All programmes', 'Education', 'Health & wellbeing'] as const;
+const categories = ['All programmes', 'Education'] as const;
 type Category = (typeof categories)[number];
 type Resource = (typeof governmentResources)[number];
 
@@ -109,7 +109,7 @@ export default function GovernmentResources() {
           <h2 id="gov-resources-heading">{t('Explore government programmes')}</h2>
           <p>
             {t(
-              'Find official education and health resources. Open a programme’s own website to read its current information.',
+              'Find official education programmes. Open a programme’s own website to read its current information.',
             )}
           </p>
         </div>
@@ -143,7 +143,6 @@ export default function GovernmentResources() {
               onClick={() => setCategory(item)}
             >
               {item === 'Education' && <GraduationCap size={17} aria-hidden="true" />}
-              {item === 'Health & wellbeing' && <HeartPulse size={17} aria-hidden="true" />}
               {t(item)}
             </button>
           ))}
@@ -197,11 +196,7 @@ export default function GovernmentResources() {
                 <ProgrammePoster resource={resource} />
                 <div className="gov-card-content">
                   <span className="gov-category">
-                    {resource.category === 'Education' ? (
-                      <GraduationCap size={15} aria-hidden="true" />
-                    ) : (
-                      <HeartPulse size={15} aria-hidden="true" />
-                    )}
+                    <GraduationCap size={15} aria-hidden="true" />
                     {t(resource.category)}
                   </span>
                   <h3 id={`gov-title-${resource.id}`}>{t(resource.title)}</h3>

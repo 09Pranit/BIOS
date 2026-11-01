@@ -77,8 +77,8 @@ export function parseRoster(text: string): RosterRow[] {
   if (text.length > 250000) throw new Error('CSV is too large. Import up to 100 children at a time.');
   const rows = csvRows(text),
     headers = rows.shift()?.map((h) => h.trim().toLowerCase());
-  if (!headers || ['name', 'dob', 'class', 'village', 'consent'].some((h) => !headers.includes(h)))
-    throw new Error('Required CSV columns: name, dob, class, village, consent. guardian is optional.');
+  if (!headers || ['name', 'dob', 'class', 'consent'].some((h) => !headers.includes(h)))
+    throw new Error('Required CSV columns: name, dob, class, consent. guardian is optional.');
   if (new Set(headers).size !== headers.length) throw new Error('CSV has repeated column headers.');
   if (headers.some((h) => !['name', 'dob', 'class', 'village', 'consent', 'guardian'].includes(h)))
     throw new Error('Use the template columns only: name, dob, class, village, guardian, consent.');
@@ -102,7 +102,8 @@ export function parseRoster(text: string): RosterRow[] {
     )
       throw new Error(`Row ${row}: enter a valid date of birth as YYYY-MM-DD.`);
     if (!grades.includes(value.class)) throw new Error(`Row ${row}: class must be Class 1 through Class 5.`);
-    if (!villages.includes(value.village)) throw new Error(`Row ${row}: use a village from the template.`);
+    value.village = value.village || 'Not specified';
+    if (value.village.length > 100) throw new Error(`Row ${row}: village exceeds 100 characters.`);
     if (value.consent.toLowerCase() !== 'true')
       throw new Error(`Row ${row}: consent must be explicitly true.`);
     if ((value.guardian ?? '').length > 80)

@@ -13,7 +13,7 @@ async function enroll(page: Page, actor: string, waitForOffline = true) {
   await page.goto('/app/library');
   await page.getByLabel('Device PIN', { exact: true }).fill('123456');
   await page.getByRole('button', { name: 'Unlock workspace', exact: true }).click();
-  await expect(page.getByRole('heading', { name: 'Learning library', exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Government schemes', exact: true })).toBeVisible();
 }
 
 function programmes(page: Page) {
@@ -61,7 +61,7 @@ for (const [name, viewport] of [
   ['desktop', { width: 1440, height: 1000 }],
   ['mobile', { width: 390, height: 844 }],
 ] as const) {
-  test(`government programmes have real local posters, safe official links, working filters and accessible library modes on ${name}`, async ({
+  test(`government programmes have real local posters, safe official links, working filters and accessible layouts on ${name}`, async ({
     page,
   }) => {
     await page.setViewportSize(viewport);
@@ -71,8 +71,7 @@ for (const [name, viewport] of [
     const total = await cards.count();
     expect(total).toBeGreaterThan(1);
     await loadedPosters(page);
-    await expect(page.locator('.lesson-card .lesson-art')).toHaveCount(4);
-    await expect(page.locator('.learning-featured-link')).toHaveAttribute('href', 'https://diksha.gov.in/');
+    await expect(page.locator('.lesson-card')).toHaveCount(0);
     for (const card of await cards.all()) {
       const official = card.locator('.gov-website-link');
       const url = new URL((await official.getAttribute('href'))!);
@@ -101,10 +100,10 @@ for (const [name, viewport] of [
     await expect(firstDetails.locator('.gov-description')).toBeVisible();
     await firstDetails.locator('summary').press('Enter');
     await expect(firstDetails.locator('.gov-description')).toBeHidden();
-    for (const category of ['Education', 'Health & wellbeing']) {
+    for (const category of ['Education']) {
       await section.getByRole('button', { name: category, exact: true }).click();
       expect(await cards.count()).toBeGreaterThan(0);
-      expect(await cards.count()).toBeLessThan(total);
+      expect(await cards.count()).toBe(total);
       for (const card of await cards.all()) await expect(card.locator('.gov-category')).toHaveText(category);
     }
     await section.getByRole('button', { name: 'All programmes', exact: true }).click();
@@ -118,7 +117,7 @@ for (const [name, viewport] of [
     await expect(
       section.getByRole('heading', { name: 'No programmes match these filters', exact: true }),
     ).toBeVisible();
-    await expect(page.locator('.lesson-card .lesson-art')).toHaveCount(4);
+    await expect(page.locator('.lesson-card')).toHaveCount(0);
     await section.getByRole('button', { name: 'Clear filters and show all programmes', exact: true }).click();
     await expect(search).toHaveValue('');
     await expect(cards).toHaveCount(total);
@@ -162,10 +161,7 @@ for (const [name, viewport] of [
   });
 }
 
-test('programme posters remain available after offline reload while the original lesson quiz still saves locally', async ({
-  page,
-  context,
-}) => {
+test('programme information and posters remain available after offline reload', async ({ page, context }) => {
   await enroll(page, 'Offline programme worker');
   const count = await programmes(page).getByRole('article').count();
   await loadedPosters(page);
@@ -181,10 +177,7 @@ test('programme posters remain available after offline reload while the original
       .filter({ hasText: 'Official websites need an internet connection.' }),
   ).toBeVisible();
   await expect(programmes(page).locator('.gov-footer-note')).toContainText('not downloaded for offline use');
-  await page.getByRole('button', { name: 'Open Little numbers, big discoveries' }).click();
-  await page.getByRole('button', { name: 'B 4', exact: true }).click();
-  await page.getByRole('button', { name: 'Check & save my progress', exact: true }).click();
-  await expect(page.getByText(/Your progress is saved\./)).toBeVisible();
+  await expect(page.locator('.lesson-card')).toHaveCount(0);
 });
 
 test('a failed poster request keeps an accessible programme fallback and official link', async ({

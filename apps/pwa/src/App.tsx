@@ -3,14 +3,12 @@ import { Link, NavLink, Routes, Route, useLocation, useNavigate, Navigate } from
 import {
   LayoutDashboard,
   Users,
-  BookOpen,
   RefreshCw,
   ShieldCheck,
   Settings,
   FlaskConical,
   ArrowRight,
   Plus,
-  Heart,
   Menu,
   Wifi,
   WifiOff,
@@ -29,11 +27,12 @@ import { I18nProvider, useI18n } from './lib/i18n';
 import LanguageSwitcher from './components/LanguageSwitcher';
 import { activateWorkspace, enroll, Vault, vault } from './lib/vault';
 import { listWorkspaces, rememberActiveWorkspace } from './lib/workspaces';
-import { Badge, Notice, Submit, time } from './components/UI';
+import { Badge, Notice, PageTitle, Submit, time } from './components/UI';
 import QuickSearch from './components/QuickSearch';
-import { displayRole } from './lib/presentation';
-import { Today, ClinicToday, Children, School, Health } from './pages/DataEntry';
-import { ChildDetail, Conflicts, SettingsPage, Library, Admin, About } from './pages/Workspace';
+import { displayRole, isPatientRecord } from './lib/presentation';
+import { Today, Children, School } from './pages/DataEntry';
+import { ChildDetail, Conflicts, SettingsPage, Admin, About } from './pages/Workspace';
+import GovernmentResources from './components/GovernmentResources';
 import Lab from './pages/Lab';
 import PublicHome from './components/PublicHome';
 import RouteMetadata, { isWorkspaceRoute } from './components/RouteMetadata';
@@ -43,14 +42,7 @@ const schoolNav = [
   ['/app/today', 'Overview', LayoutDashboard],
   ['/app/children', 'Children', Users],
   ['/app/school', 'Classroom', GraduationCap],
-  ['/app/health', 'Health records', Heart],
-  ['/app/library', 'Learning library', BookOpen],
-  ['/app/conflicts', 'Conflict inbox', ShieldCheck],
-] as const;
-const clinicNav = [
-  ['/app/today', 'Clinic overview', LayoutDashboard],
-  ['/app/children', 'Patients', Users],
-  ['/app/health', 'Clinical records', Heart],
+  ['/app/library', 'Government schemes', Building2],
   ['/app/conflicts', 'Conflict inbox', ShieldCheck],
 ] as const;
 function Brand() {
@@ -68,7 +60,7 @@ function Brand() {
       </span>
       <span className="brand-copy">
         <strong>Smriva</strong>
-        <small> {t('School & health records')}</small>
+        <small> {t('School records')}</small>
       </span>
       <span className="brand-mobile-label visually-hidden">{t('Smriva workspace')}</span>
     </Link>
@@ -220,7 +212,7 @@ function Unlock() {
                     value={role}
                     onChange={(e) => setRole(e.target.value)}
                   >
-                    {['Reviewer', 'Teacher', 'Health Worker', 'Hub Admin'].map((r) => (
+                    {['Reviewer', 'Teacher', 'Hub Admin'].map((r) => (
                       <option key={r} value={r}>
                         {t(displayRole(r))}
                       </option>
@@ -488,11 +480,20 @@ function Shell() {
     return () => window.clearInterval(timer);
   }, [unlocked, refresh]);
   if (!unlocked) return <Unlock />;
-  const conflicts = vault.view.conflicts.length,
-    identity = vault.state!.identity,
+  const identity = vault.state!.identity,
     pending = vault.pending.length,
-    clinic = identity.role === 'Health Worker',
-    activeNav = clinic ? clinicNav : schoolNav;
+    conflicts = vault.view.conflicts.filter((entry) => {
+      const person = vault.view.entities[entry.entityId.split(':')[0]];
+      return person?.type === 'child' && !isPatientRecord(person);
+    }).length,
+    personCount = Object.values(vault.view.entities).filter(
+      (person) =>
+        person.type === 'child' &&
+        !person.deleted &&
+        !person.id.startsWith('lab-') &&
+        !isPatientRecord(person),
+    ).length,
+    activeNav = schoolNav;
   const section =
     activeNav.find(([path]) => location.pathname.startsWith(path))?.[1] ??
     (location.pathname.startsWith('/lab')
@@ -527,13 +528,8 @@ function Shell() {
               <ChevronDown size={14} />
             </summary>
             <div className="new-menu-options">
-              {!clinic && (
-                <Link to="/app/children?new=student">
-                  <GraduationCap size={15} /> {t('Student')}
-                </Link>
-              )}
-              <Link to="/app/children?new=patient">
-                <Heart size={15} /> {t('Patient')}
+              <Link to="/app/children?new=student">
+                <GraduationCap size={15} /> {t('Student')}
               </Link>
             </div>
           </details>
@@ -559,15 +555,7 @@ function Shell() {
             <Icon size={16} />
             <span>{t(label)}</span>
             {path.includes('conflicts') && <span className="counter">{conflicts}</span>}
-            {path.includes('children') && (
-              <span className="counter">
-                {
-                  Object.values(vault.view.entities).filter(
-                    (c) => c.type === 'child' && !c.deleted && !c.id.startsWith('lab-'),
-                  ).length
-                }
-              </span>
-            )}
+            {path.includes('children') && <span className="counter">{personCount}</span>}
           </NavLink>
         ))}
       </nav>
@@ -590,20 +578,18 @@ function Shell() {
             </NavLink>
           ))}
         </nav>
-        <div className="nav-label tools-label">{t(clinic ? 'Clinic tools' : 'Tools')}</div>
+        <div className="nav-label tools-label">{t('Tools')}</div>
         <nav aria-label={t('Workspace tools')}>
-          {!clinic && (
-            <>
-              <NavLink to="/lab">
-                <FlaskConical size={16} />
-                <span>{t('Resilience lab')}</span>
-              </NavLink>
-              <NavLink to="/admin">
-                <Activity size={16} />
-                <span>{t('Record database')}</span>
-              </NavLink>
-            </>
-          )}
+          <>
+            <NavLink to="/lab">
+              <FlaskConical size={16} />
+              <span>{t('Resilience lab')}</span>
+            </NavLink>
+            <NavLink to="/admin">
+              <Activity size={16} />
+              <span>{t('Record database')}</span>
+            </NavLink>
+          </>
           <NavLink to="/app/settings">
             <Settings size={16} />
             <span>{t('Settings, sync & recovery')}</span>
@@ -655,9 +641,6 @@ function Shell() {
           </div>
         </div>
         <div className="durability-strip" role="region" aria-label={t('Record durability')}>
-          <span>
-            <ShieldCheck size={13} /> {t('Saved on this device')}
-          </span>
           <Link to="/app/settings#sync">
             {pending} {t('pending')}
           </Link>
@@ -677,20 +660,24 @@ function Shell() {
         </div>
         <main id="main" className="main-content" tabIndex={-1}>
           <Routes>
-            <Route path="/app/today" element={clinic ? <ClinicToday /> : <Today />} />
-            <Route path="/app/children" element={<Children clinic={clinic} />} />
+            <Route path="/app/today" element={<Today />} />
+            <Route path="/app/children" element={<Children />} />
             <Route path="/app/children/:id" element={<ChildDetail />} />
-            <Route path="/app/school" element={clinic ? <Navigate to="/app/health" replace /> : <School />} />
-            <Route path="/app/health" element={<Health />} />
+            <Route path="/app/school" element={<School />} />
             <Route
               path="/app/library"
-              element={clinic ? <Navigate to="/app/health" replace /> : <Library />}
+              element={
+                <div className="schemes-page">
+                  <PageTitle eyebrow="Education" title="Government schemes" />
+                  <GovernmentResources />
+                </div>
+              }
             />
             <Route path="/app/sync" element={<Navigate to="/app/settings#sync" replace />} />
             <Route path="/app/conflicts" element={<Conflicts />} />
             <Route path="/app/settings" element={<SettingsPage />} />
-            <Route path="/admin" element={clinic ? <Navigate to="/app/today" replace /> : <Admin />} />
-            <Route path="/lab/*" element={clinic ? <Navigate to="/app/today" replace /> : <Lab />} />
+            <Route path="/admin" element={<Admin />} />
+            <Route path="/lab/*" element={<Lab />} />
             <Route path="*" element={<Navigate to="/app/today" />} />
           </Routes>
         </main>

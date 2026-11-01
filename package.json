@@ -3,7 +3,7 @@
   "version": "2.0.0",
   "private": true,
   "type": "module",
-  "description": "Last-mile health and education records with durable offline sync.",
+  "description": "Education records with durable offline sync.",
   "scripts": {
     "dev": "concurrently -k -n hub,pwa \"tsx watch apps/hub/src/index.ts\" \"vite --host 0.0.0.0 --configLoader runner\"",
     "build": "tsx packages/content/verify.ts && tsc --noEmit && vite build --configLoader runner && tsx scripts/prepare-site.tsx",

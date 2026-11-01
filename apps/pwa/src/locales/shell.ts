@@ -1,13 +1,16 @@
 /** English keys with Hindi and Punjabi interface translations. Stored records are never translated. */
 export const shellTranslations: Record<string, readonly [string, string]> = {
+  'Government schemes': ['सरकारी योजनाएँ', 'ਸਰਕਾਰੀ ਯੋਜਨਾਵਾਂ'],
+  'School records': ['स्कूल रिकॉर्ड', 'ਸਕੂਲ ਰਿਕਾਰਡ'],
   'Settings and sync': ['सेटिंग्स और सिंक', 'ਸੈਟਿੰਗਾਂ ਅਤੇ ਸਿੰਕ'],
   'Settings, sync & recovery': ['सेटिंग्स, सिंक और रिकवरी', 'ਸੈਟਿੰਗਾਂ, ਸਿੰਕ ਅਤੇ ਰਿਕਵਰੀ'],
   'Sync failed': ['सिंक असफल हुआ', 'ਸਿੰਕ ਅਸਫਲ ਹੋਇਆ'],
   'Last backup': ['पिछला बैकअप', 'ਪਿਛਲਾ ਬੈਕਅੱਪ'],
-  'This is a demonstration project. Your PIN protects a random encryption key with PBKDF2. Remember it, and save your recovery code in Settings.': [
-    'यह एक प्रदर्शन परियोजना है। आपका PIN, PBKDF2 की मदद से एन्क्रिप्शन कुंजी को सुरक्षित रखता है। PIN याद रखें और सेटिंग्स में अपना रिकवरी कोड सहेजें।',
-    'ਇਹ ਇੱਕ ਪ੍ਰਦਰਸ਼ਨ ਪ੍ਰੋਜੈਕਟ ਹੈ। ਤੁਹਾਡਾ PIN, PBKDF2 ਨਾਲ ਇਨਕ੍ਰਿਪਸ਼ਨ ਕੁੰਜੀ ਨੂੰ ਸੁਰੱਖਿਅਤ ਰੱਖਦਾ ਹੈ। PIN ਯਾਦ ਰੱਖੋ ਅਤੇ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਆਪਣਾ ਰਿਕਵਰੀ ਕੋਡ ਸੰਭਾਲੋ।',
-  ],
+  'This is a demonstration project. Your PIN protects a random encryption key with PBKDF2. Remember it, and save your recovery code in Settings.':
+    [
+      'यह एक प्रदर्शन परियोजना है। आपका PIN, PBKDF2 की मदद से एन्क्रिप्शन कुंजी को सुरक्षित रखता है। PIN याद रखें और सेटिंग्स में अपना रिकवरी कोड सहेजें।',
+      'ਇਹ ਇੱਕ ਪ੍ਰਦਰਸ਼ਨ ਪ੍ਰੋਜੈਕਟ ਹੈ। ਤੁਹਾਡਾ PIN, PBKDF2 ਨਾਲ ਇਨਕ੍ਰਿਪਸ਼ਨ ਕੁੰਜੀ ਨੂੰ ਸੁਰੱਖਿਅਤ ਰੱਖਦਾ ਹੈ। PIN ਯਾਦ ਰੱਖੋ ਅਤੇ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਆਪਣਾ ਰਿਕਵਰੀ ਕੋਡ ਸੰਭਾਲੋ।',
+    ],
   'Smriva · Demonstration project · No real personal records': [
     'Smriva · प्रदर्शन परियोजना · कोई वास्तविक निजी रिकॉर्ड नहीं',
     'Smriva · ਪ੍ਰਦਰਸ਼ਨ ਪ੍ਰੋਜੈਕਟ · ਕੋਈ ਅਸਲ ਨਿੱਜੀ ਰਿਕਾਰਡ ਨਹੀਂ',

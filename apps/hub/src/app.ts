@@ -82,7 +82,7 @@ export function createApp(store: HubStore, demo = true) {
     const v = z
       .object({
         actor: z.string().trim().min(2).max(60),
-        role: z.enum(['Teacher', 'Health Worker', 'Reviewer', 'Hub Admin']),
+        role: z.enum(['Teacher', 'Reviewer', 'Hub Admin']),
         code: z.string().min(1).max(200),
       })
       .parse(req.body);

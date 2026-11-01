@@ -51,18 +51,10 @@ async function openChild(page: Page, href: string) {
 async function correctDob(page: Page, href: string, value: string) {
   await openChild(page, href);
   await page.getByRole('button', { name: 'Correct details', exact: true }).click();
-  const form = page.getByRole('dialog', { name: 'Edit child', exact: true });
+  const form = page.getByRole('dialog', { name: 'Edit record', exact: true });
   await form.getByLabel('Date of birth', { exact: true }).fill(value);
   await form.getByRole('button', { name: 'Save changes', exact: true }).click();
   await expect(form).toHaveCount(0);
-}
-
-async function addVisit(page: Page, childId: string, note: string) {
-  await navigate(page, '/app/health');
-  await page.getByLabel('Child for health record', { exact: true }).selectOption(childId);
-  await page.getByLabel('Visit note', { exact: true }).fill(note);
-  await page.getByRole('button', { name: 'Save health record', exact: true }).click();
-  await expect(page.getByText('Saved locally. Ready for the next record.', { exact: true })).toBeVisible();
 }
 
 function conflictPanel(page: Page, name: string, field: string) {
@@ -71,7 +63,7 @@ function conflictPanel(page: Page, name: string, field: string) {
   });
 }
 
-test('offline DOB edits require attributed human review while independent visits merge and originals survive a corrected resolution', async ({
+test('offline DOB edits require attributed human review and originals survive a corrected resolution', async ({
   browser,
   baseURL,
 }) => {
@@ -82,7 +74,6 @@ test('offline DOB edits require attributed human review while independent visits
   const name = 'Merge Review Example';
   const actors = ['Merge Reviewer A', 'Merge Reviewer B'];
   const dates = ['2018-04-15', '2018-05-20'];
-  const notes = ['Independent offline visit from worker A', 'Independent offline visit from worker B'];
   const reviewedDate = '2018-06-12';
   try {
     await enroll(a, actors[0]);
@@ -96,17 +87,6 @@ test('offline DOB edits require attributed human review while independent visits
     // Both devices start from the same causal baseline, then lose contact.
     await correctDob(a, href, dates[0]);
     await correctDob(b, href, dates[1]);
-    await addVisit(a, childId, notes[0]);
-    await addVisit(b, childId, notes[1]);
-    for (const [page, ownNote, otherNote] of [
-      [a, notes[0], notes[1]],
-      [b, notes[1], notes[0]],
-    ] as const) {
-      await openChild(page, href);
-      await expect(page.locator('.timeline').getByText(ownNote, { exact: true })).toHaveCount(1);
-      await expect(page.locator('.timeline').getByText(otherNote, { exact: true })).toHaveCount(0);
-    }
-
     await ca.setOffline(false);
     await cb.setOffline(false);
     for (const page of [a, b, a, b]) await sync(page);
@@ -116,8 +96,6 @@ test('offline DOB edits require attributed human review while independent visits
       await expect(page.locator('.child-header')).toContainText('Needs review');
       await expect(page.getByText('This record has competing accounts.', { exact: false })).toBeVisible();
       await expect(page.getByRole('button', { name: 'Correct details', exact: true })).toBeDisabled();
-      for (const note of notes)
-        await expect(page.locator('.timeline').getByText(note, { exact: true })).toHaveCount(1);
       await navigate(page, '/app/conflicts');
       const panel = conflictPanel(page, name, 'dob');
       await expect(panel).toHaveCount(1);
@@ -154,8 +132,6 @@ test('offline DOB edits require attributed human review while independent visits
       await expect(
         history.locator(':scope > div').filter({ hasText: reviewedDate }).locator('.audit-kind'),
       ).toHaveText('resolve');
-      for (const note of notes)
-        await expect(page.locator('.timeline').getByText(note, { exact: true })).toHaveCount(1);
       await navigate(page, '/app/conflicts');
       await expect(conflictPanel(page, name, 'dob')).toHaveCount(0);
     }
@@ -190,7 +166,7 @@ test('independent offline profile corrections merge without rewriting unchanged 
     await correctDob(a, href, editedDob);
     await openChild(b, href);
     await b.getByRole('button', { name: 'Correct details', exact: true }).click();
-    const form = b.getByRole('dialog', { name: 'Edit child', exact: true });
+    const form = b.getByRole('dialog', { name: 'Edit record', exact: true });
     await form.locator('input[name="guardian"]').fill(editedGuardian);
     await form.getByRole('button', { name: 'Save changes', exact: true }).click();
     await expect(form).toHaveCount(0);
@@ -209,8 +185,8 @@ test('independent offline profile corrections merge without rewriting unchanged 
       await expect(page.getByRole('button', { name: 'Correct details', exact: true })).toBeEnabled();
       await expect(page.locator('.detail-list').getByText(editedGuardian, { exact: true })).toBeVisible();
       const history = page.locator('.audit-list');
-      // Six initial fields plus exactly one correction from each worker.
-      await expect(history.locator(':scope > div')).toHaveCount(8);
+      // Seven initial fields plus exactly one correction from each worker.
+      await expect(history.locator(':scope > div')).toHaveCount(9);
       await expect(history.locator(':scope > div').filter({ hasText: actors[1] })).toHaveCount(1);
       for (const [field, count] of [
         ['name', 1],

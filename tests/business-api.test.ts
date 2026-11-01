@@ -240,7 +240,7 @@ describe('attendance, assessments, and clinical data', () => {
         .response.status,
     ).toBe(400);
   });
-  it('records consent withdrawal without erasing history and refuses later clinical entry', async () => {
+  it('records consent withdrawal without erasing history after clinical entry is removed', async () => {
     const identity = store.enroll('Reviewer', 'Reviewer'),
       child = await createChild(identity),
       path = '/api/children/' + child.record.id;
@@ -263,7 +263,7 @@ describe('attendance, assessments, and clinical data', () => {
           randomUUID(),
         )
       ).response.status,
-    ).toBe(403);
+    ).toBe(404);
     expect(store.all()).toHaveLength(count);
     expect((await request(identity, path)).data.record.consent).toBe(false);
   });
@@ -350,47 +350,23 @@ describe('attendance, assessments, and clinical data', () => {
     expect(store.all()).toHaveLength(count);
   });
 
-  it('denies clinical writes by teachers and appends validated health-worker events exactly once', async () => {
-    const teacher = store.enroll('Teacher', 'Teacher');
-    const worker = store.enroll('Health Worker', 'Health Worker');
-    const child = await createChild(teacher);
-    const path = `/api/children/${encodeURIComponent(child.record.id)}`;
-    const events = [
-      { endpoint: 'visits', field: 'visits', value: { date: '2020-01-01', note: 'Routine visit' } },
-      {
-        endpoint: 'growth',
-        field: 'growth',
-        value: { date: '2020-01-01', weight: 24.5, height: 120, muac: 15 },
-      },
-      {
-        endpoint: 'vaccinations',
-        field: 'doses',
-        value: { name: 'School health record', date: '2020-01-01', batch: 'B-1', site: 'Village clinic' },
-      },
-    ];
-    for (const event of events) {
-      const denied = await request(teacher, `${path}/${event.endpoint}`, 'POST', event.value, randomUUID());
-      expect(denied.response.status).toBe(403);
-      const key = randomUUID();
-      const added = await request(worker, `${path}/${event.endpoint}`, 'POST', event.value, key);
-      expect([200, 201]).toContain(added.response.status);
-      const count = store.all().length;
-      const replay = await request(worker, `${path}/${event.endpoint}`, 'POST', event.value, key);
-      expect(replay.response.status).toBe(200);
-      expect(replay.data.replayed).toBe(true);
-      expect(store.all()).toHaveLength(count);
-      const record = (await request(worker, path)).data.record;
-      expect(record[event.field]).toHaveLength(1);
-      expect(record[event.field][0]).toMatchObject(event.value);
+  it('removes clinical endpoints while preserving existing records', async () => {
+    const identity = store.enroll('Reviewer', 'Reviewer');
+    const child = await createChild(identity);
+    const count = store.all().length;
+    for (const endpoint of ['visits', 'growth', 'vaccinations']) {
+      const result = await request(
+        identity,
+        `/api/children/${child.record.id}/${endpoint}`,
+        'POST',
+        {},
+        randomUUID(),
+      );
+      expect(result.response.status).toBe(404);
     }
-    const invalid = await request(
-      worker,
-      `${path}/growth`,
-      'POST',
-      { date: '2020-02-30', weight: 24, height: 120 },
-      randomUUID(),
-    );
-    expect([400, 422]).toContain(invalid.response.status);
+    expect((await request(identity, '/api/health/events')).response.status).toBe(404);
+    expect(store.all()).toHaveLength(count);
+    expect((await request(identity, '/api/children/' + child.record.id)).data.record).toEqual(child.record);
   });
 });
 

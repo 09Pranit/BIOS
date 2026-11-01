@@ -24,15 +24,15 @@ export function parseSiteUrl(raw?: string): string | undefined {
 export function publicRouteMeta(path: string): PublicRouteMeta | undefined {
   if (path === '/')
     return {
-      title: 'Smriva — Offline-first health and education records',
+      title: 'Smriva — Offline-first education records',
       description:
-        'Keep village-school and community-health records working offline. Smriva preserves concurrent changes, makes conflicts visible, and synchronizes over weak connections.',
+        'Keep school records working offline. Smriva preserves concurrent changes, makes conflicts visible, and synchronizes over weak connections.',
     };
   if (path === '/about')
     return {
       title: 'About Smriva — Sources, security and offline sync',
       description:
-        'Inspect Smriva’s offline-first design, original learning content, data sources, encryption, tested synchronization behavior and deployment limits.',
+        'Inspect Smriva’s offline-first design, government programme sources, encryption, tested synchronization behavior and deployment limits.',
     };
   return undefined;
 }

@@ -5,7 +5,6 @@ import {
   ArrowUpRight,
   Plus,
   Users,
-  Heart,
   GraduationCap,
   ShieldCheck,
   RefreshCw,
@@ -13,7 +12,6 @@ import {
   Download,
   Check,
   Clock,
-  BookOpen,
   WifiOff,
   AlertTriangle,
   CheckCircle2,
@@ -33,7 +31,7 @@ import {
 } from 'lucide-react';
 import { useKuka } from '../lib/context';
 import { languages, useI18n } from '../lib/i18n';
-import { displayRole } from '../lib/presentation';
+import { displayRole, isPatientRecord } from '../lib/presentation';
 import { vault, download } from '../lib/vault';
 import { readBackupFile } from '../lib/backup-file';
 import { localCalendarDate, newId } from '../lib/platform';
@@ -52,9 +50,6 @@ import {
   External,
 } from '../components/UI';
 import { Bird, VillageArt } from '../components/Art';
-import { lessons } from '../lib/content';
-import GovernmentResources from '../components/GovernmentResources';
-import { governmentResources } from '../lib/government-resources';
 import { reasonFor, compareOpsByClock, type Op } from '../../../../packages/sync-core/src/index';
 const today = localCalendarDate;
 const fieldLabels: Record<string, string> = {
@@ -72,25 +67,6 @@ const fieldLabels: Record<string, string> = {
   prescription: 'Prescription',
   gender: 'Gender',
   phone: 'Phone',
-};
-const useChildren = () => {
-  const { version } = useKuka();
-  return Object.values(vault.view.entities)
-    .filter((e: any) => e.type === 'child' && !e.deleted && !e.id.startsWith('lab-'))
-    .sort((a, b) => a.id.localeCompare(b.id));
-};
-const counts = () => {
-  const s = vault.view;
-  return {
-    children: Object.values(s.entities).filter(
-      (e) => e.type === 'child' && !e.deleted && !e.id.startsWith('lab-'),
-    ).length,
-    attendance: Object.values(s.entities).filter((e) => e.type === 'attendance' && e.id.endsWith(today())),
-    visits: Object.values(s.entities)
-      .filter((e) => e.type === 'child' && !e.deleted && !e.id.startsWith('lab-'))
-      .reduce((n, e) => n + (e.visits?.length ?? 0), 0),
-    conflicts: s.conflicts.length,
-  };
 };
 function Metric({
   icon,
@@ -120,15 +96,7 @@ function Metric({
     </div>
   );
 }
-export function ChildForm({
-  close,
-  child,
-  profile = 'student',
-}: {
-  close: () => void;
-  child?: any;
-  profile?: 'student' | 'patient';
-}) {
+export function ChildForm({ close, child }: { close: () => void; child?: any }) {
   const { t, locale, language } = useI18n();
   const { refresh, notify } = useKuka(),
     [busy, setBusy] = useState(false),
@@ -137,7 +105,7 @@ export function ChildForm({
     [initialChild] = useState(() => (child ? { ...child } : undefined)),
     [observedAtStart] = useState(() => vault.state!.ops.slice()),
     [defaultClass, setDefaultClass] = useState(child?.class ?? 'Class 1'),
-    newTitle = profile === 'patient' ? 'New patient' : 'New student';
+    newTitle = 'New student';
   return (
     <Modal title={t(child ? 'Edit record' : newTitle)} close={close}>
       <Form
@@ -154,14 +122,17 @@ export function ChildForm({
               { entityId: id, field: 'name', value: String(data.get('name')).trim() },
               { entityId: id, field: 'dob', value: String(data.get('dob')) },
               { entityId: id, field: 'guardian', value: String(data.get('guardian') ?? '') },
-              { entityId: id, field: 'class', value: String(data.get('class')) },
+              {
+                entityId: id,
+                field: 'class',
+                value: String(data.get('class')),
+              },
               // Village is retained for older records and sync compatibility,
               // but is no longer requested when creating or editing a person.
               { entityId: id, field: 'village', value: initialChild?.village ?? 'Not specified' },
               { entityId: id, field: 'consent', value: true },
             ];
-            if (!initialChild)
-              values.push({ entityId: id, field: 'tags', value: profile, kind: 'add' });
+            if (!initialChild) values.push({ entityId: id, field: 'tags', value: 'student', kind: 'add' });
             // Correct only fields the person changed. Re-saving the whole form
             // would turn unrelated offline edits into avoidable conflicts.
             const changed = initialChild
@@ -212,24 +183,15 @@ export function ChildForm({
         </div>
         <label>
           {t('Guardian’s name')}
-          <input
-            name="guardian"
-            defaultValue={initialChild?.guardian}
-            maxLength={80}
-          />
+          <input name="guardian" defaultValue={initialChild?.guardian} maxLength={80} />
         </label>
         <label className="checkbox-label">
           <input type="checkbox" required defaultChecked={Boolean(child?.consent)} />{' '}
-          {t(
-            'Guardian consent obtained for a shared health and school record. Use synthetic details in this demo.',
-          )}
+          {t('Guardian consent obtained for the student record. Use synthetic details in this demo.')}
         </label>
         {error && <Notice tone="coral">{error}</Notice>}
         <div className="form-actions">
-          <Submit
-            busy={busy}
-            label={t(child ? 'Save changes' : profile === 'patient' ? 'Save patient' : 'Save student')}
-          />
+          <Submit busy={busy} label={t(child ? 'Save changes' : 'Save student')} />
           {!child && (
             <button className="button outline" type="submit" name="continue" value="yes" disabled={busy}>
               {t('Save and add another')}
@@ -259,6 +221,13 @@ export function ChildDetail() {
         description={t('Try syncing with the hub, or check the record ID.')}
       />
     );
+  if (isPatientRecord(child))
+    return (
+      <Empty
+        title={t('Record not in this workspace')}
+        description={t('This record is not part of the education workspace.')}
+      />
+    );
   const related = vault
     .state!.ops.filter((o) => o.entityId === id || o.entityId.startsWith(id + ':'))
     .slice()
@@ -277,7 +246,8 @@ export function ChildDetail() {
           </p>
           <h1>{child.name ?? t('Identity needs review')}</h1>
           <p className="muted">
-            {child.class} · {child.village} {t('· Born')} {child.dob ?? t('Needs review')}
+            {child.class}
+            {t('· Born')} {child.dob ?? t('Needs review')}
           </p>
         </div>
         <div className="button-row">
@@ -305,7 +275,7 @@ export function ChildDetail() {
         </Notice>
       )}
       <div className="dashboard-grid">
-        <Panel title={t('Child details')}>
+        <Panel title={t('Student details')}>
           <dl className="detail-list">
             <div>
               <dt>{t('Guardian')}</dt>
@@ -314,10 +284,6 @@ export function ChildDetail() {
             <div>
               <dt>{t('School')}</dt>
               <dd>{child.class}</dd>
-            </div>
-            <div>
-              <dt>{t('Village')}</dt>
-              <dd>{child.village}</dd>
             </div>
             <div>
               <dt>{t('Shared-record consent')}</dt>
@@ -351,49 +317,6 @@ export function ChildDetail() {
             </button>
           )}
         </Panel>
-        <Panel title={t('Health history')}>
-          <div className="timeline">
-            {(child.visits ?? []).map((v: any) => (
-              <div key={v.opId}>
-                <span className="timeline-dot peach" />
-                <strong>
-                  {t('Health visit ·')} {v.date}
-                </strong>
-                <p>{v.note}</p>
-                <small>{v.worker}</small>
-              </div>
-            ))}
-            {(child.growth ?? []).map((v: any) => (
-              <div key={v.opId}>
-                <span className="timeline-dot green" />
-                <strong>
-                  {t('Growth measurement ·')} {v.date}
-                </strong>
-                <p>
-                  {v.weight} {t('kg ·')} {v.height} {t('cm')}
-                </p>
-                <small>{t('Raw measurement · no diagnostic classification')}</small>
-              </div>
-            ))}
-            {(child.doses ?? []).map((v: any) => (
-              <div key={v.opId}>
-                <span className="timeline-dot blue" />
-                <strong>
-                  {v.name} · {v.date}
-                </strong>
-                <p>
-                  {t('Batch')} {v.batch} · {v.site}
-                </p>
-              </div>
-            ))}
-          </div>
-          {!(child.visits?.length || child.growth?.length || child.doses?.length) && (
-            <Empty
-              title={t('No health history yet')}
-              description={t('Add a health visit or record classroom activity.')}
-            />
-          )}
-        </Panel>
       </div>
       <Panel
         title={t('Correction & operation history')}
@@ -421,7 +344,10 @@ export function ChildDetail() {
 export function Conflicts() {
   const { t, locale, language } = useI18n();
   const { version, write } = useKuka(),
-    conflicts = vault.view.conflicts,
+    conflicts = vault.view.conflicts.filter((conflict) => {
+      const person = vault.view.entities[conflict.entityId.split(':')[0]];
+      return person?.type === 'child' && !isPatientRecord(person);
+    }),
     [error, setError] = useState(''),
     [custom, setCustom] = useState<Record<string, string>>({});
   return (
@@ -429,7 +355,9 @@ export function Conflicts() {
       <PageTitle
         eyebrow={t('Record review')}
         title={t('Conflict inbox')}
-        description={t('Compare both entries before choosing a value. The original versions stay in the record.')}
+        description={t(
+          'Compare both entries before choosing a value. The original versions stay in the record.',
+        )}
         action={
           <Badge tone={conflicts.length ? 'coral' : 'green'}>
             {conflicts.length} {t('open differences')}
@@ -442,7 +370,9 @@ export function Conflicts() {
           <Empty
             icon={<ShieldCheck size={35} />}
             title={t('No unresolved conflicts')}
-            description={t('When people make incompatible changes independently, both accounts will appear here. Try a real concurrent edit in the resilience lab.')}
+            description={t(
+              'When people make incompatible changes independently, both accounts will appear here. Try a real concurrent edit in the resilience lab.',
+            )}
           />
           <Link to="/lab" className="button outline centered">
             {t('Explore the lab')} <ArrowRight size={15} />
@@ -527,7 +457,9 @@ export function Conflicts() {
               </div>
             )}
             <p className="fine">
-              {t('The resolution is a new operation with causal references to the alternatives. Independent conflicting resolutions remain reviewable.')}
+              {t(
+                'The resolution is a new operation with causal references to the alternatives. Independent conflicting resolutions remain reviewable.',
+              )}
             </p>
           </Panel>
         ))
@@ -545,12 +477,13 @@ export function SyncCenter() {
         title={t('Sync center')}
         aside={
           <button className="button primary" disabled={status === 'Syncing'} onClick={() => void sync()}>
-            <RefreshCw size={16} className={status === 'Syncing' ? 'spin' : ''} />{' '}
-            {t('Sync now')}
+            <RefreshCw size={16} className={status === 'Syncing' ? 'spin' : ''} /> {t('Sync now')}
           </button>
         }
       >
-        <p>{t('Local storage and remote backup are different promises. See exactly where your work lives.')}</p>
+        <p>
+          {t('Local storage and remote backup are different promises. See exactly where your work lives.')}
+        </p>
       </Panel>
       {error && (
         <Notice tone="coral">
@@ -558,12 +491,6 @@ export function SyncCenter() {
         </Notice>
       )}
       <div className="metrics">
-        <Metric
-          icon={<LockKeyhole size={20} />}
-          label={t('Saved on this device')}
-          value={s.ops.length}
-          note={t('Encrypted and kept here')}
-        />
         <Metric
           icon={<CloudUpload size={20} />}
           label={t('Waiting for backup')}
@@ -590,284 +517,6 @@ export function SyncCenter() {
   );
   return overview;
 }
-export function Library() {
-  const { t, locale, language } = useI18n();
-  const { write, notify, version } = useKuka(),
-    [filter, setFilter] = useState('All subjects'),
-    [selected, setSelected] = useState<(typeof lessons)[number] | null>(null),
-    [answer, setAnswer] = useState<number | null>(null),
-    [result, setResult] = useState(''),
-    [cached, setCached] = useState<string[]>([]),
-    [cacheError, setCacheError] = useState('');
-  const entities = vault.view.entities;
-  const attemptCount = (id: string) => entities['lesson-' + id]?.progress?.length ?? 0;
-  const totalAttempts = lessons.reduce((sum, lesson) => sum + attemptCount(lesson.id), 0);
-  const featured = governmentResources.find((resource) => resource.id === 'diksha')!;
-  const openLesson = (lesson: (typeof lessons)[number]) => {
-    setSelected(lesson);
-    setAnswer(null);
-    setResult('');
-  };
-  useEffect(() => {
-    if (!('caches' in window)) return;
-    caches
-      .open('kuka-lessons')
-      .then(async (c) => {
-        const keys = await c.keys();
-        setCached(keys.map((k) => k.url.split('/').pop()!.replace('.json', '')));
-      })
-      .catch(() =>
-        setCacheError(
-          'Extra lesson caching is unavailable. The original lessons remain bundled with the app.',
-        ),
-      );
-  }, []);
-  return (
-    <div className="library-experience">
-      <PageTitle
-        eyebrow={t('Learning resources')}
-        title={t('Learning library')}
-        description={t('Lessons to use here, and links to education and health programmes.')}
-      />
-      <section className="learning-hero" aria-label={t('Your learning space')}>
-        <div className="learning-hero-copy">
-          <h2>{t('Pick something to learn')}</h2>
-          <p>{t('Short lessons work offline. Government websites need a connection.')}</p>
-          <div className="learning-hero-actions">
-            <a className="button primary" href="#offline-lessons">
-              <BookOpen size={16} aria-hidden="true" />
-              {t('Start an offline lesson')}
-            </a>
-            <a className="button outline" href="#government-programmes">
-              {t('Explore programmes')} <ArrowRight size={16} aria-hidden="true" />
-            </a>
-          </div>
-          <div className="learning-highlights">
-            <span>
-              <WifiOff size={15} aria-hidden="true" />
-              {lessons.length} {t('offline lessons')}
-            </span>
-            <span>
-              {governmentResources.length} {t('official programmes')}
-            </span>
-            <span>
-              {t(totalAttempts === 1 ? '{count} saved practice attempt' : '{count} saved practice attempts', {
-                count: totalAttempts,
-              })}
-            </span>
-          </div>
-        </div>
-        <figure className="learning-featured-image">
-          <a
-            className="learning-featured-link"
-            href={featured.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label={t('Open {title} official website. Internet needed. Opens in a new tab.', {
-              title: t(featured.title),
-            })}
-          >
-            <img
-              src={featured.image}
-              alt={t('Official DIKSHA banner showing schoolchildren exploring digital learning')}
-              width={643}
-              height={216}
-              decoding="async"
-            />
-          </a>
-          <figcaption>
-            {t('Image: Ministry of Education ·')}{' '}
-            <a href={featured.imageSource} target="_blank" rel="noopener noreferrer">
-              {t('DIKSHA official banner')}
-            </a>
-          </figcaption>
-        </figure>
-      </section>
-      <div className="learning-section-heading" id="offline-lessons">
-        <div>
-          <h2>{t('Start an offline lesson')}</h2>
-        </div>
-        <p>{t('Original Smriva activities · Your quiz attempts save on this device.')}</p>
-      </div>
-      <div className="toolbar">
-        <select
-          aria-label={t('Filter learning resources')}
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-        >
-          {['All subjects', 'Mathematics', 'Science', 'Reading', 'Health literacy'].map((s) => (
-            <option key={s} value={s}>
-              {t(s)}
-            </option>
-          ))}
-        </select>
-        <span className="fine">
-          {t('Smriva original content · CC BY 4.0 · {language}', {
-            language: languages.find((entry) => entry.code === language)!.name,
-          })}
-        </span>
-      </div>
-      {cacheError && <Notice tone="coral">{t(cacheError)}</Notice>}
-      <div className="lesson-grid">
-        {lessons
-          .filter((l) => filter === 'All subjects' || l.subject === filter)
-          .map((l) => (
-            <article className="lesson-card" key={l.id}>
-              <button
-                className={'lesson-art ' + l.color}
-                onClick={() => openLesson(l)}
-                aria-label={t('Open {title} · {duration}', { title: t(l.title), duration: t(l.duration) })}
-              >
-                <img
-                  src={'/learning/' + l.id + '.svg'}
-                  alt=""
-                  width={640}
-                  height={360}
-                  loading="lazy"
-                  decoding="async"
-                />
-                <span className="lesson-duration">
-                  <Clock size={12} /> {t(l.duration)}
-                </span>
-              </button>
-              <div className="lesson-info">
-                <p className="eyebrow">
-                  {t(l.subject)} <span>·</span> <span>{t(l.level)}</span>
-                </p>
-                <h3>
-                  <button type="button" className="lesson-title-button" onClick={() => openLesson(l)}>
-                    {t(l.title)}
-                  </button>
-                </h3>
-                <p>{t(l.description)}</p>
-                <div>
-                  <Badge>{t('Available offline')}</Badge>
-                  <button
-                    className="icon-button"
-                    aria-label={t(
-                      cached.includes(l.id) ? 'Remove cached pack {title}' : 'Download lesson pack {title}',
-                      { title: t(l.title) },
-                    )}
-                    onClick={async () => {
-                      try {
-                        const cache = await caches.open('kuka-lessons');
-                        if (cached.includes(l.id)) {
-                          await cache.delete('/lessons/' + l.id + '.json');
-                          setCached(cached.filter((id) => id !== l.id));
-                          notify(t('Extra cached pack removed. The bundled lesson remains available.'));
-                        } else {
-                          await cache.put(
-                            '/lessons/' + l.id + '.json',
-                            new Response(JSON.stringify(l), {
-                              headers: { 'Content-Type': 'application/json' },
-                            }),
-                          );
-                          setCached([...cached, l.id]);
-                          notify(t('Lesson pack stored in the offline cache'));
-                        }
-                        setCacheError('');
-                      } catch {
-                        setCacheError(
-                          'The extra lesson pack could not be cached. Your practice records are unchanged; try again when device storage is available.',
-                        );
-                      }
-                    }}
-                  >
-                    {cached.includes(l.id) ? <Check size={17} /> : <Download size={17} />}
-                  </button>
-                </div>
-                {attemptCount(l.id) > 0 && (
-                  <p className="lesson-practice-status">
-                    <CheckCircle2 size={14} aria-hidden="true" />
-                    {t(
-                      attemptCount(l.id) === 1
-                        ? '{count} saved practice attempt'
-                        : '{count} saved practice attempts',
-                      { count: attemptCount(l.id) },
-                    )}
-                  </p>
-                )}
-              </div>
-            </article>
-          ))}
-      </div>
-      <GovernmentResources />
-      <Panel title={t('Other learning websites')}>
-        <p>
-          {t('Explore more collections online. Their websites and materials are not downloaded by Smriva.')}
-        </p>
-        <div className="external-links">
-          <External href="https://diksha.gov.in/">{t('DIKSHA')}</External>
-          <External href="https://phet.colorado.edu/en/offline-access">
-            {t('PhET offline access guide')}
-          </External>
-          <External href="https://openstax.org/subjects">{t('OpenStax textbooks')}</External>
-        </div>
-      </Panel>
-      {selected && (
-        <Modal title={t(selected.title)} close={() => setSelected(null)}>
-          <div className="lesson-reader" lang={language}>
-            <img
-              className="lesson-reader-cover"
-              src={'/learning/' + selected.id + '.svg'}
-              alt=""
-              width={640}
-              height={360}
-            />
-            <Badge>
-              {t(selected.subject)} · <span>{t(selected.level)}</span>
-            </Badge>
-            {selected.body.map((p, i) => (
-              <p key={i}>{t(p)}</p>
-            ))}
-            <hr />
-            <h3>{t('Give it a try')}</h3>
-            <p>{t(selected.question)}</p>
-            <div className="quiz-options">
-              {selected.options.map((o, i) => (
-                <button className={answer === i ? 'selected' : ''} onClick={() => setAnswer(i)} key={o}>
-                  {String.fromCharCode(65 + i)} <span>{t(o)}</span>
-                </button>
-              ))}
-            </div>
-            <button
-              className="button primary"
-              disabled={answer === null}
-              onClick={async () => {
-                try {
-                  await write(
-                    'lesson-' + selected.id,
-                    'progress',
-                    { lesson: selected.id, answer, correct: answer === selected.answer, date: today() },
-                    'add',
-                    'lesson',
-                  );
-                  setResult(
-                    answer === selected.answer
-                      ? 'That’s right. Your progress is saved.'
-                      : 'A good try. Read the lesson and give it another go. Your attempt is saved.',
-                  );
-                } catch (e: any) {
-                  setResult(e.message);
-                }
-              }}
-            >
-              {t('Check & save my progress')} <ArrowRight size={15} />
-            </button>
-            {result && (
-              <p role="status" className="quiz-feedback">
-                {t(result)}
-              </p>
-            )}
-            <p className="fine">
-              {t('Original text by the Smriva project · CC BY 4.0 · Not clinical advice')}
-            </p>
-          </div>
-        </Modal>
-      )}
-    </div>
-  );
-}
 export function SettingsPage() {
   const { t, locale, language } = useI18n();
   const { notify, refresh } = useKuka(),
@@ -888,7 +537,9 @@ export function SettingsPage() {
       <PageTitle
         eyebrow={t('This device')}
         title={t('Settings, sync & recovery')}
-        description={t('Synchronize records, download a backup, or save your recovery code before changing devices.')}
+        description={t(
+          'Synchronize records, download a backup, or save your recovery code before changing devices.',
+        )}
       />
       <section id="sync" className="settings-sync">
         <SyncCenter />
@@ -1134,7 +785,7 @@ export function About() {
       <PageTitle
         eyebrow="Project notes"
         title="About this build"
-        description="An offline-first prototype for health and education. Built at BIOS V2. No affiliation or deployment claims."
+        description="An offline-first prototype for education. Built at BIOS V2. No affiliation or deployment claims."
       />
       <Panel title="What this build does">
         <p>
@@ -1144,8 +795,8 @@ export function About() {
         </p>
         <p>
           Critical fields use multi-value registers with causal ancestry. Tags use observed-remove semantics;
-          visits, doses, growth, and lesson attempts are append-only sets. Stock deltas use an idempotent
-          operation-based counter. These implementations are exercised by property and integration tests.
+          assessment attempts are append-only sets. Stock deltas use an idempotent operation-based counter.
+          These implementations are exercised by property and integration tests.
         </p>
       </Panel>
       <Panel title="Sources & original content">
@@ -1160,12 +811,7 @@ export function About() {
             </thead>
             <tbody>
               <tr>
-                <td>Four original lesson texts and quizzes</td>
-                <td>Smriva project</td>
-                <td>Bundled · CC BY 4.0</td>
-              </tr>
-              <tr>
-                <td>Bird, village, lesson illustrations and interface artwork</td>
+                <td>Bird and interface artwork</td>
                 <td>Smriva project</td>
                 <td>Original SVG / CSS · CC BY 4.0</td>
               </tr>
@@ -1184,8 +830,8 @@ export function About() {
                 <td>Website content online · attributed programme banner bundled separately</td>
               </tr>
               <tr>
-                <td>Eight official programme reference images</td>
-                <td>Ministry of Education / National Health Mission, MoHFW</td>
+                <td>Six official programme reference images</td>
+                <td>Ministry of Education</td>
                 <td>Unchanged, with acknowledgement under the respective website reproduction policies</td>
               </tr>
               <tr>
@@ -1212,13 +858,9 @@ export function About() {
           the{' '}
           <External href="https://www.dsel-education.gov.in/policies/copyright-policy">
             education image policy
-          </External>{' '}
-          and{' '}
-          <External href="https://nhm.gov.in/index4.php?lang=1&level=0&lid=13&linkid=8">
-            health image policy
           </External>
-          . Source credits are shown with each programme in the Learning library. No government endorsement of
-          Smriva is implied.
+          . Source credits are shown with each programme under Government schemes. No government endorsement
+          of Smriva is implied.
         </p>
       </Panel>
       <Panel title="National education context · separate from demo children">
@@ -1253,20 +895,19 @@ export function About() {
         <p>
           Judge enrollment is deliberately open. Controlled enrollment through first-admin bootstrap and
           role-bound invitations is implemented. External identity-provider login, field-specific read
-          permissions, district peer replication, Merkle repair trees, clinical decision support and external
-          integrations are not completed. Workspace controls and the four original lessons are available in
-          English, Hindi and Punjabi; source documentation and raw technical logs remain English. Do not
-          deploy this demo with real personal data.
+          permissions, district peer replication, Merkle repair trees and external integrations are not
+          completed. Workspace controls are available in English, Hindi and Punjabi; source documentation and
+          raw technical logs remain English. Do not deploy this demo with real personal data.
         </p>
         <p>
           The hub encrypts operation bodies with an environment key. Database indexes expose operation IDs,
-          school IDs, device IDs, and metadata. HTTPS, clinical safety review, data-protection review,
-          hardened identity, and a managed key store are required for real deployments.
+          school IDs, device IDs, and metadata. HTTPS, data-protection review, hardened identity, and a
+          managed key store are required for real deployments.
         </p>
         <p>
           Unsynchronized work without a backup cannot be recovered after device loss. Signed bundles require
           the same trusted hub key. A SHA-256 log digest proves equal logs when compared; it does not
-          independently prove clinical correctness.
+          independently prove record correctness.
         </p>
       </Panel>
       <div className="button-row">

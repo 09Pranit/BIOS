@@ -7,8 +7,7 @@ const privatePages: Record<string, string> = {
   '/app/today': 'Overview',
   '/app/children': 'Children',
   '/app/school': 'Classroom',
-  '/app/health': 'Health records',
-  '/app/library': 'Learning library',
+  '/app/library': 'Government schemes',
   '/app/sync': 'Save and sync',
   '/app/conflicts': 'Check differences',
   '/app/settings': 'Settings and recovery',
@@ -30,9 +29,7 @@ export default function RouteMetadata() {
       `${t(privatePages[pathname] ?? (pathname.startsWith('/app/children/') ? 'Child record' : 'Page not found'))} · Smriva`;
     const description =
       publicMeta?.description ??
-      t(
-        'Private Smriva workspace for offline health and education records. Unlock your enrolled device to continue.',
-      );
+      t('Private Smriva workspace for offline education records. Unlock your enrolled device to continue.');
     document.title = title;
     const setMeta = (selector: string, attribute: string, name: string, value: string) => {
       let tag = document.head.querySelector<HTMLMetaElement>(selector);

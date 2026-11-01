@@ -7,7 +7,6 @@ import {
   Upload,
   Check,
   Users,
-  Heart,
   GraduationCap,
   ShieldCheck,
   RefreshCw,
@@ -26,7 +25,7 @@ import {
 } from 'lucide-react';
 import { formatDisplayDate, languages, useI18n, type Language } from '../lib/i18n';
 import { useKuka } from '../lib/context';
-import { displayRole } from '../lib/presentation';
+import { displayRole, isPatientRecord } from '../lib/presentation';
 import { vault } from '../lib/vault';
 import { newId } from '../lib/platform';
 import {
@@ -55,8 +54,13 @@ import {
 } from '../lib/entry';
 const childrenOnDevice = () =>
   Object.values(vault.view.entities)
-    .filter((c) => c.type === 'child' && !c.deleted && !c.id.startsWith('lab-'))
+    .filter((c) => c.type === 'child' && !c.deleted && !c.id.startsWith('lab-') && !isPatientRecord(c))
     .sort((a, b) => (a.name ?? '').localeCompare(b.name ?? ''));
+const schoolConflicts = () =>
+  vault.view.conflicts.filter((entry) => {
+    const person = vault.view.entities[entry.entityId.split(':')[0]];
+    return person?.type === 'child' && !isPatientRecord(person);
+  });
 const states = ['present', 'absent', 'late', 'excused'] as const;
 const restoredScores = () =>
   Object.fromEntries(
@@ -119,21 +123,15 @@ export function Today() {
     children = childrenOnDevice(),
     s = vault.state!,
     entities = vault.view.entities,
-    conflicts = vault.view.conflicts;
+    conflicts = schoolConflicts();
   const marked = children.filter((c) => entities[c.id + ':' + localDate()]?.attendance !== undefined).length;
   const draftCount = Object.keys(s.entryDrafts ?? {}).filter((key) => key.startsWith('score|')).length;
-  const recent = s.ops
-    .filter((o) => o.deviceId !== 'seed' && !o.entityId.startsWith('lab-'))
-    .slice()
-    .sort(compareOpsByClock)
-    .reverse()
-    .slice(0, 8);
   return (
     <>
       <PageTitle
         eyebrow={t('Smriva workspace')}
         title={t('Overview')}
-        description={t('Attendance, child records and health visits for this hub.')}
+        description={t('Attendance and education records for this workspace.')}
         action={
           <Link className="button primary" to="/app/children?new=1">
             <Plus size={16} /> {t('New child')}{' '}
@@ -146,9 +144,6 @@ export function Today() {
         </Link>
         <Link className="button outline" to="/app/school?tab=assessments">
           {t('Enter assessment scores')}{' '}
-        </Link>
-        <Link className="button outline" to="/app/health">
-          <Heart size={16} /> {t('Add health record')}{' '}
         </Link>
         <span className="shortcut-note">{t('All entries save locally before syncing.')}</span>
       </div>
@@ -206,67 +201,6 @@ export function Today() {
                 <ChevronRight size={16} />
               </Link>
             </div>
-          </Panel>
-          <Panel
-            title={t('Recent changes')}
-            aside={
-              <Link className="text-link" to="/app/settings#sync">
-                {t('View operation ledger')}{' '}
-              </Link>
-            }
-            className="flush-panel"
-          >
-            {recent.length ? (
-              <div className="table-scroll">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>{t('Record')}</th>
-                      <th>{t('Change')}</th>
-                      <th>{t('Author')}</th>
-                      <th>{t('Saved')}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {recent.map((o) => (
-                      <tr key={o.opId}>
-                        <td>
-                          <Link
-                            to={
-                              o.entityType === 'lesson'
-                                ? '/app/library'
-                                : '/app/children/' + o.entityId.split(':')[0]
-                            }
-                          >
-                            {entities[o.entityId]?.name ??
-                              entities[o.entityId.split(':')[0]]?.name ??
-                              o.entityId}
-                          </Link>
-                          <small>{o.entityId}</small>
-                        </td>
-                        <td>
-                          <code>{o.field}</code>
-                          <small>
-                            {o.kind}{' '}
-                            {typeof o.value === 'string' || typeof o.value === 'number'
-                              ? String(o.value)
-                              : ''}
-                          </small>
-                        </td>
-                        <td>{o.actorId}</td>
-                        <td className="nowrap">{time(o.hlc.physical, locale)}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            ) : (
-              <div className="plain-empty">
-                <GitBranch size={22} />
-                <p>{t('No new changes on this workspace.')}</p>
-                <small>{t('Start with attendance, a child record, or a health visit.')}</small>
-              </div>
-            )}
           </Panel>
           <Panel
             title={t('Children')}
@@ -333,191 +267,12 @@ export function Today() {
               </div>
             </dl>
           </section>
-          <section>
-            <h2>{t('Keyboard shortcuts')}</h2>
-            <div className="shortcut-list">
-              <span>
-                <kbd>Ctrl K</kbd> {t('Search records and pages')}{' '}
-              </span>
-              <span>
-                <kbd>P</kbd>
-                <kbd>A</kbd>
-                <kbd>L</kbd>
-                <kbd>E</kbd> {t('Mark attendance')}{' '}
-              </span>
-              <span>
-                <kbd>Enter</kbd> {t('Save score and move down')}{' '}
-              </span>
-              <span>
-                <kbd>Ctrl Enter</kbd> {t('Submit form')}{' '}
-              </span>
-            </div>
-          </section>
-          <section>
-            <h2>
-              <LockKeyhole size={15} /> {t('Saved on this device')}{' '}
-            </h2>
-            <p>
-              {t('{count} encrypted operations stored on this device. {pending} awaiting hub backup.', {
-                count: s.ops.length,
-                pending: vault.pending.length,
-              })}{' '}
-            </p>
-            <Link className="text-link" to="/app/settings">
-              {t('Backup and recovery')}{' '}
-            </Link>
-          </section>
         </aside>
       </div>
     </>
   );
 }
 
-function ClinicMetric({
-  icon,
-  value,
-  label,
-  note,
-}: {
-  icon: ReactNode;
-  value: number;
-  label: string;
-  note: string;
-}) {
-  return (
-    <div className="metric">
-      <div className="metric-icon blue">{icon}</div>
-      <div className="metric-top">
-        <span>{label}</span>
-        <strong>{value}</strong>
-      </div>
-      <p>{note}</p>
-    </div>
-  );
-}
-
-export function ClinicToday() {
-  const { t, locale } = useI18n();
-  const { status } = useKuka();
-  const patients = childrenOnDevice();
-  const visits = patients.reduce((total, patient) => total + (patient.visits?.length ?? 0), 0);
-  const clinicalFields = new Set(['visits', 'growth', 'doses', 'doseStatus', 'allergy', 'prescription']);
-  const recent = vault
-    .state!.ops.filter(
-      (operation) => clinicalFields.has(operation.field) && !operation.entityId.startsWith('lab-'),
-    )
-    .slice()
-    .sort(compareOpsByClock)
-    .reverse()
-    .slice(0, 8);
-  return (
-    <>
-      <PageTitle
-        eyebrow={t('Clinic workspace')}
-        title={t('Clinic overview')}
-        description={t(
-          'Offline patient registration, community visits and clinical follow-up in one workspace.',
-        )}
-        action={
-          <Link className="button primary" to="/app/children?new=patient">
-            <Plus size={16} /> {t('New patient')}
-          </Link>
-        }
-      />
-      <div className="entry-shortcuts">
-        <Link className="button primary" to="/app/health">
-          <Heart size={16} /> {t('Add clinical record')}
-        </Link>
-        <Link className="button outline" to="/app/children">
-          <Users size={16} /> {t('Open patients')}
-        </Link>
-        <Link className="button outline" to="/app/conflicts">
-          <ShieldCheck size={16} /> {t('Review conflicts')}
-        </Link>
-        <span className="shortcut-note">{t('Every entry is encrypted and saved locally first.')}</span>
-      </div>
-      <div className="metrics">
-        <ClinicMetric
-          icon={<Users size={18} />}
-          value={patients.length}
-          label={t('Patients')}
-          note={t('Available on this device')}
-        />
-        <ClinicMetric
-          icon={<Heart size={18} />}
-          value={visits}
-          label={t('Clinical visits')}
-          note={t('Recorded history retained')}
-        />
-        <ClinicMetric
-          icon={<ShieldCheck size={18} />}
-          value={vault.view.conflicts.length}
-          label={t('Conflicts')}
-          note={t('Alternatives preserved for review')}
-        />
-        <ClinicMetric
-          icon={<RefreshCw size={18} />}
-          value={vault.pending.length}
-          label={t('Waiting to sync')}
-          note={t(status)}
-        />
-      </div>
-      <div className="dashboard-grid">
-        <Panel title={t('Patient list')} className="flush-panel">
-          <div className="table-scroll">
-            <table>
-              <thead>
-                <tr>
-                  <th>{t('Patient')}</th>
-                  <th>{t('Date of birth')}</th>
-                  <th>{t('Visits')}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {patients.slice(0, 8).map((patient) => (
-                  <tr key={patient.id}>
-                    <td>
-                      <Link to={'/app/children/' + patient.id}>{patient.name ?? patient.id}</Link>
-                    </td>
-                    <td>{patient.dob ?? t('Not recorded')}</td>
-                    <td>{patient.visits?.length ?? 0}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          {!patients.length && (
-            <Empty
-              title={t('No patients yet')}
-              description={t('Register a patient to begin offline care records.')}
-            />
-          )}
-        </Panel>
-        <Panel title={t('Recent clinical changes')} className="flush-panel">
-          {recent.length ? (
-            <div className="compact-events">
-              {recent.map((operation) => (
-                <div key={operation.opId}>
-                  <Heart size={15} />
-                  <span>
-                    <strong>{t(operation.field)}</strong>
-                    <small>{operation.actorId}</small>
-                  </span>
-                  <time>{time(operation.hlc.physical, locale)}</time>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <Empty
-              title={t('No clinical changes yet')}
-              description={t('Visits and observations will appear here.')}
-            />
-          )}
-        </Panel>
-      </div>
-    </>
-  );
-}
 function RosterImport({ close }: { close: () => void }) {
   const { t, locale } = useI18n();
   const { refresh, notify } = useKuka(),
@@ -563,8 +318,8 @@ function RosterImport({ close }: { close: () => void }) {
           className="button plain"
           onClick={() =>
             downloadCSV('smriva-roster-template.csv', [
-              ['name', 'dob', 'class', 'village', 'guardian', 'consent'],
-              ['Example Child', '2019-04-15', 'Class 1', 'Daun Kalan', 'Example Guardian', 'true'],
+              ['name', 'dob', 'class', 'guardian', 'consent'],
+              ['Example Child', '2019-04-15', 'Class 1', 'Example Guardian', 'true'],
             ])
           }
         >
@@ -668,7 +423,7 @@ function RosterImport({ close }: { close: () => void }) {
     </Modal>
   );
 }
-export function Children({ clinic = false }: { clinic?: boolean }) {
+export function Children() {
   const { t, locale, language } = useI18n();
   const { version } = useKuka(),
     children = childrenOnDevice(),
@@ -677,15 +432,14 @@ export function Children({ clinic = false }: { clinic?: boolean }) {
     [review, setReview] = useState('All records'),
     [sortLanguage, setSortLanguage] = useState<Language>(language),
     [params, setParams] = useSearchParams(),
-    [add, setAdd] = useState<'student' | 'patient' | null>(null),
+    [add, setAdd] = useState(false),
     [importing, setImporting] = useState(false);
   useEffect(() => {
     const requested = params.get('new');
-    if (requested === 'student' || requested === 'patient') setAdd(requested);
-    else if (requested === '1') setAdd('student');
+    if (requested === 'student' || requested === '1') setAdd(true);
   }, [params]);
   const close = () => {
-    setAdd(null);
+    setAdd(false);
     if (params.has('new')) {
       const next = new URLSearchParams(params);
       next.delete('new');
@@ -709,49 +463,30 @@ export function Children({ clinic = false }: { clinic?: boolean }) {
   return (
     <>
       <PageTitle
-        eyebrow={t(clinic ? 'Clinic workspace' : 'Smriva workspace')}
-        title={t(clinic ? 'Patients' : 'Children')}
-        description={t(
-          clinic
-            ? 'Search, register and update patient records offline.'
-            : 'Search, register, import, and correct child records.',
-        )}
+        eyebrow={t('Smriva workspace')}
+        title={t('Children')}
+        description={t('Search, register, import, and correct child records.')}
         action={
           <div className="button-row no-margin">
-            {!clinic && (
-              <button className="button outline" onClick={() => setImporting(true)}>
-                <Upload size={16} /> {t('Import CSV')}
-              </button>
-            )}
-            {clinic ? (
-              <button className="button primary" onClick={() => setAdd('patient')}>
-                <Plus size={16} /> {t('New patient')}
-              </button>
-            ) : (
-              <details className="new-menu">
-                <summary className="button primary">
-                  <Plus size={16} /> {t('New')} <ChevronDown size={14} />
-                </summary>
-                <div className="new-menu-options">
-                  <button type="button" onClick={() => setAdd('student')}>
-                    <GraduationCap size={15} /> {t('Student')}
-                  </button>
-                  <button type="button" onClick={() => setAdd('patient')}>
-                    <Heart size={15} /> {t('Patient')}
-                  </button>
-                </div>
-              </details>
-            )}
+            <button className="button outline" onClick={() => setImporting(true)}>
+              <Upload size={16} /> {t('Import CSV')}
+            </button>
+            <details className="new-menu">
+              <summary className="button primary">
+                <Plus size={16} /> {t('New')} <ChevronDown size={14} />
+              </summary>
+              <div className="new-menu-options">
+                <button type="button" onClick={() => setAdd(true)}>
+                  <GraduationCap size={15} /> {t('Student')}
+                </button>
+              </div>
+            </details>
           </div>
         }
       />
       <div className="toolbar records-toolbar">
-        <SearchField
-          value={search}
-          onChange={setSearch}
-          label={clinic ? 'Search patients' : 'Search children'}
-        />
-        {!clinic && <ClassFilter value={grade} onChange={setGrade} />}
+        <SearchField value={search} onChange={setSearch} />
+        <ClassFilter value={grade} onChange={setGrade} />
         <select aria-label={t('Record status')} value={review} onChange={(e) => setReview(e.target.value)}>
           <option value="All records">{t('All records')}</option>
           <option value="Needs review">{t('Needs review')}</option>
@@ -770,18 +505,10 @@ export function Children({ clinic = false }: { clinic?: boolean }) {
         <button
           className="button outline"
           onClick={() =>
-            downloadCSV(
-              clinic ? 'smriva-patients.csv' : 'smriva-children.csv',
-              clinic
-                ? [
-                    ['name', 'dob', 'guardian', 'visits', 'consent'],
-                    ...shown.map((c) => [c.name, c.dob, c.guardian, c.visits?.length ?? 0, c.consent]),
-                  ]
-                : [
-                    ['name', 'dob', 'class', 'village', 'guardian', 'consent'],
-                    ...shown.map((c) => [c.name, c.dob, c.class, c.village, c.guardian, c.consent]),
-                  ],
-            )
+            downloadCSV('smriva-children.csv', [
+              ['name', 'dob', 'class', 'guardian', 'consent'],
+              ...shown.map((c) => [c.name, c.dob, c.class, c.guardian, c.consent]),
+            ])
           }
         >
           <Download size={16} /> {t('Export')}
@@ -802,8 +529,8 @@ export function Children({ clinic = false }: { clinic?: boolean }) {
               <tr>
                 <th>{t('Child')}</th>
                 <th>{t('Date of birth')}</th>
-                {!clinic && <th>{t('Class')}</th>}
-                <th>{t(clinic ? 'Guardian' : 'Village')}</th>
+                <th>{t('Class')}</th>
+                <th>{t('Guardian')}</th>
                 <th>{t('Records')}</th>
                 <th>{t('Status')}</th>
               </tr>
@@ -817,29 +544,19 @@ export function Children({ clinic = false }: { clinic?: boolean }) {
                       <span>
                         <strong>{c.name ?? t('Identity needs review')}</strong>
                         <small>
-                          {t(c.tags?.includes('patient') ? 'Patient' : 'Student')} · {c.id}
+                          {t('Student')} · {c.id}
                         </small>
                       </span>
                     </Link>
                   </td>
                   <td>{c.dob ?? t('Review required')}</td>
-                  {!clinic && <td>{t(c.class ?? 'Needs review')}</td>}
-                  <td>
-                    {clinic ? c.guardian || t('No guardian recorded') : c.village}
-                    {!clinic && <small>{c.guardian || t('No guardian recorded')}</small>}
-                  </td>
+                  <td>{t(c.class ?? 'Needs review')}</td>
+                  <td>{c.guardian || t('No guardian recorded')}</td>
                   <td>
                     <span className="record-tags">
-                      {!clinic && (
-                        <span>
-                          <GraduationCap size={13} /> {t('School')}{' '}
-                        </span>
-                      )}
-                      {(clinic || c.visits?.length > 0) && (
-                        <span>
-                          <Heart size={13} /> {t('Health')}{' '}
-                        </span>
-                      )}
+                      <span>
+                        <GraduationCap size={13} /> {t('School')}
+                      </span>
                     </span>
                   </td>
                   <td>
@@ -859,7 +576,7 @@ export function Children({ clinic = false }: { clinic?: boolean }) {
           />
         )}
       </Panel>
-      {add && <ChildForm close={close} profile={add} />}
+      {add && <ChildForm close={close} />}
       {importing && <RosterImport close={() => setImporting(false)} />}
     </>
   );
@@ -1368,244 +1085,6 @@ export function School() {
           'Incompatible concurrent entries require review. Separate assessment attempt numbers keep their own scores.',
         )}{' '}
       </p>
-    </>
-  );
-}
-export function Health() {
-  const { t, locale } = useI18n();
-  const { write, version } = useKuka(),
-    children = childrenOnDevice(),
-    [search, setSearch] = useState(''),
-    [child, setChild] = useState(''),
-    [kind, setKind] = useState('visits'),
-    [error, setError] = useState(''),
-    [busy, setBusy] = useState(false),
-    [formKey, setFormKey] = useState(0),
-    [saved, setSaved] = useState('');
-  const shown = children.filter((c) => matchesChild(c, search)),
-    chosen = children.find((c) => c.id === child),
-    events = chosen
-      ? [
-          ...(chosen.visits ?? []).map((e: any) => ({ ...e, type: 'Visit', detail: e.note })),
-          ...(chosen.growth ?? []).map((e: any) => ({
-            ...e,
-            type: 'Growth',
-            detail: `${e.weight} kg · ${e.height} cm`,
-          })),
-          ...(chosen.doses ?? []).map((e: any) => ({ ...e, type: 'Vaccination', detail: e.name })),
-        ].sort((a, b) => String(b.date).localeCompare(String(a.date)))
-      : [];
-  return (
-    <>
-      <PageTitle
-        eyebrow={t('Smriva workspace')}
-        title={t('Health records')}
-        description={t(
-          'Select a child, enter the event, and save locally. Every event is retained separately.',
-        )}
-      />
-      <div className="health-entry-layout">
-        <Panel title={t('New health record')}>
-          <Form
-            key={formKey}
-            onSubmit={async (f) => {
-              setBusy(true);
-              setError('');
-              setSaved('');
-              try {
-                if (!child) throw new Error('Select a child before saving.');
-                if (kind === 'visits' && !String(f.get('note') ?? '').trim())
-                  throw new Error('Enter a visit note.');
-                if (
-                  kind === 'doses' &&
-                  ['dose', 'batch', 'site'].some((key) => !String(f.get(key) ?? '').trim())
-                )
-                  throw new Error('Vaccine name, batch, and site are required.');
-                const value =
-                  kind === 'visits'
-                    ? {
-                        date: String(f.get('date')),
-                        note: String(f.get('note')).trim(),
-                        worker: vault.state!.identity.actorId,
-                      }
-                    : kind === 'growth'
-                      ? {
-                          date: String(f.get('date')),
-                          weight: Number(f.get('weight')),
-                          height: Number(f.get('height')),
-                          muac: f.get('muac') ? Number(f.get('muac')) : null,
-                        }
-                      : {
-                          name: String(f.get('dose')).trim(),
-                          date: String(f.get('date')),
-                          batch: String(f.get('batch')).trim(),
-                          site: String(f.get('site')).trim(),
-                        };
-                await write(child, kind, value, 'add');
-                setSaved('Saved locally. Ready for the next record.');
-                setFormKey((v) => v + 1);
-              } catch (e: any) {
-                setError(e.message);
-              } finally {
-                setBusy(false);
-              }
-            }}
-          >
-            <label>
-              {t('Find a child')}{' '}
-              <input
-                aria-label={t('Find child for health record')}
-                placeholder={t('Name, internal ID, village…')}
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
-            </label>
-            <label>
-              {t('Child')} <span className="required-mark">*</span>
-              <select
-                aria-label={t('Child for health record')}
-                value={child}
-                onChange={(e) => {
-                  setChild(e.target.value);
-                  setSaved('');
-                }}
-                required
-              >
-                <option value="">{t('Select a child…')}</option>
-                {shown.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name} · {t(c.class ?? 'Needs review')} · {c.village}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <div className="form-grid">
-              <label>
-                {t('Record type')}{' '}
-                <select
-                  value={kind}
-                  onChange={(e) => {
-                    setKind(e.target.value);
-                    setSaved('');
-                  }}
-                >
-                  <option value="visits">{t('Health visit')}</option>
-                  <option value="growth">{t('Growth measurement')}</option>
-                  <option value="doses">{t('Vaccination event')}</option>
-                </select>
-              </label>
-              <label>
-                {t('Date')}{' '}
-                <input name="date" type="date" defaultValue={localDate()} max={localDate()} required />
-              </label>
-            </div>
-            {kind === 'visits' ? (
-              <label>
-                {t('Visit note')}{' '}
-                <textarea
-                  name="note"
-                  required
-                  maxLength={1000}
-                  placeholder={t('Enter the visit observations…')}
-                />
-              </label>
-            ) : kind === 'growth' ? (
-              <>
-                <div className="form-grid">
-                  <label>
-                    {t('Weight (kg)')}{' '}
-                    <input name="weight" type="number" step="0.1" min="0.1" max="200" required />
-                  </label>
-                  <label>
-                    {t('Height (cm)')}{' '}
-                    <input name="height" type="number" step="0.1" min="20" max="220" required />
-                  </label>
-                </div>
-                <label>
-                  {t('MUAC (cm, optional)')} <input name="muac" type="number" step="0.1" min="3" max="60" />
-                </label>
-              </>
-            ) : (
-              <>
-                <label>
-                  {t('Vaccine / dose name')} <input name="dose" required maxLength={100} />
-                </label>
-                <div className="form-grid">
-                  <label>
-                    {t('Batch')} <input name="batch" required maxLength={60} />
-                  </label>
-                  <label>
-                    {t('Site')} <input name="site" required maxLength={100} />
-                  </label>
-                </div>
-              </>
-            )}
-            {error && <Notice tone="coral">{t(error)}</Notice>}
-            {saved && (
-              <div className="inline-success">
-                <CheckCircle2 size={16} />
-                {t(saved)}
-              </div>
-            )}
-            <div className="form-actions">
-              <Submit busy={busy} label={t('Save health record')} />
-            </div>
-            <p className="fine">
-              {t('Ctrl+Enter to save. Child and record type stay selected for repeated entry.')}{' '}
-            </p>
-          </Form>
-        </Panel>
-        <aside>
-          <Panel title={chosen ? chosen.name : t('Selected child')} translateTitle={false}>
-            {chosen ? (
-              <>
-                <dl className="detail-list">
-                  <div>
-                    <dt>{t('ID')}</dt>
-                    <dd>{chosen.id}</dd>
-                  </div>
-                  <div>
-                    <dt>{t('Date of birth')}</dt>
-                    <dd>{chosen.dob}</dd>
-                  </div>
-                  <div>
-                    <dt>{t('Village')}</dt>
-                    <dd>{chosen.village}</dd>
-                  </div>
-                  <div>
-                    <dt>{t('Consent')}</dt>
-                    <dd>{chosen.consent === true ? t('Recorded') : t('Needs review')}</dd>
-                  </div>
-                </dl>
-                <Link className="text-link" to={'/app/children/' + chosen.id}>
-                  {t('Open full child record')} <ArrowRight size={14} />
-                </Link>
-              </>
-            ) : (
-              <p className="muted">{t('Select a child to check their details and recent health events.')}</p>
-            )}
-          </Panel>
-          {chosen && (
-            <Panel title={t('Recent events')}>
-              <div className="compact-events">
-                {events.slice(0, 8).map((event: any) => (
-                  <div key={event.opId}>
-                    <span className="muted">{event.date}</span>
-                    <strong>{t(event.type)}</strong>
-                    <p>{event.detail}</p>
-                  </div>
-                ))}
-                {!events.length && <p className="muted">{t('No recorded health events.')}</p>}
-              </div>
-            </Panel>
-          )}
-          <p className="fine">
-            {t(
-              'Raw measurements and recorded events only. Clinical calculations, treatment advice, and vaccination scheduling are outside this prototype.',
-            )}{' '}
-          </p>
-        </aside>
-      </div>
     </>
   );
 }

@@ -102,17 +102,22 @@ export default function Lab() {
       setEntity(id);
       await sessions[0].write(id, 'dob', draft[0]);
       await sessions[1].write(id, 'dob', draft[1]);
-      await sessions[0].write(id, 'visits', { note: 'Independent visit on A', date: '2026-10-31' }, 'add');
+      await sessions[0].write(
+        id,
+        'attempts',
+        { note: 'Independent assessment on A', date: '2026-10-31' },
+        'add',
+      );
       await sessions[1].write(id, 'tags', 'School support', 'add');
       for (let i = 0; i < 45; i++)
         await sessions[i % 2].write(
           id,
-          'visits',
+          'attempts',
           { note: 'Chunk recovery event ' + i, date: '2026-10-31' },
           'add',
         );
       record(
-        '49 real operations committed offline: incompatible DOB values, an independent tag, and 46 visits.',
+        '49 real operations committed offline: incompatible DOB values, an independent tag, and 46 assessment attempts.',
       );
       refresh();
     } catch (e: any) {
@@ -315,7 +320,7 @@ export default function Lab() {
             {sessions.map((s, i) => (
               <Panel
                 key={i}
-                title={t(i ? 'Device B · Teacher' : 'Device A · Health worker')}
+                title={t(i ? 'Device B · Teacher' : 'Device A · Teacher')}
                 aside={<Badge tone={profile === 'Offline' ? 'amber' : 'green'}>{t(profile)}</Badge>}
               >
                 <div className="device-identity">
