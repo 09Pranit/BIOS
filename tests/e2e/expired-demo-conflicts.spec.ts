@@ -89,7 +89,8 @@ for (const demo of [true, false]) {
           const panel = page
             .locator('.panel')
             .filter({ has: page.getByRole('heading', { name: `${name} · score`, exact: true }) });
-          await expect(panel.getByText('Synthetic demo conflict', { exact: true })).toBeVisible();
+          await expect(panel.getByText('Data', { exact: true })).toBeVisible();
+          await expect(panel).not.toContainText('Synthetic demo');
           await expect(panel.locator('.conflict-versions article')).toHaveCount(2);
         }
       } else

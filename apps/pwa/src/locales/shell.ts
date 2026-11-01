@@ -1,6 +1,6 @@
 /** English keys with Hindi and Punjabi interface translations. Stored records are never translated. */
 export const shellTranslations: Record<string, readonly [string, string]> = {
-  'Synthetic demo conflict': ['काल्पनिक डेमो मतभेद', 'ਕਾਲਪਨਿਕ ਡੈਮੋ ਮਤਭੇਦ'],
+  Data: ['डेटा', 'ਡਾਟਾ'],
   'Doctor’s register': ['डॉक्टर का रजिस्टर', 'ਡਾਕਟਰ ਦਾ ਰਜਿਸਟਰ'],
   'New patient entry': ['नई मरीज़ प्रविष्टि', 'ਨਵੀਂ ਮਰੀਜ਼ ਐਂਟਰੀ'],
   'Patient name': ['मरीज़ का नाम', 'ਮਰੀਜ਼ ਦਾ ਨਾਮ'],

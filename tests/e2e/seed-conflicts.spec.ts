@@ -16,7 +16,8 @@ test('demo conflicts show stored names and a reviewed choice survives sync and o
     const panel = page
       .locator('.panel')
       .filter({ has: page.getByRole('heading', { name: `${name} · score`, exact: true }) });
-    await expect(panel.getByText('Synthetic demo conflict', { exact: true })).toBeVisible();
+    await expect(panel.getByText('Data', { exact: true })).toBeVisible();
+    await expect(panel).not.toContainText('Synthetic demo');
     await expect(panel.locator('.conflict-versions article')).toHaveCount(2);
   }
   const aarohi = page
@@ -33,5 +34,5 @@ test('demo conflicts show stored names and a reviewed choice survives sync and o
   await page.getByRole('button', { name: 'Unlock workspace', exact: true }).click();
   await expect(aarohi).toHaveCount(0);
   await expect(page.getByRole('heading', { name: 'Kabir Singh · score', exact: true })).toBeVisible();
-  await expect(page.getByText('Synthetic demo conflict', { exact: true })).toHaveCount(2);
+  await expect(page.getByText('Data', { exact: true })).toHaveCount(2);
 });

@@ -52,7 +52,7 @@ Existing PINs, databases and encrypted backups remain readable. A present `data/
 
 ### Synthetic patient demo
 
-The Doctor’s register includes 12 fictional patients with realistic names, visit dates, times and varied consultation purposes. Every sample visit is labeled “Fictional demo patient.” These entries remain separate from the 24 students and classroom attendance.
+The Doctor’s register includes 12 fictional patients with realistic names, visit dates, times and varied consultation purposes. Sample authors display as “Data”; conflict examples use the same label. Presentation labels do not rewrite stored operation authors or signatures. These entries remain separate from the 24 students and classroom attendance.
 
 Demo hubs add these visits on startup, including existing demo databases. Repeated starts preserve existing records and do not duplicate visits. Set `SEED_DEMO_DATA=false` to skip seeding; controlled production mode also skips it. The Vercel deployment is an in-memory demonstration: server records and sessions can reset when its function restarts. Use the local SQLite hub for durable server storage.
 

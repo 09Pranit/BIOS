@@ -31,7 +31,7 @@ import {
 } from 'lucide-react';
 import { useKuka } from '../lib/context';
 import { languages, useI18n } from '../lib/i18n';
-import { displayRole, isPatientRecord } from '../lib/presentation';
+import { displayActor, displayRole, isPatientRecord } from '../lib/presentation';
 import { vault, download } from '../lib/vault';
 import { readBackupFile } from '../lib/backup-file';
 import { localCalendarDate, newId } from '../lib/platform';
@@ -330,7 +330,7 @@ export function ChildDetail() {
                 <strong>{o.field}</strong>{' '}
                 <span>{typeof o.value === 'string' ? o.value : JSON.stringify(o.value)}</span>
                 <small>
-                  {o.actorId} · {new Date(o.hlc.physical).toLocaleString(locale)}{' '}
+                  {displayActor(o)} · {new Date(o.hlc.physical).toLocaleString(locale)}{' '}
                 </small>
               </div>
             </div>
@@ -387,7 +387,7 @@ export function Conflicts() {
             aside={<Badge tone="coral">{t('Human review required')}</Badge>}
           >
             {c.versions.some((op) => ['seed-conflict-a-v1', 'seed-conflict-b-v1'].includes(op.deviceId)) && (
-              <p className="eyebrow">{t('Synthetic demo conflict')}</p>
+              <p className="eyebrow">{t('Data')}</p>
             )}
             <p className="conflict-reason">
               {t(
@@ -400,7 +400,7 @@ export function Conflicts() {
             <div className="conflict-versions">
               {c.versions.map((o) => (
                 <article key={o.opId}>
-                  <p className="eyebrow">{o.actorId}</p>
+                  <p className="eyebrow">{displayActor(o)}</p>
                   <h3>{typeof o.value === 'object' ? JSON.stringify(o.value) : String(o.value)}</h3>
                   <p className="fine">
                     {t('Device')} {o.deviceId.slice(-12)}

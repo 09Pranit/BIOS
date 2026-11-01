@@ -15,7 +15,10 @@ test('doctor entries appear immediately, survive offline reload and stay out of 
   await expect(page.getByRole('heading', { name: 'Doctor’s register', exact: true })).toBeVisible();
   const rows = page.getByRole('table', { name: 'Patient entries', exact: true }).locator('tbody tr');
   await expect(rows).toHaveCount(12);
-  await expect(rows.filter({ hasText: 'Harpreet Singh' })).toContainText('Fictional demo patient');
+  await expect(rows.filter({ hasText: 'Harpreet Singh' })).toContainText('Routine consultation');
+  await expect(rows.filter({ hasText: 'Harpreet Singh' })).toContainText('Data');
+  await expect(rows.filter({ hasText: 'Synthetic demo' })).toHaveCount(0);
+  await expect(rows.filter({ hasText: 'Fictional demo patient' })).toHaveCount(0);
   await context.setOffline(true);
   await page.getByLabel('Patient name', { exact: true }).fill('Offline Patient Example');
   await page.getByLabel('Date', { exact: true }).fill('2020-01-01');

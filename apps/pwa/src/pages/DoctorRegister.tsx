@@ -6,6 +6,7 @@ import { useI18n } from '../lib/i18n';
 import { vault } from '../lib/vault';
 import { localDate } from '../lib/entry';
 import { newId } from '../lib/platform';
+import { displayActor } from '../lib/presentation';
 import { DoctorEntrySchema } from '../../../../packages/sync-core/src/domain';
 import { compareOpsByClock } from '../../../../packages/sync-core/src/index';
 
@@ -106,8 +107,12 @@ export default function DoctorRegister() {
                       <td>{entry.patientName}</td>
                       <td>{entry.date}</td>
                       <td>{entry.time}</td>
-                      <td style={{ whiteSpace: 'pre-wrap', overflowWrap: 'anywhere' }}>{entry.purpose}</td>
-                      <td>{op.actorId}</td>
+                      <td style={{ whiteSpace: 'pre-wrap', overflowWrap: 'anywhere' }}>
+                        {op.deviceId === 'seed-doctor-v1'
+                          ? entry.purpose.replace(/\. Fictional demo patient\.$/, '')
+                          : entry.purpose}
+                      </td>
+                      <td>{displayActor(op)}</td>
                     </tr>
                   );
                 })}
