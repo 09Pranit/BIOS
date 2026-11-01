@@ -1,5 +1,22 @@
 /** English keys with Hindi and Punjabi interface translations. Stored records are never translated. */
 export const shellTranslations: Record<string, readonly [string, string]> = {
+  'Doctor’s register': ['डॉक्टर का रजिस्टर', 'ਡਾਕਟਰ ਦਾ ਰਜਿਸਟਰ'],
+  'New patient entry': ['नई मरीज़ प्रविष्टि', 'ਨਵੀਂ ਮਰੀਜ਼ ਐਂਟਰੀ'],
+  'Patient name': ['मरीज़ का नाम', 'ਮਰੀਜ਼ ਦਾ ਨਾਮ'],
+  Time: ['समय', 'ਸਮਾਂ'],
+  Purpose: ['उद्देश्य', 'ਮਕਸਦ'],
+  'Add record': ['रिकॉर्ड जोड़ें', 'ਰਿਕਾਰਡ ਜੋੜੋ'],
+  'Patient entries': ['मरीज़ की प्रविष्टियाँ', 'ਮਰੀਜ਼ ਐਂਟਰੀਆਂ'],
+  'Recorded by': ['दर्ज करने वाला', 'ਦਰਜ ਕਰਨ ਵਾਲਾ'],
+  'No patient entries yet': ['अभी कोई मरीज़ प्रविष्टि नहीं है', 'ਹਾਲੇ ਕੋਈ ਮਰੀਜ਼ ਐਂਟਰੀ ਨਹੀਂ ਹੈ'],
+  'Complete the form above to add the first entry.': [
+    'पहली प्रविष्टि जोड़ने के लिए ऊपर का फ़ॉर्म भरें।',
+    'ਪਹਿਲੀ ਐਂਟਰੀ ਜੋੜਨ ਲਈ ਉੱਪਰ ਦਿੱਤਾ ਫਾਰਮ ਭਰੋ।',
+  ],
+  'Add a patient entry. Saved records appear below and remain available offline.': [
+    'मरीज़ की प्रविष्टि जोड़ें। सहेजे गए रिकॉर्ड नीचे दिखेंगे और ऑफलाइन उपलब्ध रहेंगे।',
+    'ਮਰੀਜ਼ ਦੀ ਐਂਟਰੀ ਜੋੜੋ। ਸੰਭਾਲੇ ਰਿਕਾਰਡ ਹੇਠਾਂ ਦਿਖਣਗੇ ਅਤੇ ਆਫ਼ਲਾਈਨ ਉਪਲਬਧ ਰਹਿਣਗੇ।',
+  ],
   'Government schemes': ['सरकारी योजनाएँ', 'ਸਰਕਾਰੀ ਯੋਜਨਾਵਾਂ'],
   'School records': ['स्कूल रिकॉर्ड', 'ਸਕੂਲ ਰਿਕਾਰਡ'],
   'Settings and sync': ['सेटिंग्स और सिंक', 'ਸੈਟਿੰਗਾਂ ਅਤੇ ਸਿੰਕ'],

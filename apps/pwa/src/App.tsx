@@ -17,6 +17,7 @@ import {
   Activity,
   CheckCircle2,
   GraduationCap,
+  Stethoscope,
   Building2,
   Sun,
   Moon,
@@ -33,6 +34,7 @@ import { displayRole, isPatientRecord } from './lib/presentation';
 import { Today, Children, School } from './pages/DataEntry';
 import { ChildDetail, Conflicts, SettingsPage, Admin, About } from './pages/Workspace';
 import GovernmentResources from './components/GovernmentResources';
+import DoctorRegister from './pages/DoctorRegister';
 import Lab from './pages/Lab';
 import PublicHome from './components/PublicHome';
 import RouteMetadata, { isWorkspaceRoute } from './components/RouteMetadata';
@@ -42,6 +44,7 @@ const schoolNav = [
   ['/app/today', 'Overview', LayoutDashboard],
   ['/app/children', 'Children', Users],
   ['/app/school', 'Classroom', GraduationCap],
+  ['/app/doctor', 'Doctor’s register', Stethoscope],
   ['/app/library', 'Government schemes', Building2],
   ['/app/conflicts', 'Conflict inbox', ShieldCheck],
 ] as const;
@@ -664,6 +667,7 @@ function Shell() {
             <Route path="/app/children" element={<Children />} />
             <Route path="/app/children/:id" element={<ChildDetail />} />
             <Route path="/app/school" element={<School />} />
+            <Route path="/app/doctor" element={<DoctorRegister />} />
             <Route
               path="/app/library"
               element={

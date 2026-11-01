@@ -32,6 +32,35 @@ async function device(name: string) {
   return v;
 }
 describe('encrypted local durability and real HTTP synchronization', () => {
+  it('keeps doctor entries separate from students and preserves concurrent visits through reload and sync', async () => {
+    const a = await device('Doctor A');
+    const b = await device('Doctor B');
+    const value = {
+      patientName: 'Example Patient',
+      date: '2020-01-01',
+      time: '09:30',
+      purpose: 'Routine consultation',
+    };
+    await a.write('doctor-entry-a', 'doctorEntry', value, 'add', 'doctor-entry');
+    await b.write('doctor-entry-b', 'doctorEntry', { ...value, purpose: 'Follow-up' }, 'add', 'doctor-entry');
+    await expect(
+      a.write('invalid-entry', 'doctorEntry', { ...value, time: '25:99' }, 'add', 'doctor-entry'),
+    ).rejects.toThrow();
+    const reopened = new Vault(a.name);
+    instances.push(reopened);
+    await reopened.unlock('123456');
+    expect(reopened.view.entities['doctor-entry-a'].doctorEntry[0]).toMatchObject(value);
+    expect(JSON.stringify(await reopened.db.vault.get('state'))).not.toContain('Example Patient');
+    await reopened.sync();
+    await b.sync();
+    await reopened.sync();
+    await reopened.sync();
+    expect(reopened.state!.ops.filter((op) => op.field === 'doctorEntry')).toHaveLength(2);
+    expect(reopened.view.entities['doctor-entry-b'].doctorEntry[0].purpose).toBe('Follow-up');
+    expect(Object.values(reopened.view.entities).filter((record) => record.type === 'child')).toHaveLength(0);
+    expect(reopened.view.conflicts).toHaveLength(0);
+    expect(await digest(reopened.state!.ops)).toBe(await digest(b.state!.ops));
+  });
   it('keeps offline writes available after expiry and renews the session on sync', async () => {
     const identity = store.enroll('Expired offline device', 'Reviewer'),
       expired = Date.now() - 1000,

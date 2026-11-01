@@ -16,7 +16,7 @@ export const OpSchema = z
     deviceId: z.string().min(1).max(100),
     schoolId: z.string().min(1),
     entityId: z.string().min(1).max(200),
-    entityType: z.enum(['child', 'attendance', 'assessment', 'lesson', 'stock']),
+    entityType: z.enum(['child', 'attendance', 'assessment', 'lesson', 'stock', 'doctor-entry']),
     field: z.enum(Object.keys(policies) as [Field, ...Field[]]),
     kind: z.enum(['set', 'add', 'remove', 'increment', 'resolve', 'delete', 'resurrect']),
     value: z.json(),
@@ -30,6 +30,8 @@ export const OpSchema = z
       .optional(),
   })
   .superRefine((o, ctx) => {
+    if ((o.field === 'doctorEntry') !== (o.entityType === 'doctor-entry'))
+      ctx.addIssue({ code: 'custom', message: 'Doctor entries require their own record type' });
     for (const issue of validateDomainOperation(o)) ctx.addIssue({ code: 'custom', ...issue });
     if (o.opId !== `${o.deviceId}:${o.counter}`)
       ctx.addIssue({ code: 'custom', message: 'Operation ID must bind device and counter' });
@@ -268,7 +270,9 @@ export function materialize(input: Op[]): Materialized {
             .sort(compareOpsByClock)
             .at(-1),
           latestByDevice = new Map<string, Op>();
-        for (const op of boundary ? [boundary, ...ops.filter((candidate) => before(boundary, candidate))] : ops) {
+        for (const op of boundary
+          ? [boundary, ...ops.filter((candidate) => before(boundary, candidate))]
+          : ops) {
           const previous = latestByDevice.get(op.deviceId);
           if (!previous || op.counter > previous.counter) latestByDevice.set(op.deviceId, op);
         }

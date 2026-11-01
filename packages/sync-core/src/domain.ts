@@ -28,6 +28,14 @@ export const PastDateSchema = CalendarDateSchema.refine((date) => date <= today(
 });
 
 export const EntityIdSchema = requiredText(200);
+export const DoctorEntrySchema = z
+  .object({
+    patientName: shortText(80).min(2, 'Enter a patient name with at least two characters'),
+    date: CalendarDateSchema,
+    time: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, 'Enter a valid time'),
+    purpose: requiredText(1000),
+  })
+  .strict();
 export const PhoneSchema = shortText(32).refine(
   (value) => {
     if (value === '') return true;
@@ -164,6 +172,7 @@ export type DomainIssue = { path: (string | number)[]; message: string };
 const logText = z.string().max(1000);
 const logObject = z.object({}).catchall(z.json());
 const logValues: Record<string, z.ZodType> = {
+  doctorEntry: DoctorEntrySchema,
   name: logText,
   guardian: logText,
   phone: logText,

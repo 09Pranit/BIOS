@@ -45,7 +45,7 @@ export default defineConfig({
         navigateFallback: '/app-shell.html',
         navigateFallbackDenylist: [/^\/api\//],
         navigateFallbackAllowlist: [
-          /^(?:\/(?:\?|$)|\/about(?:\?|$)|\/app\/(?:today|children(?:\/[^/?]+)?|school|library|sync|conflicts|settings)(?:[/?]|$)|\/(?:admin|recover)(?:[/?]|$)|\/lab(?:[/?]|$))/,
+          /^(?:\/(?:\?|$)|\/about(?:\?|$)|\/app\/(?:today|children(?:\/[^/?]+)?|school|doctor|library|sync|conflicts|settings)(?:[/?]|$)|\/(?:admin|recover)(?:[/?]|$)|\/lab(?:[/?]|$))/,
         ],
         runtimeCaching: [
           {

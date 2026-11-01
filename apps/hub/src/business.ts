@@ -44,7 +44,7 @@ const keyFor = (req: Request) => {
 };
 const pagination = (req: Request) =>
   PaginationSchema.parse({ limit: req.query.limit, offset: req.query.offset, q: req.query.q });
-const entityType = z.enum(['child', 'attendance', 'assessment', 'lesson', 'stock']);
+const entityType = z.enum(['child', 'attendance', 'assessment', 'lesson', 'stock', 'doctor-entry']);
 const fingerprintFor = (req: Request) =>
   hash({ method: req.method, path: req.originalUrl.split('?')[0], body: req.body });
 

@@ -7,6 +7,7 @@ const privatePages: Record<string, string> = {
   '/app/today': 'Overview',
   '/app/children': 'Children',
   '/app/school': 'Classroom',
+  '/app/doctor': 'Doctor’s register',
   '/app/library': 'Government schemes',
   '/app/sync': 'Save and sync',
   '/app/conflicts': 'Check differences',

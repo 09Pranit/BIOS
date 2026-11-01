@@ -12,6 +12,7 @@ export const policies = {
   prescription: ['register', 'NEEDS_REVIEW'],
   deleted: ['tombstone', 'NEEDS_REVIEW'],
   visits: ['grow-set', 'SAFE_AUTO'],
+  doctorEntry: ['grow-set', 'SAFE_AUTO'],
   doses: ['grow-set', 'SAFE_AUTO'],
   growth: ['grow-set', 'SAFE_AUTO'],
   attempts: ['grow-set', 'SAFE_AUTO'],

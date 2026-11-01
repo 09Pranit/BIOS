@@ -20,6 +20,7 @@ const pages = [
   { title: 'Record database and enrollment', path: '/admin', Icon: Database },
   { title: 'New student', path: '/app/children?new=student', Icon: FilePlus2 },
   { title: 'Attendance and assessments', path: '/app/school', Icon: GraduationCap },
+  { title: 'Doctor’s register', path: '/app/doctor', Icon: FilePlus2 },
   { title: 'Settings and sync', path: '/app/settings#sync', Icon: RefreshCw },
   { title: 'Conflict inbox', path: '/app/conflicts', Icon: ShieldCheck },
 ];
