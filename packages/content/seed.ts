@@ -1,4 +1,41 @@
 import { makeOp, type Op } from '../sync-core/src/index.js';
+
+// Fixed fictional examples keep operation IDs and content identical across restarts.
+export const demoPatients = [
+  ['Harpreet Singh', '2026-10-28', '09:15', 'Routine consultation'],
+  ['Kavita Sharma', '2026-10-28', '10:00', 'Blood pressure check'],
+  ['Amanpreet Kaur', '2026-10-28', '11:20', 'Seasonal cough consultation'],
+  ['Rakesh Kumar', '2026-10-29', '09:30', 'Follow-up visit'],
+  ['Farah Ali', '2026-10-29', '10:45', 'General health check'],
+  ['Gurdeep Singh', '2026-10-29', '12:10', 'Knee discomfort consultation'],
+  ['Sunita Devi', '2026-10-30', '09:00', 'Nutrition counselling'],
+  ['Navjot Kaur', '2026-10-30', '10:20', 'Headache consultation'],
+  ['Mohit Verma', '2026-10-30', '11:40', 'Routine follow-up'],
+  ['Parveen Begum', '2026-10-31', '09:10', 'Blood pressure follow-up'],
+  ['Baljit Singh', '2026-10-31', '10:30', 'General consultation'],
+  ['Ritu Malhotra', '2026-10-31', '12:00', 'Wellness check'],
+] as const;
+
+export function seedDoctorOperations(): Op[] {
+  const log: Op[] = [];
+  demoPatients.forEach(([patientName, date, time, purpose], i) => {
+    log.push(
+      makeOp(
+        log,
+        'seed-doctor-v1',
+        'Synthetic demo',
+        `demo-doctor-entry-${String(i + 1).padStart(3, '0')}`,
+        'doctorEntry',
+        { patientName, date, time, purpose: `${purpose}. Fictional demo patient.` },
+        'add',
+        'doctor-entry',
+        1793448000000,
+      ),
+    );
+  });
+  return log;
+}
+
 export const demoChildren = [
   ['Aarohi Kaur', '6', 'Daun Kalan', 'Class 1'],
   ['Kabir Singh', '7', 'Daun Kalan', 'Class 2'],
@@ -68,5 +105,5 @@ export function seedOperations(): Op[] {
       );
     if (i < 8) add(`${id}:math-foundations:attempt-1`, 'score', 55 + i * 5, 'set', 'assessment');
   });
-  return log;
+  return [...log, ...seedDoctorOperations()];
 }

@@ -20,6 +20,7 @@ import {
   ancestry,
   frontier,
   signOperation,
+  isSeedDevice,
   type Op,
 } from '../../../../packages/sync-core/src/index';
 import type { Field } from '../../../../packages/sync-core/src/policy';
@@ -228,7 +229,7 @@ export class Vault {
     return (
       this.state?.ops.filter(
         (o) =>
-          o.deviceId !== 'seed' &&
+          !isSeedDevice(o.deviceId) &&
           !acked.has(o.opId) &&
           !this.state?.quarantined.some((q) => q.opId === o.opId),
       ) ?? []

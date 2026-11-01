@@ -18,6 +18,7 @@ import {
   makeOp,
   ancestry,
   causalOrder,
+  isSeedDevice,
   type Op,
   type Conflict,
 } from '../../../packages/sync-core/src/index.js';
@@ -336,9 +337,9 @@ export class HubStore {
         }
         const device = this.db.prepare('SELECT * FROM devices WHERE id=?').get(op.deviceId) as
           Device | undefined;
-        if (op.deviceId !== 'seed' && (!device || device.school !== school))
+        if (!isSeedDevice(op.deviceId) && (!device || device.school !== school))
           throw new HttpError(403, 'UNKNOWN_AUTHOR', 'Unknown operation author');
-        if (op.deviceId === 'seed' && !trustedSeed)
+        if (isSeedDevice(op.deviceId) && !trustedSeed)
           throw new HttpError(403, 'SEED_UPLOAD_FORBIDDEN', 'Seed operations cannot be uploaded');
         if (device) {
           const expected = createHmac('sha256', this.decrypt(device.signing_secret))
