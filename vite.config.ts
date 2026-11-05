@@ -41,7 +41,7 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,json,woff2}', 'government/*.{png,jpg,jpeg,webp}'],
-        globIgnores: ['**/index.html', '**/site/**'],
+        globIgnores: ['**/index.html', '**/site/**', '**/record-scene-*.js', '**/landing-three-*.js'],
         navigateFallback: '/app-shell.html',
         navigateFallbackDenylist: [/^\/api\//],
         navigateFallbackAllowlist: [
@@ -66,6 +66,7 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks(id: string) {
+          if (id.includes('node_modules/three/')) return 'landing-three';
           if (id.includes('node_modules/zod')) return 'validation';
           if (id.includes('node_modules/dexie')) return 'storage';
           if (id.includes('node_modules/react') || id.includes('node_modules/scheduler')) return 'react';

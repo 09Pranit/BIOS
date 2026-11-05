@@ -2,12 +2,22 @@ import React from 'react';
 import { mkdirSync, writeFileSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { brotliCompressSync, gzipSync } from 'node:zlib';
-import { renderToStaticMarkup } from 'react-dom/server';
+import { renderToStaticMarkup, renderToString } from 'react-dom/server';
 import { MemoryRouter } from 'react-router-dom';
 import PublicHome from '../apps/pwa/src/components/PublicHome';
 import { About } from '../apps/pwa/src/pages/Workspace';
+import { renderDocument } from '../apps/hub/src/site';
 mkdirSync('dist/site', { recursive: true });
-writeFileSync('dist/site/home.html', renderToStaticMarkup(<PublicHome />));
+const home = renderToString(<PublicHome />);
+writeFileSync('dist/site/home.html', home);
+writeFileSync(
+  'dist/landing.html',
+  renderDocument(readFileSync('dist/index.html', 'utf8'), {
+    path: '/',
+    siteUrl: process.env.SITE_URL,
+    publicMarkup: home,
+  }),
+);
 writeFileSync(
   'dist/site/about.html',
   renderToStaticMarkup(

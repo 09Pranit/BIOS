@@ -15,7 +15,7 @@ test('public pages contain crawlable HTML, clear entry points and route-specific
   expect(landing.status()).toBe(200);
   const home = await landing.text();
   expect(home.match(/<h1(?:\s|>)/gi)).toHaveLength(1);
-  expect(home).toMatch(/Offline records\.[\s\S]*?Connected communities\./);
+  expect(home).toMatch(/A school day[\s\S]*?shouldn’t depend[\s\S]*?signal/);
   expect(meta(home, 'description')?.length).toBeGreaterThanOrEqual(50);
   expect(meta(home, 'robots')).toContain('index, follow');
   const about = await request.get('/about');
@@ -40,7 +40,7 @@ test('public pages contain crawlable HTML, clear entry points and route-specific
   const page = await context.newPage();
   await page.goto('/');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(
-    /Offline records\.\s*Connected communities\./,
+    /A school day\s*shouldn’t depend\s*on a signal\./,
   );
   await expect(page.getByRole('link', { name: 'Open workspace', exact: true })).toHaveAttribute(
     'href',
@@ -118,7 +118,7 @@ for (const [name, viewport] of [
     };
     await page.goto('/');
     await expect(page.getByRole('heading', { level: 1 })).toHaveText(
-      /Offline records\.\s*Connected communities\./,
+      /A school day\s*shouldn’t depend\s*on a signal\./,
     );
     await scan();
     await page.screenshot({ path: `docs/smriva-home-${name}.png`, fullPage: true, animations: 'disabled' });

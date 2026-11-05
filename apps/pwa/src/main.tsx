@@ -22,9 +22,11 @@ async function start() {
       localStorage.getItem('kuka-theme');
     document.documentElement.dataset.theme = theme === 'light' ? 'light' : 'dark';
   } catch {}
-  // The public home is complete build-rendered HTML with native links and disclosures.
-  // Workspace encryption and form code loads only when the workspace is opened.
-  if (location.pathname === '/' && root.querySelector('.public-site')) return;
+  // Keep the public illustration independent of the encrypted workspace bundle.
+  if (location.pathname === '/') {
+    await import('./landing-main');
+    return;
+  }
   await import('./workspace-main');
 }
 void start().catch(() => {
